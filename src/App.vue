@@ -108,12 +108,7 @@ watch(cmdShiftE, (v) => {
         <div :class="[
           'flex flex-col w-full items-start justify-start space-y-4 px-2',
         ]">
-          <EditorCell :single-mode="false" />
-          <EditorCell :single-mode="false" />
-          <EditorCell :single-mode="false" />
-          <EditorCell :single-mode="false" />
-          <EditorCell :single-mode="false" />
-          <EditorCell :single-mode="false" />
+          <EditorCell :single-mode="true" />
         </div>
       </div>
     </div>

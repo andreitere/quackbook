@@ -18,7 +18,7 @@ defineEmits(["save", "clear", "play", "duplicate", "trash", "display_results"]);
 
 <template>
   <div class="flex space-x-2">
-    <Button size="xs" variant="outline" v-if="play" @click="$emit('play')">
+    <Button size="xs" class="cursor-pointer" variant="outline" v-if="play" @click="$emit('play')">
       <div class="i-pixelarticons:play h-4 w-4"></div>
     </Button>
     <Button size="xs" variant="outline" v-if="save" @click="$emit('save')">
