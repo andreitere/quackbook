@@ -81,10 +81,15 @@
 
 html, body, #app {
   @apply h-full w-full;
+  font-family: 'Roboto Mono';
 }
 
 .delius-swash-caps-regular {
-  font-family: "Delius Swash Caps", cursive;
+  font-family: "Roboto Mono", cursive;
   font-weight: 400;
   font-style: normal;
+}
+
+* {
+  user-select: none;
 }
