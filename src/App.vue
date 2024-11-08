@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import { useColorMode, useMagicKeys } from '@vueuse/core'
-import { reactive, watch } from "vue";
+import {useColorMode, useMagicKeys} from '@vueuse/core'
+import {reactive, watch} from "vue";
 import EditorCell from "@/components/EditorCell.vue";
-import { Button } from './components/ui/button';
-import { Label } from './components/ui/label';
+import {Button} from './components/ui/button';
+import {Label} from './components/ui/label';
+import Toaster from '@/components/ui/toast/Toaster.vue'
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,21 +15,16 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 
-import { Switch } from "@/components/ui/switch"
+import {Switch} from "@/components/ui/switch"
 
-import { useMemory } from '@vueuse/core'
-import { bytesToGB } from './lib/utils';
+import {useMemory} from '@vueuse/core'
+import {bytesToGB} from './lib/utils';
+import CommandMenu from "@/components/CommandMenu.vue";
 
-const { isSupported: isUseMemSupported, memory } = useMemory()
+const {isSupported: isUseMemSupported, memory} = useMemory()
 
 const mode = useColorMode() // Ref<'dark' | 'light'>
-const toggleColorMode = () => {
-  if (mode.value === 'light') {
-    mode.value = 'dark';
-  } else {
-    mode.value = 'light'
-  }
-}
+
 
 const show = reactive({
   toolBar: false,
@@ -38,11 +35,13 @@ const keys = useMagicKeys();
 
 const cmdShiftE = keys['Option+Shift+E'];
 
+
 watch(cmdShiftE, (v) => {
   if (!v) return;
   console.log(`cmdShiftE`, v);
   show.toolBar = !show.toolBar;
 })
+
 
 </script>
 
@@ -68,13 +67,13 @@ watch(cmdShiftE, (v) => {
               </DropdownMenuTrigger>
               <DropdownMenuContent class="space-y-2">
                 <div class="flex items-center space-x-2 p-2 text-xs">
-                  <Switch id="single-mode" />
+                  <Switch id="single-mode"/>
                   <Label for="signle-mode">Single Mode</Label>
                 </div>
                 <DropdownMenuItem>share</DropdownMenuItem>
                 <DropdownMenuItem>Team</DropdownMenuItem>
                 <DropdownMenuItem>Subscription</DropdownMenuItem>
-                <DropdownMenuSeparator />
+                <DropdownMenuSeparator/>
                 <DropdownMenuLabel class="text-xs text-red-600">delete</DropdownMenuLabel>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -88,7 +87,8 @@ watch(cmdShiftE, (v) => {
         <div class="flex flex-grow"></div>
         <div class="flex items-center space-x-2 text-xs">
           <span v-if="isUseMemSupported">Browser Mem (GB): {{ bytesToGB(memory?.usedJSHeapSize) }} / {{
-            bytesToGB(memory?.jsHeapSizeLimit) }} (GB)</span>
+              bytesToGB(memory?.jsHeapSizeLimit)
+            }} (GB)</span>
 
         </div>
       </header>
@@ -96,23 +96,25 @@ watch(cmdShiftE, (v) => {
         <div class="tool-bar items-center flex flex-col space-y-3 [&>*]:py-4" v-if="show.toolBar">
           <Button size="xs" variant="ghost" class="space-x-1">
             <div class="i-material-symbols-light:text-snippet-outline-rounded h-8 w-8"></div>
+            <span>Projects</span>
+          </Button>
+          <Button size="xs" variant="ghost" class="space-x-1">
+            <div class="i-material-symbols-light:text-snippet-outline-rounded h-8 w-8"></div>
             <span>Snippets</span>
-          </Button>
-          <Button size="xs" variant="ghost" class="space-x-1">
-            <div class="i-material-symbols-light:text-snippet-outline-rounded h-8 w-8"></div>
-          </Button>
-          <Button size="xs" variant="ghost" class="space-x-1">
-            <div class="i-material-symbols-light:text-snippet-outline-rounded h-8 w-8"></div>
           </Button>
         </div>
         <div :class="[
           'flex flex-col w-full items-start justify-start space-y-4 px-2',
         ]">
-          <EditorCell :single-mode="true" />
+          <EditorCell :single-mode="false"/>
+          <EditorCell :single-mode="false"/>
         </div>
       </div>
     </div>
     <div class="utils-bar bg-green-300"></div>
+    <CommandMenu/>
+    <Toaster/>
+
   </div>
 </template>
 

@@ -4,8 +4,7 @@ import EditorCellToolbar from "@/components/EditorCellToolbar.vue";
 import {onMounted, ref} from "vue";
 import {useDuckDb} from "@/hooks/useDuckDb.ts";
 import {$ref} from 'unplugin-vue-macros/macros';
-import {tableFromIPC} from 'apache-arrow';
-import {DataType, Type} from 'apache-arrow';
+import {Type} from 'apache-arrow';
 
 
 const pView = ref(null)
@@ -37,9 +36,6 @@ const onClear = async () => {
 
 const onPlay = async () => {
   const c = await db.value?.connect();
-  console.log(perspective)
-  console.debug("start loading duckdb_types;")
-  console.debug("end loading duckdb")
   try {
     let r = await c.query(query)
     // console.log(typeof results, results)
@@ -50,11 +46,12 @@ const onPlay = async () => {
       return acc;
     }, {})
     results = JSON.parse(
-      JSON.stringify(
-        results.toArray(),
-        (key, value) => (typeof value === 'bigint' ? value.toString() : value) // return everything else unchanged
-      )
+        JSON.stringify(
+            results.toArray(),
+            (key, value) => (typeof value === 'bigint' ? value.toString() : value) // return everything else unchanged
+        )
     )
+
     function arrowTypeToJsType(arrowType) {
       switch (arrowType.typeId) {
         case Type.Int:
@@ -68,6 +65,7 @@ const onPlay = async () => {
         case Type.Float16:
         case Type.Float32:
         case Type.Float64:
+        case Type.Decimal:
           return 'float';  // Both Float32 and Float64 map to 'number'
         case Type.Utf8:
           return 'string';  // UTF-8 strings map to JavaScript 'string'
@@ -125,10 +123,10 @@ onMounted(async () => {
     props.singleMode ? 'h-full' : '',
   ]">
     <EditorCellToolbar :delete="!props.singleMode" @play="onPlay" @clear="onClear"/>
-    <textarea class="max-h-[40vh] p-2 text-xs border-2 focus:border-slate-700 rounded" v-model.lazy="query"
+    <Textarea class="max-h-[40vh] p-2 text-xs border-2 focus:border-slate-700 rounded" v-model.lazy="query"
               ref="queryEditorRef" :disabled="db_loading"/>
 
-    <div class="bg-blue-200 flex-grow">
+    <div class="bg-blue-200 flex-grow" v-show="results?.length">
       <perspective-viewer ref="pView" :class="[
         'overflow-auto',
         props.singleMode ? 'h-full' : 'h-[20vh] resize-y'
