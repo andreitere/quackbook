@@ -1,110 +1,90 @@
 <script setup lang="ts">
 import {Textarea} from "@/components/ui/textarea";
 import EditorCellToolbar from "@/components/EditorCellToolbar.vue";
-import {onMounted, ref} from "vue";
+import {computed, onMounted, ref} from "vue";
 import {useDuckDb} from "@/hooks/useDuckDb.ts";
 import {$ref} from 'unplugin-vue-macros/macros';
-import {Type} from 'apache-arrow';
+import "https://cdn.jsdelivr.net/npm/@finos/perspective-viewer@3.1.3/dist/cdn/perspective-viewer.js";
+import "https://cdn.jsdelivr.net/npm/@finos/perspective-viewer-datagrid@3.1.3/dist/cdn/perspective-viewer-datagrid.js";
+import "https://cdn.jsdelivr.net/npm/@finos/perspective-viewer-d3fc@3.1.3/dist/cdn/perspective-viewer-d3fc.js";
+// import "@finos/perspective-viewer/dist/css/pro.css";
+import "@finos/perspective-viewer/dist/css/pro-dark.css";
+
+import perspective from "https://cdn.jsdelivr.net/npm/@finos/perspective/dist/cdn/perspective.js";
+import {arrowTypeToJsType} from "@/lib/utils.ts";
+import {useSnippets} from "@/store/snippets.ts";
+import {db_events} from "@/store/meta.ts";
+import {useColorMode} from "@vueuse/core";
 
 
 const pView = ref(null)
-
+const color = useColorMode()
 const props = defineProps({
   singleMode: {default: true, type: Boolean},
   fillWH: {default: false, type: Boolean},
 })
 
-const {db, loading: db_loading, error: db_err} = useDuckDb()
-import "https://cdn.jsdelivr.net/npm/@finos/perspective-viewer@3.1.3/dist/cdn/perspective-viewer.js";
-import "https://cdn.jsdelivr.net/npm/@finos/perspective-viewer-datagrid@3.1.3/dist/cdn/perspective-viewer-datagrid.js";
-import "https://cdn.jsdelivr.net/npm/@finos/perspective-viewer-d3fc@3.1.3/dist/cdn/perspective-viewer-d3fc.js";
+const {db, loading: db_loading, error: db_err, ready} = useDuckDb()
+const $snippets = useSnippets()
 
-
-import perspective from "https://cdn.jsdelivr.net/npm/@finos/perspective/dist/cdn/perspective.js";
 
 let query = $ref("SELECT * FROM 'https://shell.duckdb.org/data/tpch/0_01/parquet/orders.parquet';");
 let queryEditorRef = $ref(null);
 let results: any = $ref(null);
 let error: any = $ref('');
 let pWorker = $ref(null);
+let inputFocused = $ref(false);
+
+
+// -- start computed --
+
+const tableTheme = computed(() => {
+  if(color.value === 'light') {
+    return ''
+  } else {
+    return 'Pro Dark'
+  }
+})
+// -- end computed --
+
 
 // -- start methods --
 const onClear = async () => {
   query = ''
 }
 
+const onSave = async () => {
+
+}
 
 const onPlay = async () => {
+  await ready;
+  error = '';
   const c = await db.value?.connect();
   try {
     let r = await c.query(query)
     // console.log(typeof results, results)
     results = r;
-    const mappedFields = results.schema.fields.reduce((acc, next) => {
+    const mappedFields = results.schema.fields.reduce((acc: Record<string, string>, next: unknown) => {
       acc = acc ?? {};
-      acc[next.name] = arrowTypeToJsType(next.type);
+      acc[next?.name] = arrowTypeToJsType(next?.type);
       return acc;
     }, {})
     results = JSON.parse(
         JSON.stringify(
             results.toArray(),
-            (key, value) => (typeof value === 'bigint' ? value.toString() : value) // return everything else unchanged
+            (_, value) => (typeof value === 'bigint' ? value.toString() : value) // return everything else unchanged
         )
     )
-
-    function arrowTypeToJsType(arrowType) {
-      switch (arrowType.typeId) {
-        case Type.Int:
-        case Type.Int8:
-        case Type.Int16:
-        case Type.Int32:
-          return 'integer';  // All smaller integers can be represented as 'number'
-        case Type.Int64:
-          return 'bigint';  // Int64 can map to 'bigint' in JavaScript
-        case Type.Float:
-        case Type.Float16:
-        case Type.Float32:
-        case Type.Float64:
-        case Type.Decimal:
-          return 'float';  // Both Float32 and Float64 map to 'number'
-        case Type.Utf8:
-          return 'string';  // UTF-8 strings map to JavaScript 'string'
-        case Type.Date32:
-        case Type.Date64:
-        case Type.Date:
-        case Type.DateDay:
-        case Type.DateMillisecond:
-        case Type.Timestamp:
-          return 'date';  // Date32 and Date64 map to JavaScript's Date object
-        case Type.Bool:
-          return 'boolean';  // Boolean maps to JavaScript 'boolean'Timestamps can also map to JavaScript's Date
-        case Type.Struct:
-          return 'object';  // Structs map to JavaScript objects
-        case Type.List:
-          return 'string';  // Lists map to JavaScript arrays
-        case Type.Dictionary:
-          return 'string';  // Dictionary types (often categorical) can be strings
-        default:
-          console.log(arrowType)
-          return 'unknown';  // Fallback for any types not covered
-      }
-    }
 
 
     console.log(mappedFields)
     const table = await pWorker.table(mappedFields);
     table.update(results)
     pView?.value.load(table, {configure: true});
-
-    // const resp = await fetch("https://cdn.jsdelivr.net/npm/superstore-arrow/superstore.lz4.arrow");
-    // const arrow = await resp.arrayBuffer();
-    // const table = pWorker.table(arrow);
-    console.log('done')
-    // pView._value.load(table);
+    db_events.emit('UPDATE_SCHEMA')
   } catch (e) {
     error = e.message;
-    console.log(e)
-    console.log(`error`)
   }
 }
 
@@ -123,14 +103,21 @@ onMounted(async () => {
     props.singleMode ? 'h-full' : '',
   ]">
     <EditorCellToolbar :delete="!props.singleMode" @play="onPlay" @clear="onClear"/>
-    <Textarea class="max-h-[40vh] p-2 text-xs border-2 focus:border-slate-700 rounded" v-model.lazy="query"
-              ref="queryEditorRef" :disabled="db_loading"/>
+    <div class="flex items-start">
+      <Textarea class="max-h-[40vh] p-2 border-2 focus:border-slate-700 rounded" v-model.lazy="query"
+                ref="queryEditorRef" :disabled="db_loading" @focusin="inputFocused = true" @blur="inputFocused = false"
+                style="field-sizing: content"/>
+      <div v-if="error" class="w-1/3 text-sm text-red-500 px-4">
+        {{ error }}
+      </div>
+    </div>
 
     <div class="bg-blue-200 flex-grow" v-show="results?.length">
       <perspective-viewer ref="pView" :class="[
         'overflow-auto',
         props.singleMode ? 'h-full' : 'h-[20vh] resize-y'
-      ]"></perspective-viewer>
+      ]"
+                          :theme="tableTheme"></perspective-viewer>
     </div>
   </div>
 </template>

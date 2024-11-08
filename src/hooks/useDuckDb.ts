@@ -7,18 +7,27 @@ import {AsyncDuckDB, getDuckDB} from "duckdb-wasm-kit";
  */
 export function useDuckDb() {
   const db: Ref<AsyncDuckDB | null> = ref(null);
-  const loading = ref(true);
+  const loading = ref(false);
   const error: Ref<any | null> = ref(null);
 
-  onMounted(async () => {
-    try {
-      db.value = await getDuckDB();
-    } catch (e) {
-      error.value = e;
-    } finally {
-      loading.value = false;
-    }
+  const ready = new Promise<void>((resolve, reject) => {
+    onMounted(async () => {
+      try {
+        if (db.value) {
+          resolve();
+          return;
+        }
+        loading.value = true;
+        db.value = await getDuckDB();
+        resolve(); // Resolve the promise once db is loaded
+      } catch (e) {
+        error.value = e;
+        reject(e); // Reject the promise if there’s an error
+      } finally {
+        loading.value = false;
+      }
+    });
   });
 
-  return {db, loading, error};
+  return {db, loading, error, ready};
 }

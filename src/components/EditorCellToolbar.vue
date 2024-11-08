@@ -43,7 +43,7 @@ watch(cmdEnter, (v) => {
     <Button size="xs" variant="outline" v-if="clear" @click="$emit('clear')">
       <div class="i-pixelarticons:delete h-4 w-4"></div>
     </Button>
-    <Label class="flex items-center space-x-1 border-[1px] rounded p-1 cursor-pointer">
+    <Label class="flex items-center space-x-1  rounded p-1 cursor-pointer">
       <Checkbox :checked="display_results" @update:checked="(v) => $emit('update:display_results', v)"/>
 
       <span class="text-xs">show results</span>
@@ -52,12 +52,6 @@ watch(cmdEnter, (v) => {
             @click="$emit('update:display_results', $event.target.value)">
     </Button>
     <div class="flex-grow"></div>
-    <Button size="xs" variant="outline">
-      <div class="i-pixelarticons:arrow-up h-4 w-4"></div>
-    </Button>
-    <Button size="xs" variant="outline">
-      <div class="i-pixelarticons:arrow-down h-4 w-4"></div>
-    </Button>
     <Button size="xs" variant="outline" v-if="duplicate" @click="$emit('duplicate')">
       <div class="i-pixelarticons:duplicate h-4 w-4"></div>
     </Button>

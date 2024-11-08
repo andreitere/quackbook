@@ -1,23 +1,16 @@
 <script setup lang="ts">
-import {
-  Command,
-  CommandGroup,
-  CommandInput,
-  CommandList,
-  CommandItem,
-  CommandEmpty,
-  CommandSeparator
-} from "@/components/ui/command"
+import {Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator} from "@/components/ui/command"
 import {Dialog, DialogContent} from "@/components/ui/dialog"
-import {$ref} from "unplugin-vue-macros/macros";
+
 import {useColorMode, useMagicKeys} from "@vueuse/core";
-import {watch} from "vue";
+import {ref, watch} from "vue";
 import {Button} from "@/components/ui/button";
+import {useMetaStore} from "@/store/meta.ts";
 
 const colorMode = useColorMode()
+const $meta = useMetaStore()
 
-
-let open = $ref(false)
+let open = ref(false)
 
 
 const keys = useMagicKeys();
@@ -31,19 +24,19 @@ const onColorModeToggle = () => {
   } else {
     colorMode.value = 'light'
   }
-  open = false;
+  $meta.cmdMenu = false;
 }
 
 
 watch(cmdK, (v) => {
   if (!v) return;
-  open = !open;
+  $meta.cmdMenu = !$meta.cmdMenu;
 })
 
 </script>
 
 <template>
-  <Dialog v-model:open="open">
+  <Dialog v-model:open="$meta.cmdMenu">
     <DialogContent class="p-0 m-0">
       <Command class="rounded-lg border shadow-md ">
         <CommandInput placeholder="Type a command or search..."/>
