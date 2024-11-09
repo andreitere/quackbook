@@ -11,7 +11,11 @@ import UnoCSS from "unocss/vite";
 // https://vitejs.dev/config/
 export default defineConfig({
   build: {
-    sourcemap: true,
+    minify: false,
+    terserOptions: {
+      compress: false,
+      mangle: false,
+    },
   },
   css: {
     postcss: {
