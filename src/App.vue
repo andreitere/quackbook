@@ -1,13 +1,11 @@
 <script setup lang="ts">
 import {useColorMode, useMagicKeys, useMemory} from '@vueuse/core'
-import {reactive, ref, watch} from "vue";
-import EditorCell from "@/components/EditorCell.vue";
+import {onMounted, reactive, ref, watch} from "vue";
 import {Button} from './components/ui/button';
 import Toaster from '@/components/ui/toast/Toaster.vue'
 import {bytesToGB} from './lib/utils';
 import CommandMenu from "@/components/CommandMenu.vue";
 import {useMetaStore} from "@/store/meta.ts";
-import DBSchemaDetails from "@/components/DBSchemaDetails.vue";
 import {useProjects} from "@/store/project.ts";
 import {Input} from "@/components/ui/input";
 
@@ -53,8 +51,6 @@ watch(cmdShiftE, (v) => {
   console.log(`cmdShiftE`, v);
   show.toolBar = !show.toolBar;
 })
-
-
 </script>
 
 <template>
@@ -84,23 +80,7 @@ watch(cmdShiftE, (v) => {
       </div>
     </header>
     <div class="flex flex-row flex-grow">
-      <div class="flex flex-grow flex-col h-full max-h-full px-2  py-4">
-        <div class="overflow-y-scroll nice-scrollbar flex flex-col h-0 flex-grow space-y-6">
-          <div v-for="cell in $projects.sortedCells.value"  v-if="$projects.activeProject.value.mode == 'notebook'" class="w-full">
-            <EditorCell :mode="$projects.activeProject.value.mode" v-model:query="cell.query" :id="cell.id" :position="cell.position"/>
-          </div>
-          <EditorCell v-if="$projects.activeProject.value.mode == 'console'" :mode="$projects.activeProject.value.mode"
-                      v-model:query="$projects.activeProject.value.cells[0].query"/>
-        </div>
-      </div>
-      <div :class="[
-            'tool-bar items-center flex flex-col space-y-3 overflow-y-scroll nice-scrollbar h-full',
-            $meta.showToolbar ? 'w-1/3' : 'w-0 opacity-0'
-        ]">
-        <div class="overflow-y-scroll h-0 flex-grow w-full">
-          <DBSchemaDetails class="w-full"/>
-        </div>
-      </div>
+      <router-view></router-view>
     </div>
     <CommandMenu ref="cmdMenu" v-on="commandEvents"/>
     <Toaster/>

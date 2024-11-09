@@ -8,6 +8,38 @@ export function cn(...inputs: ClassValue[]) {
 
 export const bytesToGB = (bytes: number) => (bytes / Math.pow(1024, 3)).toFixed(2);
 
+export const encodeJsonToBase64Url = (jsonObject) => {
+  // Convert the JSON object to a JSON string
+  const jsonString = JSON.stringify(jsonObject);
+
+  // Encode to Base64 using TextEncoder and Uint8Array to handle Unicode
+  const utf8Bytes = new TextEncoder().encode(jsonString);
+  const base64String = btoa(String.fromCharCode(...utf8Bytes));
+
+  // Make the Base64 string URL-friendly by replacing characters
+  return base64String
+      .replace(/\+/g, '-')    // Replace '+' with '-'
+      .replace(/\//g, '_')    // Replace '/' with '_'
+      .replace(/=+$/, '');    // Remove trailing '=' characters
+};
+
+export const decodeBase64UrlToJson = (base64UrlString) => {
+  // Convert URL-safe Base64 to standard Base64
+  const base64String = base64UrlString
+      .replace(/-/g, '+')    // Replace '-' back to '+'
+      .replace(/_/g, '/')    // Replace '_' back to '/'
+      .padEnd(base64UrlString.length + (4 - base64UrlString.length % 4) % 4, '=');
+
+  // Decode Base64 to binary string
+  const binaryString = atob(base64String);
+
+  // Convert binary string back to UTF-8 bytes, then to a JSON string
+  const utf8Bytes = new Uint8Array([...binaryString].map(char => char.charCodeAt(0)));
+  const jsonString = new TextDecoder().decode(utf8Bytes);
+
+  // Parse the JSON string back to an object
+  return JSON.parse(jsonString);
+};
 
 export const arrowTypeToJsType = (arrowType: keyof typeof Type) => {
   switch (arrowType.typeId) {

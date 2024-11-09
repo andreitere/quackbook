@@ -53,7 +53,7 @@ watch(cmdK, (v) => {
               <div class="i-pixelarticons:save w-4 h-4 mr-2"></div>
               <span>save project</span>
             </CommandItem>
-            <CommandItem value="share">
+            <CommandItem value="share" @select="$projects.shareProject">
               <div class="i-pixelarticons:open w-4 h-4 mr-2"></div>
               <span>share</span>
             </CommandItem>

@@ -134,7 +134,7 @@ onMounted(async () => {
 
     <div class="bg-blue-200 flex-grow" v-show="results?.length">
       <perspective-viewer ref="pView" :class="[
-        'overflow-auto',
+        'overflow-hidden',
         props.mode=='console' ? 'h-full' : 'h-[20vh] resize-y'
       ]"
                           :theme="tableTheme"></perspective-viewer>

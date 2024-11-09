@@ -2,6 +2,7 @@ import {useStorage} from "@vueuse/core";
 import {computed, Ref} from "vue";
 import {useToast} from "@/components/ui/toast";
 import {useMetaStore} from "@/store/meta.ts";
+import {encodeJsonToBase64Url} from "@/lib/utils.ts";
 
 type Project = {
   id: number | string;
@@ -35,6 +36,7 @@ const generateProjectName = () => {
 export const useProjects = () => {
   const {toast} = useToast()
   const $meta = useMetaStore()
+
 
   const projects: Ref<Project[]> = useStorage("projects", [])
   const activeProject: Ref<Project> = useStorage("activeProject", {
@@ -153,5 +155,34 @@ export const useProjects = () => {
     activeProject.value = project;
   }
 
-  return {projects, activeProject, createProject, addCell, convertToConsole, convertToNotebook, moveDown, moveUp, sortedCells, deleteCell, saveProject, setActiveProject}
+  const shareProject = () => {
+    let project = {...activeProject.value, id: null};
+    const project_in_url = encodeJsonToBase64Url(project)
+    const url = `${window.location.origin}/import/${project_in_url}`;
+
+    console.log(url); // For testing, you can log or use the URL as needed
+    return url;
+  }
+
+  const importSharedProject = (project_json: Project) => {
+    activeProject.value = {...project_json, id: Date.now().valueOf()}
+    toast({title: `Project has been imported!`, description: `${project_json.name} imported. 😋`})
+  }
+
+  return {
+    projects,
+    activeProject,
+    createProject,
+    addCell,
+    convertToConsole,
+    convertToNotebook,
+    moveDown,
+    moveUp,
+    sortedCells,
+    deleteCell,
+    saveProject,
+    setActiveProject,
+    shareProject,
+    importSharedProject
+  }
 }
