@@ -12,10 +12,9 @@ const props = defineProps({
 })
 const {markdown} = useVModels(props)
 
-const {md, ready: md_ready, highlighter} = useMarkdownRenderer()
+const {md, ready: md_ready} = useMarkdownRenderer()
 
 
-let editMode = $ref(false)
 let rendered = $ref('');
 
 const doRender = async () => {

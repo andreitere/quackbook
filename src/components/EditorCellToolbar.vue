@@ -1,8 +1,6 @@
 <script setup lang="ts">
 
 import {Button} from "@/components/ui/button";
-import {Checkbox} from '@/components/ui/checkbox'
-import {Label} from '@/components/ui/label'
 import {useMagicKeys} from "@vueuse/core";
 import {watch} from "vue";
 
@@ -24,7 +22,7 @@ const cmdEnter = keys['Cmd+Enter'];
 
 
 watch(cmdEnter, (v) => {
-  if(!v) return;
+  if (!v) return;
   console.log(`cmdEnter`);
   $emit("play")
 })
@@ -43,11 +41,6 @@ watch(cmdEnter, (v) => {
     <Button tabindex="-1" size="xs" variant="outline" v-if="clear" @click="$emit('clear')">
       <div class="i-mingcute:broom-line h-4 w-4"></div>
     </Button>
-    <Label tabindex="-1" class="flex items-center space-x-1  rounded p-1 cursor-pointer" v-if="display_results">
-      <Checkbox :checked="display_results" @update:checked="(v) => $emit('update:display_results', v)"/>
-
-      <span class="text-xs">show results</span>
-    </Label>
     <Button tabindex="-1" class="space-x-1" size="xs" variant="outline" v-if="display_results"
             @click="$emit('update:display_results', $event.target.value)">
     </Button>

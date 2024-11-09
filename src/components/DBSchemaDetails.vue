@@ -4,15 +4,16 @@ import {db_events} from "@/store/meta.ts";
 import {onMounted, ref, Ref} from "vue";
 import {Collapsible, CollapsibleContent, CollapsibleTrigger} from "@/components/ui/collapsible";
 import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
+import {AsyncDuckDB} from "duckdb-wasm-kit";
 
-const {db, loading: db_loading, error: db_err, ready} = useDuckDb()
+const {db, ready} = useDuckDb()
 
 const events: Ref<string[]> = ref([])
-const schema: Ref<Record<string, string>> = ref()
+const schema: Ref<Record<string, Record<string, any>>> = ref({})
 
-const getSchemaDetails = async (db) => {
+const getSchemaDetails = async (db: AsyncDuckDB) => {
   await ready;
-  const conn = await db.value?.connect();
+  const conn = await db.connect();
 
   // Step 1: Get all schemas
   const schemasResult = await conn.query(`
@@ -45,19 +46,23 @@ const getSchemaDetails = async (db) => {
     // }
   });
 
-  return _db_schemas;
+  return _db_schemas as Record<string, Record<string, any>>;
 }
 
+const updateSchemaDetails = async () => {
+  if (!db.value) return;
+  schema.value = (await getSchemaDetails(db.value));
+}
 
 db_events.on(async (msg) => {
   if (msg === "UPDATE_SCHEMA") {
-    schema.value = (await getSchemaDetails(db));
+    await updateSchemaDetails()
   }
-  events.value.push(msg)
+  events.value.push(msg as string)
 })
 
-onMounted(async () => {
-  schema.value = (await getSchemaDetails(db));
+onMounted(() => {
+  updateSchemaDetails()
 })
 </script>
 
@@ -91,14 +96,14 @@ onMounted(async () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            <TableRow v-for="columns in schema[key]">
+            <TableRow v-for="column in schema[key]">
               <TableCell class="font-medium">
-                {{ columns.name }}
+                {{ column.name }}
               </TableCell>
-              <TableCell>{{ columns.type.toLowerCase() }}</TableCell>
-              <TableCell>{{ columns.notnull }}</TableCell>
-              <TableCell>{{ columns.dflt_value }}</TableCell>
-              <TableCell>{{ columns.pk }}</TableCell>
+              <TableCell>{{ column.type.toLowerCase() }}</TableCell>
+              <TableCell>{{ column.notnull }}</TableCell>
+              <TableCell>{{ column.dflt_value }}</TableCell>
+              <TableCell>{{ column.pk }}</TableCell>
             </TableRow>
           </TableBody>
         </Table>

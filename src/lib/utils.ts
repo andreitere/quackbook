@@ -8,7 +8,7 @@ export function cn(...inputs: ClassValue[]) {
 
 export const bytesToGB = (bytes: number) => (bytes / Math.pow(1024, 3)).toFixed(2);
 
-export const encodeJsonToBase64Url = (jsonObject) => {
+export const encodeJsonToBase64Url = (jsonObject: Record<string, any>) => {
   // Convert the JSON object to a JSON string
   const jsonString = JSON.stringify(jsonObject);
 
@@ -23,7 +23,7 @@ export const encodeJsonToBase64Url = (jsonObject) => {
       .replace(/=+$/, '');    // Remove trailing '=' characters
 };
 
-export const decodeBase64UrlToJson = (base64UrlString) => {
+export const decodeBase64UrlToJson = (base64UrlString: string) => {
   // Convert URL-safe Base64 to standard Base64
   const base64String = base64UrlString
       .replace(/-/g, '+')    // Replace '-' back to '+'
@@ -41,7 +41,7 @@ export const decodeBase64UrlToJson = (base64UrlString) => {
   return JSON.parse(jsonString);
 };
 
-export const arrowTypeToJsType = (arrowType: keyof typeof Type) => {
+export const arrowTypeToJsType = (arrowType: Record<string, any>) => {
   switch (arrowType.typeId) {
     case Type.Int:
     case Type.Int8:
@@ -58,8 +58,8 @@ export const arrowTypeToJsType = (arrowType: keyof typeof Type) => {
       return 'float';  // Both Float32 and Float64 map to 'number'
     case Type.Utf8:
       return 'string';  // UTF-8 strings map to JavaScript 'string'
-    case Type.Date32:
-    case Type.Date64:
+      // case Type.Date32:
+      // case Type.Date64:
     case Type.Date:
     case Type.DateDay:
     case Type.DateMillisecond:

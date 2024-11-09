@@ -2,11 +2,11 @@
 import {Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator} from "@/components/ui/command"
 import {Dialog, DialogContent} from "@/components/ui/dialog"
 
-import {useColorMode, useMagicKeys, usePreferredColorScheme} from "@vueuse/core";
-import {ref, watch} from "vue";
+import {useColorMode, useMagicKeys,} from "@vueuse/core";
+import {watch} from "vue";
 import {useMetaStore} from "@/store/meta.ts";
 import {useProjects} from "@/store/project.ts";
-import {useRouter} from "vue-router";
+import {useRouter} from "vue-router"
 
 const colorMode = useColorMode()
 const $meta = useMetaStore()
@@ -15,7 +15,6 @@ defineEmits(["add-cell-sql", "add-cell-markdown", "new-project", "convert-to-con
 
 const $projects = useProjects()
 const $router = useRouter()
-let open = ref(false)
 
 
 const keys = useMagicKeys();
@@ -65,11 +64,11 @@ watch(cmdK, (v) => {
               <div class="i-fluent:window-console-20-filled w-4 h-4 mr-2"></div>
               <span>convert to console</span>
             </CommandItem>
-            <CommandItem value="new-add-cell-sql" class="items-center flex" @select="$projects.addCell('sql')">
+            <CommandItem value="new-add-cell-sql" class="items-center flex" @select="$projects.addCell('sql', null)">
               <div class="i-material-symbols:sheets-add-on w-4 h-4 mr-2"></div>
               <span>add sql cell</span>
             </CommandItem>
-            <CommandItem value="new-add-cell-markdown" class="items-center flex" @select="$projects.addCell('markdown')">
+            <CommandItem value="new-add-cell-markdown" class="items-center flex" @select="$projects.addCell('markdown', null)">
               <div class="i-ion:logo-markdown w-4 h-4 mr-2"></div>
               <span>add markdown cell</span>
             </CommandItem>

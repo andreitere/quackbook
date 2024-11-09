@@ -7,12 +7,13 @@ import {$ref} from 'unplugin-vue-macros/macros';
 import "https://cdn.jsdelivr.net/npm/@finos/perspective-viewer@3.1.3/dist/cdn/perspective-viewer.js";
 import "https://cdn.jsdelivr.net/npm/@finos/perspective-viewer-datagrid@3.1.3/dist/cdn/perspective-viewer-datagrid.js";
 import "https://cdn.jsdelivr.net/npm/@finos/perspective-viewer-d3fc@3.1.3/dist/cdn/perspective-viewer-d3fc.js";
-// import "@finos/perspective-viewer/dist/css/pro.css";
+import "@finos/perspective-viewer/dist/css/pro.css";
 import "@finos/perspective-viewer/dist/css/pro-dark.css";
 
+//@ts-ignore
 import perspective from "https://cdn.jsdelivr.net/npm/@finos/perspective/dist/cdn/perspective.js";
+
 import {arrowTypeToJsType} from "@/lib/utils.ts";
-import {useSnippets} from "@/store/snippets.ts";
 import {db_events} from "@/store/meta.ts";
 import {useColorMode, useVModels} from "@vueuse/core";
 import {useProjects} from "@/store/project.ts";
@@ -28,8 +29,7 @@ const props = defineProps({
 const {query} = useVModels(props);
 
 
-const {db, loading: db_loading, error: db_err, ready} = useDuckDb()
-const $snippets = useSnippets()
+const {db, loading: db_loading, ready} = useDuckDb()
 const $projects = useProjects()
 let queryEditorRef = $ref(null);
 let results: any = $ref(null);
@@ -56,26 +56,23 @@ const onClear = async () => {
   error = '';
 }
 
-const onSave = async () => {
-
-}
-
 
 const onPlay = async () => {
   if (!inputFocused) return;
+  if (!db.value) return;
+  if (!pWorker) return;
   await ready;
   error = '';
 
-  const c = await db.value?.connect();
+  const c = await db.value.connect();
   try {
     loading = true;
     let start = performance.now()
-    let r = await c.query(query.value)
-    // console.log(typeof results, results)
-    results = r;
-    const mappedFields = results.schema.fields.reduce((acc: Record<string, string>, next: unknown) => {
+    results = await c.query(query.value)
+
+    const mappedFields = results.schema.fields.reduce((acc: Record<string, string>, next: Record<string, any>) => {
       acc = acc ?? {};
-      acc[next?.name] = arrowTypeToJsType(next?.type);
+      acc[next?.name] = arrowTypeToJsType(next.type);
       return acc;
     }, {})
     results = JSON.parse(
@@ -84,16 +81,21 @@ const onPlay = async () => {
             (_, value) => (typeof value === 'bigint' ? value.toString() : value) // return everything else unchanged
         )
     )
-
+    //@ts-ignore
     const table = await pWorker.table(mappedFields);
     table.update(results)
-    pView?.value.load(table, {configure: true});
+    //@ts-ignore
+    pView.value.load(table, {configure: true});
     let end = performance.now()
 
     lastQueryDuration = ((end - start) / 1000).toFixed(5);
     db_events.emit('UPDATE_SCHEMA')
   } catch (e) {
-    error = e.message;
+    if (e instanceof Error) {
+      error = e.toString();
+    } else {
+      error = 'An unknown error occured'
+    }
   } finally {
     loading = false;
   }
@@ -118,8 +120,8 @@ onMounted(async () => {
                        :trash="props.mode == 'notebook'"
                        :duplicate="props.mode == 'notebook'"
                        @play="onPlay" @clear="onClear"
-                       @movedown="$projects.moveDown({id: props.id, position: props.position})"
-                       @moveup="$projects.moveUp({id: props.id, position: props.position})"
+                       @movedown="$projects.moveDown(props.id, props.position)"
+                       @moveup="$projects.moveUp(props.id, props.position)"
                        @trash="$projects.deleteCell(props.id)"
                        :display_results="false"/>
     <div class="flex items-start">

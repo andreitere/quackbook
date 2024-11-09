@@ -6,7 +6,6 @@ const md = MarkdownIt({
   linkify: true,
   typographer: true
 })
-let highlighter = null
 
 const ready = async () => {
   md.use(await Shiki({

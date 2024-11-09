@@ -11,7 +11,7 @@ const $router = useRouter()
 const $projects = useProjects();
 
 const parsedProject = computed(() => {
-  return decodeBase64UrlToJson($route.params.project_json)
+  return decodeBase64UrlToJson($route.params.project_json as string)
 })
 
 const doImport = () => {

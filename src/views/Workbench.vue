@@ -3,9 +3,9 @@
 import DBSchemaDetails from "@/components/DBSchemaDetails.vue";
 import EditorCell from "@/components/EditorCell.vue";
 import {useMagicKeys} from '@vueuse/core'
-import {onMounted, reactive, watch} from "vue";
 import {useMetaStore} from "@/store/meta.ts";
 import {useProjects} from "@/store/project.ts";
+import {reactive, watch} from "vue";
 
 const $meta = useMetaStore()
 const $projects = useProjects();
@@ -36,6 +36,8 @@ watch(cmdShiftE, (v) => {
         <EditorCell :mode="$projects.activeProject.value.mode" v-model:query="cell.query" :id="cell.id" :position="cell.position"/>
       </div>
       <EditorCell v-if="$projects.activeProject.value.mode == 'console'" :mode="$projects.activeProject.value.mode"
+                  :id="$projects.activeProject.value.cells[0].id"
+                  :position="$projects.activeProject.value.cells[0].position"
                   v-model:query="$projects.activeProject.value.cells[0].query"/>
     </div>
   </div>

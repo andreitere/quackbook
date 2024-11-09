@@ -6,7 +6,7 @@ import {AsyncDuckDB, getDuckDB} from "duckdb-wasm-kit";
  * Vue composable to access a singleton DuckDb instance within components or other composables.
  */
 export function useDuckDb() {
-  const db: Ref<AsyncDuckDB | null> = ref(null);
+  const db = ref<AsyncDuckDB>();
   const loading = ref(false);
   const error: Ref<any | null> = ref(null);
 
@@ -18,7 +18,7 @@ export function useDuckDb() {
           return;
         }
         loading.value = true;
-        db.value = await getDuckDB();
+        db.value = await getDuckDB() as AsyncDuckDB;
         resolve(); // Resolve the promise once db is loaded
       } catch (e) {
         error.value = e;

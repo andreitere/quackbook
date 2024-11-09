@@ -14,13 +14,13 @@ type Project = {
 }
 type CellType = "markdown" | "sql";
 
-type Cell = {
-  id: number | string;
-  query?: string;
-  markdown?: string;
-  position: number;
-  type: CellType
-}
+// type Cell = {
+//   id: number | string;
+//   query?: string;
+//   markdown?: string;
+//   position: number;
+//   type: CellType
+// }
 
 const prefixes = ["Data", "Query", "Insight", "Metric", "Stat", "Predict", "Analyze", "Cluster", "Compute", "Delta"];
 const nouns = ["Hub", "Forge", "Sphere", "Sync", "Lab", "Matrix", "Engine", "Flow", "Stack", "Nest"];
@@ -66,7 +66,7 @@ export const useProjects = () => {
     activeProject.value = project;
   }
 
-  const addCell = (cell_type: CellType, query: string) => {
+  const addCell = (cell_type: CellType, query: string | null) => {
     let obj = {
       id: Date.now().valueOf(),
       type: cell_type,
@@ -74,7 +74,7 @@ export const useProjects = () => {
       query: '',
       markdown: ''
     }
-    if(cell_type == "sql") {
+    if (cell_type == "sql") {
       obj.query = query ?? 'select 1 + 1 as result'
     } else {
       obj.markdown = query ?? '#hello';
@@ -107,26 +107,27 @@ export const useProjects = () => {
   }
 
   // move up visually (basically inverse order)
-  const moveUp = (cell: Cell) => {
-    const index = activeProject.value.cells.findIndex(c => c.id === cell.id);
+  const moveUp = (id: number, position: number) => {
+    const index = activeProject.value.cells.findIndex(c => c.id === id);
     console.log(`moveUp`, {index})
-    const prevIndex = activeProject.value.cells.findIndex(c => c.position == (cell.position - 1));
-    activeProject.value.cells[prevIndex].position = cell.position;
-    activeProject.value.cells[index].position = cell.position - 1;
+    const prevIndex = activeProject.value.cells.findIndex(c => c.position == (position - 1));
+    activeProject.value.cells[prevIndex].position = position;
+    activeProject.value.cells[index].position = position - 1;
     console.table(activeProject.value.cells)
   };
 
   // move down visually (basically inverse order)
-  const moveDown = (cell: Cell) => {
-    const index = activeProject.value.cells.findIndex(c => c.id === cell.id);
+  const moveDown = (id: number, position: number) => {
+    const index = activeProject.value.cells.findIndex(c => c.id === id);
     console.log(`moveDown`, {index})
-    const nextIndex = activeProject.value.cells.findIndex(c => c.position == (cell.position + 1));
-    activeProject.value.cells[nextIndex].position = cell.position;
-    activeProject.value.cells[index].position = cell.position + 1;
+    const nextIndex = activeProject.value.cells.findIndex(c => c.position == (position + 1));
+    activeProject.value.cells[nextIndex].position = position;
+    activeProject.value.cells[index].position = position + 1;
     console.table(activeProject.value.cells)
   };
 
   const sortedCells = computed(() => {
+    //@ts-ignore
     return activeProject.value.cells.toSorted((a, b) => a.position - b.position);
   });
 
@@ -158,7 +159,7 @@ export const useProjects = () => {
     toast({title: `Project has been saved ❤️‍🔥`, description: `${project.name} saved. Now you can safely switch to another or continue your work`})
   }
 
-  const setActiveProject = (project) => {
+  const setActiveProject = (project: Project) => {
     activeProject.value = project;
   }
 
