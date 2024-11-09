@@ -1,6 +1,5 @@
-
 import VueMacros from "unplugin-vue-macros/vite";
-import { defineConfig } from "vite";
+import {defineConfig} from "vite";
 import path from "node:path";
 import vue from "@vitejs/plugin-vue";
 import tailwind from "tailwindcss";
@@ -31,7 +30,14 @@ export default defineConfig({
     VueMacros({
       reactivityTransform: true,
       plugins: {
-        vue: vue(),
+        vue: vue({
+          template: {
+            compilerOptions: {
+              // treat all tags with a dash as custom elements
+              isCustomElement: (tag) => tag.includes('perspective-viewer')
+            }
+          }
+        }),
       },
     }),
     // ReactivityTransform()

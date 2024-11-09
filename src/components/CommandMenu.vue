@@ -6,9 +6,14 @@ import {useColorMode, useMagicKeys} from "@vueuse/core";
 import {ref, watch} from "vue";
 import {Button} from "@/components/ui/button";
 import {useMetaStore} from "@/store/meta.ts";
+import {useProjects} from "@/store/project.ts";
 
 const colorMode = useColorMode()
 const $meta = useMetaStore()
+
+defineEmits(["add-cell-sql", "add-cell-markdown", "new-project", "convert-to-console", "convert-to-notebook"])
+
+const $projecs = useProjects()
 
 let open = ref(false)
 
@@ -43,7 +48,6 @@ watch(cmdK, (v) => {
         <CommandList class="max-h-[60vh]">
           <CommandEmpty>No results found.</CommandEmpty>
 
-
           <CommandGroup heading="Actions">
             <CommandItem value="save">
               <div class="i-pixelarticons:save w-4 h-4 mr-2"></div>
@@ -53,33 +57,47 @@ watch(cmdK, (v) => {
               <div class="i-pixelarticons:open w-4 h-4 mr-2"></div>
               <span>share</span>
             </CommandItem>
-            <CommandItem value="new project" class="items-center flex">
-              <div class="i-pixelarticons:briefcase-plus w-4 h-4 mr-2"></div>
-              <span>new project</span>
-            </CommandItem>
-            <CommandItem value="convert-to-notebook" class="items-center flex">
+            <CommandItem value="convert-to-notebook" class="items-center flex" v-if="$projecs.activeProject.value.mode == 'console'" @select="$projecs.convertToNotebook">
               <div class="i-mdi:notebook-edit-outline w-4 h-4 mr-2"></div>
               <span>convert to notebook</span>
             </CommandItem>
-            <CommandItem value="convert-to-console" class="items-center flex">
+            <CommandItem value="convert-to-console" class="items-center flex" v-if="$projecs.activeProject.value.mode == 'notebook'" @select="$projecs.convertToConsole">
               <div class="i-fluent:window-console-20-filled w-4 h-4 mr-2"></div>
               <span>convert to console</span>
+            </CommandItem>
+            <CommandItem value="new-add-cell-sql" class="items-center flex" @select="$projecs.addCell('sql')">
+              <div class="i-material-symbols:sheets-add-on w-4 h-4 mr-2"></div>
+              <span>add sql cell</span>
+            </CommandItem>
+            <CommandItem value="new-add-cell-markdown" class="items-center flex" @select="$projecs.addCell('markdown')">
+              <div class="i-ion:logo-markdown w-4 h-4 mr-2"></div>
+              <span>add markdown cell</span>
             </CommandItem>
           </CommandGroup>
           <CommandSeparator/>
           <CommandGroup heading="Projects">
-            <CommandItem value="default">
+            <CommandItem :value="project.name" v-for="project in $projecs.projects.value.slice(0,3)">
               <div class="flex justify-between items-center w-full">
-                <span>default</span>
-                <div>
-                  <Button variant="ghost" class="current-line">open</Button>
-                  <Button variant="ghost" class="current-line">delete</Button>
-                </div>
+                <span>{{ project.name }}</span>
               </div>
+            </CommandItem>
+            <CommandSeparator/>
+            <CommandItem value="list all projects" class="items-center flex" @select="$emit('new-project')">
+              <div class="i-ic:baseline-menu-book w-4 h-4 mr-2"></div>
+              <span>all projects</span>
+            </CommandItem>
+            <CommandItem value="new project" class="items-center flex" @select="$emit('new-project')">
+              <div class="i-pixelarticons:briefcase-plus w-4 h-4 mr-2"></div>
+              <span>new project</span>
             </CommandItem>
           </CommandGroup>
           <CommandSeparator/>
           <CommandGroup heading="Settings">
+            <CommandItem value="whats-this">
+              <div class="flex justify-between items-center w-full">
+                <span>what's this?</span>
+              </div>
+            </CommandItem>
             <CommandItem value="theme light dark" @select="onColorModeToggle">
               <div class="flex justify-between items-center w-full">
                 <span>switch to {{ colorMode == 'light' ? 'dark' : 'light' }} mode</span>

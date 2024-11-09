@@ -83,7 +83,7 @@
 
 
 html, body, #app {
-  @apply h-full w-full;
+  @apply h-full w-full max-h-full max-w-full overflow-hidden;
   font-family: 'Roboto Mono';
 }
 

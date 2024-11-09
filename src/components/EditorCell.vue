@@ -14,32 +14,31 @@ import perspective from "https://cdn.jsdelivr.net/npm/@finos/perspective/dist/cd
 import {arrowTypeToJsType} from "@/lib/utils.ts";
 import {useSnippets} from "@/store/snippets.ts";
 import {db_events} from "@/store/meta.ts";
-import {useColorMode} from "@vueuse/core";
-
+import {useColorMode, useVModels} from "@vueuse/core";
 
 const pView = ref(null)
 const color = useColorMode()
 const props = defineProps({
-  singleMode: {default: true, type: Boolean},
-  fillWH: {default: false, type: Boolean},
+  mode: {default: 'console', type: String},
+  query: {type: String, default: 'select 1+1 as result;'}
 })
+const {query} = useVModels(props);
+
 
 const {db, loading: db_loading, error: db_err, ready} = useDuckDb()
 const $snippets = useSnippets()
 
-
-let query = $ref("SELECT * FROM 'https://shell.duckdb.org/data/tpch/0_01/parquet/orders.parquet';");
 let queryEditorRef = $ref(null);
 let results: any = $ref(null);
 let error: any = $ref('');
 let pWorker = $ref(null);
 let inputFocused = $ref(false);
-
-
+let lastQueryDuration = $ref('')
+let loading = $ref(false);
 // -- start computed --
 
 const tableTheme = computed(() => {
-  if(color.value === 'light') {
+  if (color.value === 'light') {
     return ''
   } else {
     return 'Pro Dark'
@@ -50,7 +49,8 @@ const tableTheme = computed(() => {
 
 // -- start methods --
 const onClear = async () => {
-  query = ''
+  results = ''
+  error = '';
 }
 
 const onSave = async () => {
@@ -58,11 +58,15 @@ const onSave = async () => {
 }
 
 const onPlay = async () => {
+  if (!inputFocused) return;
   await ready;
   error = '';
+
   const c = await db.value?.connect();
   try {
-    let r = await c.query(query)
+    loading = true;
+    let start = performance.now()
+    let r = await c.query(query.value)
     // console.log(typeof results, results)
     results = r;
     const mappedFields = results.schema.fields.reduce((acc: Record<string, string>, next: unknown) => {
@@ -82,9 +86,14 @@ const onPlay = async () => {
     const table = await pWorker.table(mappedFields);
     table.update(results)
     pView?.value.load(table, {configure: true});
+    let end = performance.now()
+
+    lastQueryDuration = ((end - start) / 1000).toFixed(5);
     db_events.emit('UPDATE_SCHEMA')
   } catch (e) {
     error = e.message;
+  } finally {
+    loading = false;
   }
 }
 
@@ -92,20 +101,23 @@ const onPlay = async () => {
 
 onMounted(async () => {
   pWorker = await perspective.worker();
-  console.log(pView._value)
 })
 
 </script>
 
 <template>
   <div :class="[
-    'transition-all duration-200 w-full flex h-auto flex-col p-3 rounded space-y-2 border-[1px] border-solid border-gray-100 hover:shadow-md focus-within:shadow-md',
-    props.singleMode ? 'h-full' : '',
-  ]">
-    <EditorCellToolbar :delete="!props.singleMode" @play="onPlay" @clear="onClear"/>
+    'transition-all duration-200 w-full flex h-auto flex-col p-3 rounded space-y-2',
+    props.mode == 'console' ? 'h-full' : 'border-[2px] border-solid border-slate-300 hover:shadow-md focus-within:border-slate-500 focus-within:shadow-lg',
+  ]"
+       @focusin="inputFocused = true" @focusout="inputFocused = false"
+       @keydown.enter="console.log(queryEditorRef)"
+  >
+    <EditorCellToolbar :delete="props.mode == 'notebook'" :trash="props.mode == 'notebook'" :duplicate="props.mode == 'notebook'" @play="onPlay" @clear="onClear"
+                       :display_results="false"/>
     <div class="flex items-start">
-      <Textarea class="max-h-[40vh] p-2 border-2 focus:border-slate-700 rounded" v-model.lazy="query"
-                ref="queryEditorRef" :disabled="db_loading" @focusin="inputFocused = true" @blur="inputFocused = false"
+      <Textarea tabindex="-1" class="max-h-[40vh] p-2 border-2 focus:border-slate-300 rounded" v-model:model-value="query"
+                ref="queryEditorRef" :disabled="db_loading"
                 style="field-sizing: content"/>
       <div v-if="error" class="w-1/3 text-sm text-red-500 px-4">
         {{ error }}
@@ -115,9 +127,16 @@ onMounted(async () => {
     <div class="bg-blue-200 flex-grow" v-show="results?.length">
       <perspective-viewer ref="pView" :class="[
         'overflow-auto',
-        props.singleMode ? 'h-full' : 'h-[20vh] resize-y'
+        props.mode=='console' ? 'h-full' : 'h-[20vh] resize-y'
       ]"
                           :theme="tableTheme"></perspective-viewer>
+    </div>
+    <div class="info justify-end flex space-x-2">
+      <span class="text-xs" v-if="results && !error">query took: {{ lastQueryDuration }} s</span>
+      <span class="text-xs" v-if="!!results && !error">{{ error }}</span>
+      <div class="i-ep:success-filled text-green-600 h-5 w-5" v-if="!!results && !error"></div>
+      <div class="i-material-symbols:chat-error-outline text-red-600 h-5 w-5" v-if="!!error"></div>
+      <div class="i-line-md:loading-twotone-loop h-5 w-5" v-if="loading"></div>
     </div>
   </div>
 </template>
