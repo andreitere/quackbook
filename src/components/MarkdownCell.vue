@@ -23,7 +23,6 @@ const editMode = ref(false);
 const doRender = async () => {
   await md_ready;
   rendered.value = md.render(markdown.value)
-  console.log(rendered.value.toString())
 }
 
 watch(markdown, () => {
