@@ -69,20 +69,20 @@ const onPlay = async () => {
     let start = performance.now()
     results.value = await c.query(query.value)
 
-    const mappedFields = results.schema.fields.reduce((acc: Record<string, string>, next: Record<string, any>) => {
+    const mappedFields = results.value.schema.fields.reduce((acc: Record<string, string>, next: Record<string, any>) => {
       acc = acc ?? {};
       acc[next?.name] = arrowTypeToJsType(next.type);
       return acc;
     }, {})
     results.value = JSON.parse(
         JSON.stringify(
-            results.toArray(),
+            results.value.toArray(),
             (_, value) => (typeof value === 'bigint' ? value.toString() : value) // return everything else unchanged
         )
     )
     //@ts-ignore
-    const table = await pWorker.table(mappedFields);
-    table.update(results)
+    const table = await pWorker.value.table(mappedFields);
+    table.update(results.value)
     //@ts-ignore
     pView.value.load(table, {configure: true});
     let end = performance.now()
@@ -122,6 +122,7 @@ onMounted(async () => {
                        @movedown="$projects.moveDown(props.id, props.position)"
                        @moveup="$projects.moveUp(props.id, props.position)"
                        @trash="$projects.deleteCell(props.id)"
+                       :edit="false"
                        :display_results="false"/>
     <div class="flex items-start">
       <Textarea tabindex="-1" class="max-h-[40vh] p-2 border-2 focus:border-slate-300 rounded" v-model:model-value="query"

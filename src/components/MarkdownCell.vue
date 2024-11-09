@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import {useVModels} from "@vueuse/core";
-import {Textarea} from "@/components/ui/textarea";
 import {onMounted, ref, watch} from "vue";
 import {useMarkdownRenderer} from "@/hooks/useMDShiki";
+import EditorCellToolbar from "@/components/EditorCellToolbar.vue";
+import {Textarea} from "@/components/ui/textarea"
+import {useProjects} from "@/store/project.ts";
 
 const props = defineProps({
   mode: {default: 'console', type: String},
@@ -11,15 +13,15 @@ const props = defineProps({
   position: {type: Number, required: true},
 })
 const {markdown} = useVModels(props)
-
+const $projects = useProjects()
 const {md, ready: md_ready} = useMarkdownRenderer()
 
 
 let rendered = ref('');
+const editMode = ref(false);
 
 const doRender = async () => {
   await md_ready;
-  console.log(`ready to render`)
   rendered.value = md.render(markdown.value)
   console.log(rendered.value.toString())
 }
@@ -35,11 +37,30 @@ onMounted(() => {
 
 <template>
   <div :class="[
-    'transition-all duration-200 w-full flex h-auto flex-col p-3 rounded space-y-2',
-    'border-[2px] border-solid border-slate-200 hover:shadow-md focus-within:border-slate-400 focus-within:shadow-lg',
+    'transition-all duration-200 w-full flex h-auto flex-col p-3 rounded space-y-2 group',
+    'focus-within:shadow-lg border-[2px] border-transparent',
+    editMode ? ' border-solid border-slate-200 hover:shadow-md' : ''
   ]"
   >
-    <Textarea v-model:model-value="markdown"/>
+    <EditorCellToolbar
+        class="opacity-0 group-hover:opacity-100"
+        :delete="props.mode == 'notebook'"
+        :trash="props.mode == 'notebook'"
+        :duplicate="props.mode == 'notebook'"
+        :play="false"
+        :save="false"
+        :clear="false"
+        :edit="editMode != true"
+        @movedown="$projects.moveDown(props.id, props.position)"
+        @moveup="$projects.moveUp(props.id, props.position)"
+        @trash="$projects.deleteCell(props.id)"
+        @edit="editMode = true"
+        @update="editMode = false"
+        :update="editMode == true"
+        :display_results="false"
+
+    />
+    <Textarea v-model:model-value="markdown" style="field-sizing: content" v-if="editMode"/>
     <div class=" text-sm w-full">
       <div class="prose prose-slate dark:prose-invert w-full" v-html="rendered"></div>
     </div>

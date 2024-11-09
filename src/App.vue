@@ -21,7 +21,6 @@ const cmdMenu = ref(null);
 const openMenu = () => {
   // if(!cmdMenu.value) return;
   $meta.cmdMenu = true;
-  console.log($meta.cmdMenu);
 }
 const show = reactive({
   toolBar: false,
