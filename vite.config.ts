@@ -16,6 +16,14 @@ export default defineConfig({
     },
   },
   plugins: [
+    vue({
+      template: {
+        compilerOptions: {
+          // treat all tags with a dash as custom elements
+          isCustomElement: (tag) => tag.includes('perspective-viewer')
+        }
+      }
+    }),
     UnoCSS(),
     Unfonts({
       google: {
@@ -28,17 +36,7 @@ export default defineConfig({
       autoInstall: true,
     }),
     VueMacros({
-      reactivityTransform: true,
-      plugins: {
-        vue: vue({
-          template: {
-            compilerOptions: {
-              // treat all tags with a dash as custom elements
-              isCustomElement: (tag) => tag.includes('perspective-viewer')
-            }
-          }
-        }),
-      },
+      reactivityTransform: true
     }),
     // ReactivityTransform()
   ],
