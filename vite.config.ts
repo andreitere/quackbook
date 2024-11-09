@@ -10,6 +10,9 @@ import UnoCSS from "unocss/vite";
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  build: {
+    sourceMap: true,
+  },
   css: {
     postcss: {
       plugins: [tailwind(), autoprefixer()],
