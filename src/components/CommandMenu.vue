@@ -16,9 +16,6 @@ const $projects = useProjects()
 const $router = useRouter()
 
 
-const keys = useMagicKeys();
-
-
 const onColorModeToggle = () => {
   if (colorMode.value === 'light') {
     colorMode.value = 'dark'
