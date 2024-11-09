@@ -32,6 +32,9 @@ watch(cmdShiftE, (v) => {
 
 <template>
   <div class="flex flex-grow flex-col h-full max-h-full px-2  py-4">
+    <div class="flex justify-center" >
+
+    </div>
     <div class="overflow-y-scroll nice-scrollbar flex flex-col h-0 flex-grow space-y-6">
       <div v-for="cell in $projects.sortedCells.value" v-if="$projects.activeProject.value.mode == 'notebook'" class="w-full">
         <EditorCell :mode="$projects.activeProject.value.mode" v-model:query="cell.query" :id="cell.id" :position="cell.position" v-if="cell.type == 'sql'"/>

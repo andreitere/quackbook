@@ -47,56 +47,58 @@ watch([Meta_K, Ctrl_K], (v) => {
         <CommandEmpty>No results found.</CommandEmpty>
 
         <CommandGroup heading="Actions">
-          <CommandItem value="save" @select="$projects.saveProject">
+          <CommandItem value="save" @select="$projects.saveProject" data-umami-event="save-project">
             <div class="i-pixelarticons:save w-4 h-4 mr-2"></div>
             <span>save project</span>
           </CommandItem>
-          <CommandItem value="share" @select="$projects.shareProject">
+          <CommandItem value="share" @select="$projects.shareProject" data-umami-event="share-project">
             <div class="i-pixelarticons:open w-4 h-4 mr-2"></div>
             <span>share</span>
           </CommandItem>
-          <CommandItem value="convert-to-notebook" class="items-center flex" v-if="$projects.activeProject.value.mode == 'console'" @select="$projects.convertToNotebook">
+          <CommandItem value="convert-to-notebook" data-umami-event="convert-to-notebook" class="items-center flex" v-if="$projects.activeProject.value.mode == 'console'"
+                       @select="$projects.convertToNotebook">
             <div class="i-mdi:notebook-edit-outline w-4 h-4 mr-2"></div>
             <span>convert to notebook</span>
           </CommandItem>
-          <CommandItem value="convert-to-console" class="items-center flex" v-if="$projects.activeProject.value.mode == 'notebook'" @select="$projects.convertToConsole">
+          <CommandItem value="convert-to-console" data-umami-event="convert-to-console" class="items-center flex" v-if="$projects.activeProject.value.mode == 'notebook'"
+                       @select="$projects.convertToConsole">
             <div class="i-fluent:window-console-20-filled w-4 h-4 mr-2"></div>
             <span>convert to console</span>
           </CommandItem>
-          <CommandItem value="new-add-cell-sql" class="items-center flex" @select="$projects.addCell('sql', null)">
+          <CommandItem value="new-add-cell-sql" data-umami-event="add-sql-cell" class="items-center flex" @select="$projects.addCell('sql', null)">
             <div class="i-material-symbols:sheets-add-on w-4 h-4 mr-2"></div>
             <span>add sql cell</span>
           </CommandItem>
-          <CommandItem value="new-add-cell-markdown" class="items-center flex" @select="$projects.addCell('markdown', null)">
+          <CommandItem value="new-add-cell-markdown" data-umami-event="add-markdown-cell" class="items-center flex" @select="$projects.addCell('markdown', null)">
             <div class="i-ion:logo-markdown w-4 h-4 mr-2"></div>
             <span>add markdown cell</span>
           </CommandItem>
         </CommandGroup>
         <CommandSeparator/>
         <CommandGroup heading="Projects">
-          <CommandItem :value="project.name" v-for="project in $projects.projects.value.slice(0,3)" @select="$projects.setActiveProject(project)">
+          <CommandItem :value="project.name" data-umami-event="open-project" v-for="project in $projects.projects.value.slice(0,3)" @select="$projects.setActiveProject(project)">
             <div class="flex justify-between items-center w-full">
               <span>{{ project.name }}</span>
             </div>
           </CommandItem>
           <CommandSeparator/>
-          <CommandItem value="list all projects" class="items-center flex" @select="$router.push('/projects')">
+          <CommandItem value="list all projects" data-umami-event="list-projects" class="items-center flex" @select="$router.push('/projects')">
             <div class="i-ic:baseline-menu-book w-4 h-4 mr-2"></div>
             <span>all projects</span>
           </CommandItem>
-          <CommandItem value="new project" class="items-center flex" @select="$emit('new-project')">
+          <CommandItem value="new project" data-umami-event="new-project" class="items-center flex" @select="$emit('new-project')">
             <div class="i-pixelarticons:briefcase-plus w-4 h-4 mr-2"></div>
             <span>new project</span>
           </CommandItem>
         </CommandGroup>
         <CommandSeparator/>
         <CommandGroup heading="Settings">
-          <CommandItem value="whats-this">
+          <CommandItem value="whats-this" data-umami-event="whats-this">
             <div class="flex justify-between items-center w-full" @select="$router.push('/about')">
               <span>what's this?</span>
             </div>
           </CommandItem>
-          <CommandItem value="theme light dark" @select="onColorModeToggle">
+          <CommandItem value="theme light dark" :data-umami-event="`switch-to-${colorMode == 'light' ? 'dark' : 'light'}`" @select="onColorModeToggle">
             <div class="flex justify-between items-center w-full">
               <span>switch to {{ colorMode == 'light' ? 'dark' : 'light' }} mode</span>
             </div>

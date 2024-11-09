@@ -58,7 +58,7 @@ watch(cmdShiftE, (v) => {
       <h1 class="text-xl">DuckBench</h1>
       <div class="h-full w-[1px] bg-gray-500"></div>
       <div class="flex items-center space-x-4">
-        <Button size="xs" class="text-xs space-x-1 cursor-pointer" @click="openMenu">
+        <Button size="xs" class="text-xs space-x-1 cursor-pointer"  @click="openMenu" data-umami-event="command-menu">
           <div class="i-pixelarticons:command h-4 w-4"></div>
         </Button>
       </div>
@@ -73,7 +73,7 @@ watch(cmdShiftE, (v) => {
             }} (GB)</span>
 
       </div>
-      <div @click="$meta.showToolbar = !$meta.showToolbar" :class="[
+      <div data-umami-event="" @click="$meta.showToolbar = !$meta.showToolbar" :class="[
           show.toolBar ? `i-octicon:sidebar-collapse-24` : `i-octicon:sidebar-expand-24`,
           'cursor-pointer h-5 w-5'
         ]">
