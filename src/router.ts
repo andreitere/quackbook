@@ -9,6 +9,7 @@ const routes = [
   },
   {
     "path": "/",
+    "name": "workbench",
     "component": Workbench
   }
 ]

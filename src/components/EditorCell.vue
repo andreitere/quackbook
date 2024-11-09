@@ -113,7 +113,6 @@ onMounted(async () => {
     props.mode == 'console' ? 'h-full' : 'border-[2px] border-solid border-slate-200 hover:shadow-md focus-within:border-slate-400 focus-within:shadow-lg',
   ]"
        @focusin="inputFocused = true" @focusout="inputFocused = false"
-       @keydown.enter="console.log(queryEditorRef)"
   >
     <EditorCellToolbar :delete="props.mode == 'notebook'"
                        :trash="props.mode == 'notebook'"

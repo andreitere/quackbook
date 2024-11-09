@@ -2,11 +2,11 @@
 import {Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator} from "@/components/ui/command"
 import {Dialog, DialogContent} from "@/components/ui/dialog"
 
-import {useColorMode, useMagicKeys} from "@vueuse/core";
+import {useColorMode, useMagicKeys, usePreferredColorScheme} from "@vueuse/core";
 import {ref, watch} from "vue";
-import {Button} from "@/components/ui/button";
 import {useMetaStore} from "@/store/meta.ts";
 import {useProjects} from "@/store/project.ts";
+import {useRouter} from "vue-router";
 
 const colorMode = useColorMode()
 const $meta = useMetaStore()
@@ -14,7 +14,7 @@ const $meta = useMetaStore()
 defineEmits(["add-cell-sql", "add-cell-markdown", "new-project", "convert-to-console", "convert-to-notebook"])
 
 const $projects = useProjects()
-
+const $router = useRouter()
 let open = ref(false)
 
 
@@ -82,7 +82,7 @@ watch(cmdK, (v) => {
               </div>
             </CommandItem>
             <CommandSeparator/>
-            <CommandItem value="list all projects" class="items-center flex" @select="$emit('new-project')">
+            <CommandItem value="list all projects" class="items-center flex" @select="$router.push('/projects')">
               <div class="i-ic:baseline-menu-book w-4 h-4 mr-2"></div>
               <span>all projects</span>
             </CommandItem>
@@ -94,7 +94,7 @@ watch(cmdK, (v) => {
           <CommandSeparator/>
           <CommandGroup heading="Settings">
             <CommandItem value="whats-this">
-              <div class="flex justify-between items-center w-full">
+              <div class="flex justify-between items-center w-full" @select="$router.push('/about')">
                 <span>what's this?</span>
               </div>
             </CommandItem>

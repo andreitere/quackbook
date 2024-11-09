@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {useColorMode, useMagicKeys, useMemory} from '@vueuse/core'
-import {onMounted, reactive, ref, watch} from "vue";
+import {reactive, ref, watch} from "vue";
 import {Button} from './components/ui/button';
 import Toaster from '@/components/ui/toast/Toaster.vue'
 import {bytesToGB} from './lib/utils';
@@ -8,10 +8,11 @@ import CommandMenu from "@/components/CommandMenu.vue";
 import {useMetaStore} from "@/store/meta.ts";
 import {useProjects} from "@/store/project.ts";
 import {Input} from "@/components/ui/input";
+import {useRoute} from "vue-router";
 
 const $meta = useMetaStore()
 const $projects = useProjects();
-
+const $route = useRoute()
 const {isSupported: isUseMemSupported, memory} = useMemory()
 
 const mode = useColorMode() // Ref<'dark' | 'light'>
@@ -65,6 +66,7 @@ watch(cmdShiftE, (v) => {
       </div>
       <div class="flex flex-grow justify-center">
         <Input v-model:model-value="$projects.activeProject.value.name"
+               v-if="$route.name === 'workbench'"
                class="max-w-[400px] border-slate-200  bg-slate-200 dark:bg-slate-500 text-center focus:bg-slate-100 dark:focus:bg-slate-900"/>
       </div>
       <div class="flex items-center space-x-2 text-xs">

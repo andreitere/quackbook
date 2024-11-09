@@ -25,10 +25,11 @@ const doImport = () => {
   <div class="flex flex-grow flex-col items-center justify-center h-full max-h-full px-2  py-4">
     <Card class="w-[max(600px,90vh)]">
       <CardHeader>
-        <CardTitle>{{ parsedProject.name }}</CardTitle>
+        <CardTitle>Import project</CardTitle>
         <CardDescription>Review and import project</CardDescription>
       </CardHeader>
       <CardContent>
+        <h2 class="font-bold">{{ parsedProject.name }}</h2>
         <div v-for="cell in parsedProject.cells" class="my-2 p-2 border-2 rounded text-sm">
           {{ cell.query }}
         </div>

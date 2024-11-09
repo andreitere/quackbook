@@ -66,13 +66,20 @@ export const useProjects = () => {
     activeProject.value = project;
   }
 
-  const addCell = (cell_type: CellType, query: string = 'select 1 + 1 as result') => {
-    activeProject.value.cells.push({
-      query,
+  const addCell = (cell_type: CellType, query: string) => {
+    let obj = {
       id: Date.now().valueOf(),
       type: cell_type,
-      position: Math.max(...(activeProject.value.cells.map(x => x.position))) + 1
-    })
+      position: Math.max(...(activeProject.value.cells.map(x => x.position))) + 1,
+      query: '',
+      markdown: ''
+    }
+    if(cell_type == "sql") {
+      obj.query = query ?? 'select 1 + 1 as result'
+    } else {
+      obj.markdown = query ?? '#hello';
+    }
+    activeProject.value.cells.push(obj)
   }
 
   const convertToConsole = () => {
