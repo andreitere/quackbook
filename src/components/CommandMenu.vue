@@ -13,7 +13,7 @@ const $meta = useMetaStore()
 
 defineEmits(["add-cell-sql", "add-cell-markdown", "new-project", "convert-to-console", "convert-to-notebook"])
 
-const $projecs = useProjects()
+const $projects = useProjects()
 
 let open = ref(false)
 
@@ -49,34 +49,34 @@ watch(cmdK, (v) => {
           <CommandEmpty>No results found.</CommandEmpty>
 
           <CommandGroup heading="Actions">
-            <CommandItem value="save">
+            <CommandItem value="save" @select="$projects.saveProject">
               <div class="i-pixelarticons:save w-4 h-4 mr-2"></div>
-              <span>save</span>
+              <span>save project</span>
             </CommandItem>
             <CommandItem value="share">
               <div class="i-pixelarticons:open w-4 h-4 mr-2"></div>
               <span>share</span>
             </CommandItem>
-            <CommandItem value="convert-to-notebook" class="items-center flex" v-if="$projecs.activeProject.value.mode == 'console'" @select="$projecs.convertToNotebook">
+            <CommandItem value="convert-to-notebook" class="items-center flex" v-if="$projects.activeProject.value.mode == 'console'" @select="$projects.convertToNotebook">
               <div class="i-mdi:notebook-edit-outline w-4 h-4 mr-2"></div>
               <span>convert to notebook</span>
             </CommandItem>
-            <CommandItem value="convert-to-console" class="items-center flex" v-if="$projecs.activeProject.value.mode == 'notebook'" @select="$projecs.convertToConsole">
+            <CommandItem value="convert-to-console" class="items-center flex" v-if="$projects.activeProject.value.mode == 'notebook'" @select="$projects.convertToConsole">
               <div class="i-fluent:window-console-20-filled w-4 h-4 mr-2"></div>
               <span>convert to console</span>
             </CommandItem>
-            <CommandItem value="new-add-cell-sql" class="items-center flex" @select="$projecs.addCell('sql')">
+            <CommandItem value="new-add-cell-sql" class="items-center flex" @select="$projects.addCell('sql')">
               <div class="i-material-symbols:sheets-add-on w-4 h-4 mr-2"></div>
               <span>add sql cell</span>
             </CommandItem>
-            <CommandItem value="new-add-cell-markdown" class="items-center flex" @select="$projecs.addCell('markdown')">
+            <CommandItem value="new-add-cell-markdown" class="items-center flex" @select="$projects.addCell('markdown')">
               <div class="i-ion:logo-markdown w-4 h-4 mr-2"></div>
               <span>add markdown cell</span>
             </CommandItem>
           </CommandGroup>
           <CommandSeparator/>
           <CommandGroup heading="Projects">
-            <CommandItem :value="project.name" v-for="project in $projecs.projects.value.slice(0,3)">
+            <CommandItem :value="project.name" v-for="project in $projects.projects.value.slice(0,3)" @select="$projects.setActiveProject(project)">
               <div class="flex justify-between items-center w-full">
                 <span>{{ project.name }}</span>
               </div>

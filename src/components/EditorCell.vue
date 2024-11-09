@@ -15,19 +15,22 @@ import {arrowTypeToJsType} from "@/lib/utils.ts";
 import {useSnippets} from "@/store/snippets.ts";
 import {db_events} from "@/store/meta.ts";
 import {useColorMode, useVModels} from "@vueuse/core";
+import {useProjects} from "@/store/project.ts";
 
 const pView = ref(null)
 const color = useColorMode()
 const props = defineProps({
   mode: {default: 'console', type: String},
-  query: {type: String, default: 'select 1+1 as result;'}
+  query: {type: String, default: 'select 1+1 as result;'},
+  id: {type: Number, required: true},
+  position: {type: Number, required: true},
 })
 const {query} = useVModels(props);
 
 
 const {db, loading: db_loading, error: db_err, ready} = useDuckDb()
 const $snippets = useSnippets()
-
+const $projects = useProjects()
 let queryEditorRef = $ref(null);
 let results: any = $ref(null);
 let error: any = $ref('');
@@ -57,6 +60,7 @@ const onSave = async () => {
 
 }
 
+
 const onPlay = async () => {
   if (!inputFocused) return;
   await ready;
@@ -81,8 +85,6 @@ const onPlay = async () => {
         )
     )
 
-
-    console.log(mappedFields)
     const table = await pWorker.table(mappedFields);
     table.update(results)
     pView?.value.load(table, {configure: true});
@@ -108,12 +110,18 @@ onMounted(async () => {
 <template>
   <div :class="[
     'transition-all duration-200 w-full flex h-auto flex-col p-3 rounded space-y-2',
-    props.mode == 'console' ? 'h-full' : 'border-[2px] border-solid border-slate-300 hover:shadow-md focus-within:border-slate-500 focus-within:shadow-lg',
+    props.mode == 'console' ? 'h-full' : 'border-[2px] border-solid border-slate-200 hover:shadow-md focus-within:border-slate-400 focus-within:shadow-lg',
   ]"
        @focusin="inputFocused = true" @focusout="inputFocused = false"
        @keydown.enter="console.log(queryEditorRef)"
   >
-    <EditorCellToolbar :delete="props.mode == 'notebook'" :trash="props.mode == 'notebook'" :duplicate="props.mode == 'notebook'" @play="onPlay" @clear="onClear"
+    <EditorCellToolbar :delete="props.mode == 'notebook'"
+                       :trash="props.mode == 'notebook'"
+                       :duplicate="props.mode == 'notebook'"
+                       @play="onPlay" @clear="onClear"
+                       @movedown="$projects.moveDown({id: props.id, position: props.position})"
+                       @moveup="$projects.moveUp({id: props.id, position: props.position})"
+                       @trash="$projects.deleteCell(props.id)"
                        :display_results="false"/>
     <div class="flex items-start">
       <Textarea tabindex="-1" class="max-h-[40vh] p-2 border-2 focus:border-slate-300 rounded" v-model:model-value="query"

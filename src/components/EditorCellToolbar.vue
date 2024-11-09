@@ -15,7 +15,7 @@ defineProps({
 })
 const display_results = defineModel("display_results");
 
-const $emit = defineEmits(["save", "clear", "play", "duplicate", "trash", "display_results"]);
+const $emit = defineEmits(["save", "clear", "play", "duplicate", "trash", "display_results", "moveup", "movedown"]);
 
 
 const keys = useMagicKeys();
@@ -52,6 +52,12 @@ watch(cmdEnter, (v) => {
             @click="$emit('update:display_results', $event.target.value)">
     </Button>
     <div class="flex-grow"></div>
+    <Button tabindex="-1" size="xs" variant="outline" @click="$emit('moveup')">
+      <div class="i-material-symbols-light:arrow-upward-alt-rounded h-4 w-4"></div>
+    </Button>
+    <Button tabindex="-1" size="xs" variant="outline" @click="$emit('movedown')">
+      <div class="i-material-symbols-light:arrow-downward-alt-rounded h-4 w-4"></div>
+    </Button>
     <Button tabindex="-1" size="xs" variant="outline" v-if="duplicate" @click="$emit('duplicate')">
       <div class="i-pixelarticons:duplicate h-4 w-4"></div>
     </Button>

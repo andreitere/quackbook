@@ -41,6 +41,10 @@ const commandEvents = {
   },
   "new-project": () => {
     $projects.createProject()
+  },
+  "save": () => {
+    console.log("save project")
+    $projects.saveProject()
   }
 }
 
@@ -80,20 +84,22 @@ watch(cmdShiftE, (v) => {
       </div>
     </header>
     <div class="flex flex-row flex-grow">
-      <div class="flex flex-grow flex-col  px-2  py-4">
-        <div class="overflow-y-scroll flex flex-col h-0 flex-grow space-y-6">
-          <div v-for="cell in $projects.activeProject.value.cells" :key="cell.name" v-if="$projects.activeProject.value.mode == 'notebook'" class="w-full">
-            <EditorCell :mode="$projects.activeProject.value.mode" v-model:query="cell.query"/>
+      <div class="flex flex-grow flex-col h-full max-h-full px-2  py-4">
+        <div class="overflow-y-scroll nice-scrollbar flex flex-col h-0 flex-grow space-y-6">
+          <div v-for="cell in $projects.sortedCells.value"  v-if="$projects.activeProject.value.mode == 'notebook'" class="w-full">
+            <EditorCell :mode="$projects.activeProject.value.mode" v-model:query="cell.query" :id="cell.id" :position="cell.position"/>
           </div>
           <EditorCell v-if="$projects.activeProject.value.mode == 'console'" :mode="$projects.activeProject.value.mode"
                       v-model:query="$projects.activeProject.value.cells[0].query"/>
         </div>
       </div>
       <div :class="[
-            'tool-bar items-center flex flex-col space-y-3',
+            'tool-bar items-center flex flex-col space-y-3 overflow-y-scroll nice-scrollbar h-full',
             $meta.showToolbar ? 'w-1/3' : 'w-0 opacity-0'
         ]">
-        <DBSchemaDetails class="w-full"/>
+        <div class="overflow-y-scroll h-0 flex-grow w-full">
+          <DBSchemaDetails class="w-full"/>
+        </div>
       </div>
     </div>
     <CommandMenu ref="cmdMenu" v-on="commandEvents"/>
