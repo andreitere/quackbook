@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import {useVModels} from "@vueuse/core";
 import {Textarea} from "@/components/ui/textarea";
-import {onMounted, watch} from "vue";
-import {useMarkdownRenderer} from "@/hooks/useMDShiki.ts";
+import {onMounted, ref, watch} from "vue";
+import {useMarkdownRenderer} from "@/hooks/useMDShiki";
 
 const props = defineProps({
   mode: {default: 'console', type: String},
@@ -15,13 +15,13 @@ const {markdown} = useVModels(props)
 const {md, ready: md_ready} = useMarkdownRenderer()
 
 
-let rendered = $ref('');
+let rendered = ref('');
 
 const doRender = async () => {
   await md_ready;
   console.log(`ready to render`)
-  rendered = md.render(markdown.value)
-  console.log(rendered.toString())
+  rendered.value = md.render(markdown.value)
+  console.log(rendered.value.toString())
 }
 
 watch(markdown, () => {
@@ -40,8 +40,8 @@ onMounted(() => {
   ]"
   >
     <Textarea v-model:model-value="markdown"/>
-    <div class=" text-sm">
-      <div class="markdown-body" v-html="rendered"></div>
+    <div class=" text-sm w-full">
+      <div class="prose prose-slate dark:prose-invert w-full" v-html="rendered"></div>
     </div>
 
 

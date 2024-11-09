@@ -3,6 +3,7 @@ import {defineConfig} from "vite";
 import path from "node:path";
 import vue from "@vitejs/plugin-vue";
 import tailwind from "tailwindcss";
+import typography from "@tailwindcss/typography";
 import autoprefixer from "autoprefixer";
 import Unfonts from "unplugin-fonts/vite";
 import Icons from "unplugin-icons/vite";
@@ -10,13 +11,6 @@ import UnoCSS from "unocss/vite";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  build: {
-    minify: false,
-    terserOptions: {
-      compress: false,
-      mangle: false,
-    },
-  },
   css: {
     postcss: {
       plugins: [tailwind(), autoprefixer()],
@@ -45,7 +39,6 @@ export default defineConfig({
     VueMacros({
       reactivityTransform: true
     }),
-    // ReactivityTransform()
   ],
   resolve: {
     alias: {

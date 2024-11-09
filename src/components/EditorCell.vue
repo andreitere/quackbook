@@ -3,7 +3,6 @@ import {Textarea} from "@/components/ui/textarea";
 import EditorCellToolbar from "@/components/EditorCellToolbar.vue";
 import {computed, onMounted, ref} from "vue";
 import {useDuckDb} from "@/hooks/useDuckDb.ts";
-import {$ref} from 'unplugin-vue-macros/macros';
 import "https://cdn.jsdelivr.net/npm/@finos/perspective-viewer@3.1.3/dist/cdn/perspective-viewer.js";
 import "https://cdn.jsdelivr.net/npm/@finos/perspective-viewer-datagrid@3.1.3/dist/cdn/perspective-viewer-datagrid.js";
 import "https://cdn.jsdelivr.net/npm/@finos/perspective-viewer-d3fc@3.1.3/dist/cdn/perspective-viewer-d3fc.js";
@@ -31,13 +30,13 @@ const {query} = useVModels(props);
 
 const {db, loading: db_loading, ready} = useDuckDb()
 const $projects = useProjects()
-let queryEditorRef = $ref(null);
-let results: any = $ref(null);
-let error: any = $ref('');
-let pWorker = $ref(null);
-let inputFocused = $ref(false);
-let lastQueryDuration = $ref('')
-let loading = $ref(false);
+const queryEditorRef = ref(null);
+const results: any = ref(null);
+const error: any = ref('');
+const pWorker = ref(null);
+const inputFocused = ref(false);
+const lastQueryDuration = ref('')
+const loading = ref(false);
 // -- start computed --
 
 const tableTheme = computed(() => {
@@ -52,8 +51,8 @@ const tableTheme = computed(() => {
 
 // -- start methods --
 const onClear = async () => {
-  results = ''
-  error = '';
+  results.value = ''
+  error.value = '';
 }
 
 
@@ -62,20 +61,20 @@ const onPlay = async () => {
   if (!db.value) return;
   if (!pWorker) return;
   await ready;
-  error = '';
+  error.value = '';
 
   const c = await db.value.connect();
   try {
-    loading = true;
+    loading.value = true;
     let start = performance.now()
-    results = await c.query(query.value)
+    results.value = await c.query(query.value)
 
     const mappedFields = results.schema.fields.reduce((acc: Record<string, string>, next: Record<string, any>) => {
       acc = acc ?? {};
       acc[next?.name] = arrowTypeToJsType(next.type);
       return acc;
     }, {})
-    results = JSON.parse(
+    results.value = JSON.parse(
         JSON.stringify(
             results.toArray(),
             (_, value) => (typeof value === 'bigint' ? value.toString() : value) // return everything else unchanged
@@ -88,23 +87,23 @@ const onPlay = async () => {
     pView.value.load(table, {configure: true});
     let end = performance.now()
 
-    lastQueryDuration = ((end - start) / 1000).toFixed(5);
+    lastQueryDuration.value = ((end - start) / 1000).toFixed(5);
     db_events.emit('UPDATE_SCHEMA')
   } catch (e) {
     if (e instanceof Error) {
-      error = e.toString();
+      error.value = e.toString();
     } else {
-      error = 'An unknown error occured'
+      error.value = 'An unknown error occured'
     }
   } finally {
-    loading = false;
+    loading.value = false;
   }
 }
 
 // -- end methods --
 
 onMounted(async () => {
-  pWorker = await perspective.worker();
+  pWorker.value = await perspective.worker();
 })
 
 </script>
