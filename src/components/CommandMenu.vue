@@ -47,6 +47,7 @@ watch([Meta_K, Ctrl_K], (v) => {
         <CommandEmpty>No results found.</CommandEmpty>
 
         <CommandGroup heading="Actions">
+
           <CommandItem value="save" @select="$projects.saveProject" data-umami-event="save-project">
             <div class="i-pixelarticons:save w-4 h-4 mr-2"></div>
             <span>save project</span>
@@ -74,6 +75,16 @@ watch([Meta_K, Ctrl_K], (v) => {
             <span>add markdown cell</span>
           </CommandItem>
         </CommandGroup>
+        <CommandGroup heading="Files import">
+          <CommandItem value="import file" data-umami-event="start-import-files" @select="$meta.startFilesImport">
+            <div class="i-pixelarticons:calendar-import w-4 h-4 mr-2"></div>
+            <span>import file (csv, arrow, parquet)</span>
+          </CommandItem>
+          <CommandItem value="mount local filesystem" data-umami-event="mount-file-system" @select="$meta.startMountFileSystem">
+            <div class="i-eos-icons:file-system-outlined w-4 h-4 mr-2"></div>
+            <span>mount file system</span>
+          </CommandItem>
+        </CommandGroup>
         <CommandSeparator/>
         <CommandGroup heading="Projects">
           <CommandItem :value="project.name" data-umami-event="open-project" v-for="project in $projects.projects.value.slice(0,3)" @select="$projects.setActiveProject(project)">
@@ -92,7 +103,7 @@ watch([Meta_K, Ctrl_K], (v) => {
           </CommandItem>
         </CommandGroup>
         <CommandSeparator/>
-        <CommandGroup heading="Settings">
+        <CommandGroup heading="Other">
           <CommandItem value="whats-this" data-umami-event="whats-this">
             <div class="flex justify-between items-center w-full" @select="$router.push('/about')">
               <span>what's this?</span>

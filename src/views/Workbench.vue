@@ -17,6 +17,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
+import FileImport from "@/components/FileImport.vue";
+import MountFileSystem from "@/components/MountFileSystem.vue";
 
 const $meta = useMetaStore()
 const $projects = useProjects();
@@ -88,6 +90,8 @@ const doCopy = async () => {
       </AlertDialogFooter>
     </AlertDialogContent>
   </AlertDialog>
+  <FileImport/>
+  <MountFileSystem/>
 </template>
 
 <style scoped>
