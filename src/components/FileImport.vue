@@ -16,7 +16,6 @@ const $meta = useMetaStore()
 const files = ref<{ name: string, file: File }[]>([]);
 const {db, ready} = useDuckDb()
 
-let status_msg = ref("");
 
 const onFilesPicked = (event: Event) => {
   files.value = [];
