@@ -4,11 +4,12 @@ import {reactive, ref, watch} from "vue";
 import {Button} from './components/ui/button';
 import Toaster from '@/components/ui/toast/Toaster.vue'
 import {bytesToGB} from './lib/utils';
-import CommandMenu from "@/components/CommandMenu.vue";
+// import CommandMenu from "@/components/CommandMenu.vue";
 import {useMetaStore} from "@/store/meta.ts";
 import {useProjects} from "@/store/project.ts";
 import {Input} from "@/components/ui/input";
 import {useRoute} from "vue-router";
+import CommandMenu from "@/components/CommandMenu.vue";
 
 const $meta = useMetaStore()
 const $projects = useProjects();
@@ -58,7 +59,7 @@ watch(cmdShiftE, (v) => {
       <h1 class="text-xl">DuckBench</h1>
       <div class="h-full w-[1px] bg-gray-500"></div>
       <div class="flex items-center space-x-4">
-        <Button size="xs" class="text-xs space-x-1 cursor-pointer"  @click="openMenu" data-umami-event="command-menu">
+        <Button size="xs" class="text-xs space-x-1 cursor-pointer" @click="openMenu" data-umami-event="command-menu">
           <div class="i-pixelarticons:command h-4 w-4"></div>
         </Button>
       </div>
