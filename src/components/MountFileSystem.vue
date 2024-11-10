@@ -31,7 +31,7 @@ const $meta = useMetaStore();
         </div>
         <p>Run one of these commands in the folder you want to make available. <span class="font-semibold">Check which port the server starts on!</span></p>
         <p>Once running, you can point DuckDB to the served files:</p>
-        <pre class="select-all text-sm">select * from read_csv_auto("http://localhost:8080");</pre>
+        <pre class="select-all text-sm">select * from read_csv_auto("http://localhost:8080/your_file.csv");</pre>
       </div>
       <DialogFooter>
         <Button data-umami-event="ok-mount-file-system" @click="$meta.showMountFileSystem = false">

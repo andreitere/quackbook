@@ -56,7 +56,7 @@ watch([meta, shift, e], (v) => {
 <template>
   <div class="w-full h-full flex flex-col relative">
     <header class="flex items-center p-3 space-x-4 border-b-[1px] border-solid border-slate-200">
-      <h1 class="text-xl">DuckBook</h1>
+      <h1 class="text-xl">QuackBook</h1>
       <div class="h-[50%] w-[1px] mx-5 bg-gray-500"></div>
       <div class="flex items-center space-x-4">
         <Button size="xs" class="text-xs space-x-1 cursor-pointer" @click="openMenu" data-umami-event="command-menu">
