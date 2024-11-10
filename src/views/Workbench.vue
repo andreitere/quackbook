@@ -2,18 +2,32 @@
 
 import DBSchemaDetails from "@/components/DBSchemaDetails.vue";
 import EditorCell from "@/components/EditorCell.vue";
-import {useMagicKeys} from '@vueuse/core'
+import {useClipboard, useMagicKeys} from '@vueuse/core'
 import {useMetaStore} from "@/store/meta.ts";
 import {useProjects} from "@/store/project.ts";
-import {reactive, watch} from "vue";
+import {reactive, ref, watch} from "vue";
+import {Button} from "@/components/ui/button"
 import MarkdownCell from "@/components/MarkdownCell.vue";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
+import {Input} from "@/components/ui/input";
 
 const $meta = useMetaStore()
 const $projects = useProjects();
+const shareVal = ref()
 
+const {text, copy, copied, isSupported} = useClipboard({source: $meta.shareLink})
 
 const show = reactive({
-  toolBar: false,
+  toolBar: true,
   utilsBar: false,
 })
 
@@ -31,8 +45,8 @@ watch(cmdShiftE, (v) => {
 </script>
 
 <template>
-  <div class="flex flex-grow flex-col h-full max-h-full px-2  py-4">
-    <div class="flex justify-center" >
+  <div class="flex flex-grow w-1/3 flex-col h-full max-h-full px-2  py-4">
+    <div class="flex justify-center">
 
     </div>
     <div class="overflow-y-scroll nice-scrollbar flex flex-col h-0 flex-grow space-y-6">
@@ -48,12 +62,29 @@ watch(cmdShiftE, (v) => {
   </div>
   <div :class="[
             'tool-bar items-center flex flex-col space-y-3 overflow-y-scroll nice-scrollbar h-full',
-            $meta.showToolbar ? 'w-1/3' : 'w-0 opacity-0'
+            $meta.showToolbar ? 'flex-grow w-[max(20vw,350px)] max-w-[max(20vw,350px)]' : 'w-0 opacity-0'
         ]">
-    <div class="overflow-y-scroll h-0 flex-grow w-full">
+    <div class="overflow-y-scroll nice-scrollbar h-0 flex-grow w-full">
       <DBSchemaDetails class="w-full"/>
     </div>
   </div>
+  <AlertDialog :open="$meta.shareLink != ''">
+    <AlertDialogContent>
+      <AlertDialogHeader>
+        <AlertDialogTitle>Share project</AlertDialogTitle>
+        <AlertDialogDescription>
+          {{ $projects.activeProject.value.name }}
+        </AlertDialogDescription>
+      </AlertDialogHeader>
+      <div class="flex items-stretch">
+        <input type="text" class="flex-grow border-2 rounded text-sm p-1" :value="$meta.shareLink" ref="shareVal"/>
+      </div>
+      <AlertDialogFooter>
+        <AlertDialogCancel>Cancel</AlertDialogCancel>
+        <AlertDialogAction data-umami-event="copy-shared-link"  @click="copy($meta.shareLink) && ($meta.shareLink = '')">Copy & Close</AlertDialogAction>
+      </AlertDialogFooter>
+    </AlertDialogContent>
+  </AlertDialog>
 </template>
 
 <style scoped>

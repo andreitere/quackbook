@@ -36,7 +36,7 @@ onMounted(() => {
 
 <template>
   <div :class="[
-    'transition-all duration-200 w-full flex h-auto flex-col p-3 rounded space-y-2 group',
+    'transition-all duration-200 w-full flex h-auto flex-col rounded space-y-2 group',
     'focus-within:shadow-lg border-[2px] border-transparent',
     editMode ? ' border-solid border-slate-200 hover:shadow-md' : ''
   ]"

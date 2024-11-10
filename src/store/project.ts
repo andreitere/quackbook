@@ -90,7 +90,8 @@ export const useProjects = () => {
     }, {
       id: Date.now().valueOf(),
       type: "sql",
-      query: ""
+      query: "",
+      position: 0
     })
     activeProject.value = {
       ...activeProject.value,
@@ -98,6 +99,7 @@ export const useProjects = () => {
       mode: "console",
     }
     activeProject.value.dirty = true;
+    $meta.cmdMenu = false;
   }
 
   const convertToNotebook = () => {
@@ -107,25 +109,41 @@ export const useProjects = () => {
       mode: "notebook",
     }
     activeProject.value.dirty = true;
+    $meta.cmdMenu = false;
   }
 
-  // move up visually (basically inverse order)
-  const moveUp = (id: number, position: number) => {
+  const updatePositions = () => {
+    // Reassign contiguous position values based on current order
+    activeProject.value.cells.forEach((cell, index) => {
+      cell.position = index + 1;
+    });
+  };
+
+  const moveUp = (id: number) => {
     const index = activeProject.value.cells.findIndex(c => c.id === id);
-    console.log(`moveUp`, {index})
-    const prevIndex = activeProject.value.cells.findIndex(c => c.position == (position - 1));
-    activeProject.value.cells[prevIndex].position = position;
-    activeProject.value.cells[index].position = position - 1;
+    if (index <= 0) return; // Can't move up the first element
+
+    // Swap current cell with the previous one
+    const prevCell = activeProject.value.cells[index - 1];
+    activeProject.value.cells[index - 1] = activeProject.value.cells[index];
+    activeProject.value.cells[index] = prevCell;
+
+    // Update all positions to be contiguous
+    updatePositions();
     activeProject.value.dirty = true;
   };
 
-  // move down visually (basically inverse order)
-  const moveDown = (id: number, position: number) => {
+  const moveDown = (id: number) => {
     const index = activeProject.value.cells.findIndex(c => c.id === id);
-    console.log(`moveDown`, {index})
-    const nextIndex = activeProject.value.cells.findIndex(c => c.position == (position + 1));
-    activeProject.value.cells[nextIndex].position = position;
-    activeProject.value.cells[index].position = position + 1;
+    if (index === -1 || index === activeProject.value.cells.length - 1) return; // Can't move down the last element
+
+    // Swap current cell with the next one
+    const nextCell = activeProject.value.cells[index + 1];
+    activeProject.value.cells[index + 1] = activeProject.value.cells[index];
+    activeProject.value.cells[index] = nextCell;
+
+    // Update all positions to be contiguous
+    updatePositions();
     activeProject.value.dirty = true;
   };
 
@@ -146,10 +164,7 @@ export const useProjects = () => {
     // Remove the item from the array
     activeProject.value.cells.splice(index, 1);
 
-    // Recompute positions to keep them sequential (0, 1, 2, ...)
-    activeProject.value.cells.forEach((cell, idx) => {
-      cell.position = idx;
-    });
+    updatePositions()
     activeProject.value.dirty = true;
     $meta.cmdMenu = false;
     toast({title: 'Cell deleted 🗑️'})
@@ -166,19 +181,26 @@ export const useProjects = () => {
 
   const setActiveProject = (project: Project) => {
     activeProject.value = project;
+    $meta.cmdMenu = false;
   }
 
   const shareProject = () => {
     let project = {...activeProject.value, id: null};
     const project_in_url = encodeJsonToBase64Url(project)
     const url = `${window.location.origin}/import/${project_in_url}`;
-
+    $meta.cmdMenu = false;
+    $meta.shareLink = url;
     return url;
   }
 
   const importSharedProject = (project_json: Project) => {
     activeProject.value = {...project_json, id: Date.now().valueOf()}
     toast({title: `Project has been imported!`, description: `${project_json.name} imported. 😋`})
+  }
+  const convertProjectTo = (what: string) => {
+    if (!["notebook", "console"].includes(what)) return;
+    activeProject.value.mode = what;
+    $meta.cmdMenu = false;
   }
 
   return {
@@ -195,6 +217,7 @@ export const useProjects = () => {
     saveProject,
     setActiveProject,
     shareProject,
-    importSharedProject
+    importSharedProject,
+    convertProjectTo
   }
 }

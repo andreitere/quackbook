@@ -5,7 +5,8 @@ import {useEventBus, useStorage} from "@vueuse/core";
 export const useMetaStore = defineStore("metaStore", () => {
   const showToolbar = useStorage("showToolbar", false);
   const cmdMenu = ref(false);
-  return {cmdMenu, showToolbar}
+  const shareLink = ref('');
+  return {cmdMenu, showToolbar, shareLink}
 })
 
 

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {useMagicKeys, useMemory} from '@vueuse/core'
-import {reactive, ref, watch} from "vue";
+import {watch} from "vue";
 import {Button} from './components/ui/button';
 import Toaster from '@/components/ui/toast/Toaster.vue'
 import {bytesToGB} from './lib/utils';
@@ -18,16 +18,10 @@ const $route = useRoute()
 const {isSupported: isUseMemSupported, memory} = useMemory()
 
 
-const cmdMenu = ref(null);
-
 const openMenu = () => {
   // if(!cmdMenu.value) return;
   $meta.cmdMenu = true;
 }
-const show = reactive({
-  toolBar: false,
-  utilsBar: false,
-})
 
 
 const commandEvents = {
@@ -43,26 +37,27 @@ const commandEvents = {
   }
 }
 
-const {Meta_Enter, Ctrl_Enter} = useMagicKeys({
+const {meta, shift, e} = useMagicKeys({
   passive: false,
-  onEventFired(e) {
-    if (e.key === 'enter' && (e.metaKey || e.ctrlKey))
+  onEventFired: function (e) {
+    if (e.key === 'e' && (e.metaKey || e.ctrlKey) && e.key === 'shift')
       e.preventDefault()
   },
 })
 
-watch([Meta_Enter, Ctrl_Enter], (v) => {
-  if ((v[0] || v[1]) && inputFocused.value)
-    onPlay()
+watch([meta, shift, e], (v) => {
+  if ((v[0] && v[1] && v[2])) {
+    $meta.showToolbar = !$meta.showToolbar;
+  }
 })
 
 </script>
 
 <template>
   <div class="w-full h-full flex flex-col relative">
-    <header class="flex items-center p-3 space-x-2 border-b-[1px] border-solid border-slate-200">
-      <h1 class="text-xl">DuckBench</h1>
-      <div class="h-full w-[1px] bg-gray-500"></div>
+    <header class="flex items-center p-3 space-x-4 border-b-[1px] border-solid border-slate-200">
+      <h1 class="text-xl">DuckBook</h1>
+      <div class="h-[50%] w-[1px] mx-5 bg-gray-500"></div>
       <div class="flex items-center space-x-4">
         <Button size="xs" class="text-xs space-x-1 cursor-pointer" @click="openMenu" data-umami-event="command-menu">
           <div class="i-pixelarticons:command h-4 w-4"></div>
@@ -81,7 +76,7 @@ watch([Meta_Enter, Ctrl_Enter], (v) => {
 
       </div>
       <div data-umami-event="" @click="$meta.showToolbar = !$meta.showToolbar" :class="[
-          show.toolBar ? `i-octicon:sidebar-collapse-24` : `i-octicon:sidebar-expand-24`,
+          $meta.showToolbar ? `i-octicon:sidebar-collapse-24` : `i-octicon:sidebar-expand-24`,
           'cursor-pointer h-5 w-5'
         ]">
       </div>
