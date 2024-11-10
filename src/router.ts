@@ -1,6 +1,7 @@
 import {createRouter, createWebHistory} from 'vue-router'
 import ImportView from "@/views/ImportView.vue";
 import Workbench from "@/views/Workbench.vue";
+import {useMetaStore} from "@/store/meta.ts";
 
 const routes = [
   {
@@ -17,4 +18,10 @@ const routes = [
 export const router = createRouter({
   history: createWebHistory(),
   routes,
+})
+
+
+router.beforeEach((to, from, next) => {
+  useMetaStore().cmdMenu = false;
+  next()
 })

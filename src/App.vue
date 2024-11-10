@@ -29,10 +29,6 @@ const show = reactive({
   utilsBar: false,
 })
 
-const keys = useMagicKeys();
-
-const cmdShiftE = keys['Option+Shift+E'];
-
 
 const commandEvents = {
   "add-cell-sql": () => {
@@ -47,11 +43,19 @@ const commandEvents = {
   }
 }
 
-watch(cmdShiftE, (v) => {
-  if (!v) return;
-  console.log(`cmdShiftE`, v);
-  show.toolBar = !show.toolBar;
+const {Meta_Enter, Ctrl_Enter} = useMagicKeys({
+  passive: false,
+  onEventFired(e) {
+    if (e.key === 'enter' && (e.metaKey || e.ctrlKey))
+      e.preventDefault()
+  },
 })
+
+watch([Meta_Enter, Ctrl_Enter], (v) => {
+  if ((v[0] || v[1]) && inputFocused.value)
+    onPlay()
+})
+
 </script>
 
 <template>
