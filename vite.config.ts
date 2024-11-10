@@ -30,7 +30,7 @@ export default defineConfig({
     Unfonts({
       google: {
         preconnect: true,
-        families: ["Roboto Mono"],
+        families: ["Roboto Mono", "Poppins"],
       },
     }),
     Icons({

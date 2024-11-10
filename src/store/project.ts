@@ -80,6 +80,7 @@ export const useProjects = () => {
       obj.markdown = query ?? '#hello';
     }
     activeProject.value.cells.push(obj)
+    activeProject.value.dirty = true;
   }
 
   const convertToConsole = () => {
@@ -96,6 +97,7 @@ export const useProjects = () => {
       cells: [singleCell],
       mode: "console",
     }
+    activeProject.value.dirty = true;
   }
 
   const convertToNotebook = () => {
@@ -104,6 +106,7 @@ export const useProjects = () => {
       cells: [{...activeProject.value.cells[0]}],
       mode: "notebook",
     }
+    activeProject.value.dirty = true;
   }
 
   // move up visually (basically inverse order)
@@ -113,7 +116,7 @@ export const useProjects = () => {
     const prevIndex = activeProject.value.cells.findIndex(c => c.position == (position - 1));
     activeProject.value.cells[prevIndex].position = position;
     activeProject.value.cells[index].position = position - 1;
-    console.table(activeProject.value.cells)
+    activeProject.value.dirty = true;
   };
 
   // move down visually (basically inverse order)
@@ -123,7 +126,7 @@ export const useProjects = () => {
     const nextIndex = activeProject.value.cells.findIndex(c => c.position == (position + 1));
     activeProject.value.cells[nextIndex].position = position;
     activeProject.value.cells[index].position = position + 1;
-    console.table(activeProject.value.cells)
+    activeProject.value.dirty = true;
   };
 
   const sortedCells = computed(() => {
@@ -147,6 +150,7 @@ export const useProjects = () => {
     activeProject.value.cells.forEach((cell, idx) => {
       cell.position = idx;
     });
+    activeProject.value.dirty = true;
     $meta.cmdMenu = false;
     toast({title: 'Cell deleted 🗑️'})
   }
@@ -156,6 +160,7 @@ export const useProjects = () => {
     const newProjects = [...projects.value.filter(p => p.id !== project.id), project];
     projects.value = [...newProjects]
     $meta.cmdMenu = false;
+    activeProject.value.dirty = false;
     toast({title: `Project has been saved ❤️‍🔥`, description: `${project.name} saved. Now you can safely switch to another or continue your work`})
   }
 
@@ -168,7 +173,6 @@ export const useProjects = () => {
     const project_in_url = encodeJsonToBase64Url(project)
     const url = `${window.location.origin}/import/${project_in_url}`;
 
-    console.log(url); // For testing, you can log or use the URL as needed
     return url;
   }
 

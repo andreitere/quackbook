@@ -10,6 +10,7 @@ import {useProjects} from "@/store/project.ts";
 import {Input} from "@/components/ui/input";
 import {useRoute} from "vue-router";
 import CommandMenu from "@/components/CommandMenu.vue";
+import NotificationsCard from "@/components/NotificationsCard.vue";
 
 const $meta = useMetaStore()
 const $projects = useProjects();
@@ -63,10 +64,11 @@ watch(cmdShiftE, (v) => {
           <div class="i-pixelarticons:command h-4 w-4"></div>
         </Button>
       </div>
-      <div class="flex flex-grow justify-center">
+      <div class="flex flex-grow justify-center space-x-2">
         <Input v-model:model-value="$projects.activeProject.value.name"
                v-if="$route.name === 'workbench'"
                class="max-w-[400px] border-slate-200  bg-slate-200 dark:bg-slate-500 text-center focus:bg-slate-100 dark:focus:bg-slate-900"/>
+        <NotificationsCard/>
       </div>
       <div class="flex items-center space-x-2 text-xs">
           <span v-if="isUseMemSupported && memory">Browser Mem (GB): {{ bytesToGB(memory.usedJSHeapSize) }} / {{

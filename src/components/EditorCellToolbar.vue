@@ -1,8 +1,6 @@
 <script setup lang="ts">
 
 import {Button} from "@/components/ui/button";
-import {useMagicKeys} from "@vueuse/core";
-import {watch} from "vue";
 
 defineProps({
   play: {default: true},
@@ -15,19 +13,6 @@ defineProps({
 })
 
 const $emit = defineEmits(["save", "clear", "play", "edit", "update", "duplicate", "trash", "display_results", "moveup", "movedown"]);
-
-
-const keys = useMagicKeys();
-
-const cmdEnter = keys['Cmd+Enter'];
-
-
-watch(cmdEnter, (v) => {
-  if (!v) return;
-  console.log(`cmdEnter`);
-  $emit("play")
-})
-
 
 </script>
 

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {Textarea} from "@/components/ui/textarea";
 import EditorCellToolbar from "@/components/EditorCellToolbar.vue";
-import {computed, onMounted, ref} from "vue";
+import {computed, onMounted, ref, watch} from "vue";
 import {useDuckDb} from "@/hooks/useDuckDb.ts";
 import "https://cdn.jsdelivr.net/npm/@finos/perspective-viewer@3.1.3/dist/cdn/perspective-viewer.js";
 import "https://cdn.jsdelivr.net/npm/@finos/perspective-viewer-datagrid@3.1.3/dist/cdn/perspective-viewer-datagrid.js";
@@ -14,7 +14,7 @@ import perspective from "https://cdn.jsdelivr.net/npm/@finos/perspective/dist/cd
 
 import {arrowTypeToJsType} from "@/lib/utils.ts";
 import {db_events} from "@/store/meta.ts";
-import {useColorMode, useVModels} from "@vueuse/core";
+import {useColorMode, useMagicKeys, useVModels} from "@vueuse/core";
 import {useProjects} from "@/store/project.ts";
 
 const pView = ref(null)
@@ -99,6 +99,20 @@ const onPlay = async () => {
     loading.value = false;
   }
 }
+
+const {Meta_Enter, Ctrl_Enter} = useMagicKeys({
+  passive: false,
+  onEventFired(e) {
+    if (e.key === 'enter' && (e.metaKey || e.ctrlKey))
+      e.preventDefault()
+  },
+})
+
+watch([Meta_Enter, Ctrl_Enter], (v) => {
+  if ((v[0] || v[1]) && inputFocused.value)
+    onPlay()
+})
+
 
 // -- end methods --
 
