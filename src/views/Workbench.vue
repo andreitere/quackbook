@@ -6,7 +6,6 @@ import {useClipboard, useMagicKeys} from '@vueuse/core'
 import {useMetaStore} from "@/store/meta.ts";
 import {useProjects} from "@/store/project.ts";
 import {reactive, ref, watch} from "vue";
-import {Button} from "@/components/ui/button"
 import MarkdownCell from "@/components/MarkdownCell.vue";
 import {
   AlertDialog,
@@ -18,13 +17,12 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
-import {Input} from "@/components/ui/input";
 
 const $meta = useMetaStore()
 const $projects = useProjects();
 const shareVal = ref()
 
-const {text, copy, copied, isSupported} = useClipboard({source: $meta.shareLink})
+const {copy} = useClipboard({source: $meta.shareLink})
 
 const show = reactive({
   toolBar: true,
@@ -81,7 +79,7 @@ watch(cmdShiftE, (v) => {
       </div>
       <AlertDialogFooter>
         <AlertDialogCancel>Cancel</AlertDialogCancel>
-        <AlertDialogAction data-umami-event="copy-shared-link"  @click="copy($meta.shareLink) && ($meta.shareLink = '')">Copy & Close</AlertDialogAction>
+        <AlertDialogAction data-umami-event="copy-shared-link" @click="copy($meta.shareLink) && ($meta.shareLink = '')">Copy & Close</AlertDialogAction>
       </AlertDialogFooter>
     </AlertDialogContent>
   </AlertDialog>
