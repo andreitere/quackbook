@@ -40,6 +40,11 @@ watch(cmdShiftE, (v) => {
   show.toolBar = !show.toolBar;
 })
 
+const doCopy = async () => {
+  await copy($meta.shareLink)
+  $meta.shareLink = ''
+}
+
 </script>
 
 <template>
@@ -79,7 +84,7 @@ watch(cmdShiftE, (v) => {
       </div>
       <AlertDialogFooter>
         <AlertDialogCancel>Cancel</AlertDialogCancel>
-        <AlertDialogAction data-umami-event="copy-shared-link" @click="copy($meta.shareLink) && ($meta.shareLink = '')">Copy & Close</AlertDialogAction>
+        <AlertDialogAction data-umami-event="copy-shared-link" @click="doCopy">Copy & Close</AlertDialogAction>
       </AlertDialogFooter>
     </AlertDialogContent>
   </AlertDialog>

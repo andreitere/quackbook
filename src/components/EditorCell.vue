@@ -133,8 +133,8 @@ onMounted(async () => {
                        :trash="props.mode == 'notebook'"
                        :duplicate="props.mode == 'notebook'"
                        @play="onPlay" @clear="onClear"
-                       @movedown="$projects.moveDown(props.id, props.position)"
-                       @moveup="$projects.moveUp(props.id, props.position)"
+                       @movedown="$projects.moveDown(props.id)"
+                       @moveup="$projects.moveUp(props.id)"
                        @trash="$projects.deleteCell(props.id)"
                        :edit="false"
                        :display_results="false"/>

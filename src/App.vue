@@ -40,7 +40,7 @@ const commandEvents = {
 const {meta, shift, e} = useMagicKeys({
   passive: false,
   onEventFired: function (e) {
-    if (e.key === 'e' && (e.metaKey || e.ctrlKey) && e.key === 'shift')
+    if (e.key === 'e' && (e.metaKey || e.ctrlKey) && e.shiftKey)
       e.preventDefault()
   },
 })
