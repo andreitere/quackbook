@@ -22,4 +22,4 @@ Bear in mind that this is under active development at the moment. Some things ma
 - No Backend Required: Entirely client-side operation ensures privacy and simplicity.
 
 
-> work in progress😂
+> work in progress
