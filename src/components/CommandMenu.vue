@@ -121,17 +121,20 @@ watch([Meta_K, Ctrl_K], (v) => {
           </CommandItem>
         </CommandGroup>
         <CommandSeparator/>
-        <CommandGroup heading="Other">
+        <CommandGroup heading="Navigation">
           <CommandItem value="home" data-umami-event="home" @select="$router.push('/')">
             <div class="flex justify-between items-center w-full">
-              <span>go home</span>
+              <span>home</span>
             </div>
           </CommandItem>
-          <CommandItem value="whats-this" data-umami-event="whats-this" @select="$router.push('/about')">
+          <CommandItem value="about" data-umami-event="about" @select="$router.push('/about')">
             <div class="flex justify-between items-center w-full">
-              <span>what's this?</span>
+              <span>about</span>
             </div>
           </CommandItem>
+
+        </CommandGroup>
+        <CommandGroup heading="Meta">
           <CommandItem value="theme light dark"
                        :data-umami-event="`switch-to-${colorMode == 'light' ? 'dark' : 'light'}`"
                        @select="onColorModeToggle">
