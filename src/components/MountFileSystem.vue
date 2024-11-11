@@ -22,12 +22,16 @@ const $meta = useMetaStore();
         <h2 class="mt-4 text-xl font-bold">So, what’s the solution?</h2>
         <p>One option is to run an HTTP server in any folder on your system, allowing DuckDB to access files served by that server.</p>
         <div>
-          <h3 class="font-bold">Using NPM</h3>
+          <h3 class="font-bold">Using Node</h3>
           <pre class="select-all text-sm">npx serve --cors</pre>
         </div>
         <div>
-          <h3 class="font-bold">Using NPM</h3>
+          <h3 class="font-bold">Using Node</h3>
           <pre class="select-all text-sm">npx http-server --cors</pre>
+        </div>
+        <div>
+          <h3 class="font-bold">Using Python</h3>
+          <pre class="select-all text-sm">python -m http.server --bind 127.0.0.1</pre>
         </div>
         <p>Run one of these commands in the folder you want to make available. <span class="font-semibold">Check which port the server starts on!</span></p>
         <p>Once running, you can point DuckDB to the served files:</p>
