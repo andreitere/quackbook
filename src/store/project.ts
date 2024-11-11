@@ -48,7 +48,7 @@ export const useProjects = () => {
         type: "sql",
         position: 0
       }
-    ], mode: "console", dirty: false
+    ], mode: "notebook", dirty: false
   })
 
   const createProject = () => {
