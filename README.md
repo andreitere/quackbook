@@ -12,7 +12,7 @@ I wanted to build my own. I also love Vue. So the combo looked cool in my mind
 
 So here we are.
 
-Bear in mind that this is under active development at the moment. Some things may break... some may may be fixed 🙂‍↕️.
+Bear in mind that this is under active development at the moment. Some things may break... some may may be fixed 😅.
 
 ### What can QuackBook do?
 
