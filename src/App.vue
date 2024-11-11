@@ -69,17 +69,19 @@ watch([meta, shift, e], (v) => {
                class="max-w-[400px] border-slate-200  bg-slate-200 dark:bg-slate-500 text-center focus:bg-slate-100 dark:focus:bg-slate-900"/>
         <NotificationsCard/>
       </div>
-      <div class="flex items-center space-x-2 text-xs">
+      <div class="flex items-center space-x-2 text-xs hidden md:flex">
           <span v-if="isUseMemSupported && memory">Browser Mem (GB): {{ bytesToGB(memory.usedJSHeapSize) }} / {{
               bytesToGB(memory.jsHeapSizeLimit)
             }} (GB)</span>
 
       </div>
-      <div data-umami-event="" @click="$meta.showToolbar = !$meta.showToolbar" :class="[
+      <Button variant="ghost" data-umami-event="show-db-schema" @click="$meta.showToolbar = !$meta.showToolbar">
+        <div :class="[
           $meta.showToolbar ? `i-octicon:sidebar-collapse-24` : `i-octicon:sidebar-expand-24`,
           'cursor-pointer h-5 w-5'
         ]">
-      </div>
+        </div>
+      </Button>
     </header>
     <div class="flex flex-row flex-grow">
       <router-view></router-view>
