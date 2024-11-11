@@ -62,6 +62,7 @@ const onPlay = async () => {
   if (!pWorker) return;
   await ready;
   error.value = '';
+  lastQueryDuration.value = '';
 
   const c = await db.value.connect();
   try {
@@ -139,8 +140,9 @@ onMounted(async () => {
                        :edit="false"
                        :display_results="false"/>
     <div class="flex items-start">
-      <Textarea tabindex="-1" class="max-h-[40vh] p-2 border-2 focus:border-slate-300 rounded" v-model:model-value="query"
-                ref="queryEditorRef" :disabled="db_loading"
+      <Textarea tabindex="-1" class="max-h-[40vh] p-2 border-2 focus:border-slate-300 rounded"
+                v-model:model-value="query"
+                ref="queryEditorRef" :disabled="db_loading || loading"
                 style="field-sizing: content"/>
       <div v-if="error" class="w-1/3 text-sm text-red-500 px-4">
         {{ error }}
@@ -155,10 +157,10 @@ onMounted(async () => {
                           :theme="tableTheme"></perspective-viewer>
     </div>
     <div class="info justify-end flex space-x-2">
-      <span class="text-xs" v-if="results && !error">query took: {{ lastQueryDuration }} s</span>
-      <span class="text-xs" v-if="!!results && !error">{{ error }}</span>
-      <div class="i-ep:success-filled text-green-600 h-5 w-5" v-if="!!results && !error"></div>
-      <div class="i-material-symbols:chat-error-outline text-red-600 h-5 w-5" v-if="!!error"></div>
+      <span class="text-xs" v-if="results && lastQueryDuration != ''">query took: {{ lastQueryDuration }} s</span>
+      <span class="text-xs" v-if="!!results && error != ''">{{ error }}</span>
+      <div class="i-ep:success-filled text-green-600 h-5 w-5" v-if="lastQueryDuration != '' && error == ''"></div>
+      <div class="i-material-symbols:chat-error-outline text-red-600 h-5 w-5" v-if="error != ''"></div>
       <div class="i-line-md:loading-twotone-loop h-5 w-5" v-if="loading"></div>
     </div>
   </div>
