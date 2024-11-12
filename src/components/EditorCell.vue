@@ -43,7 +43,7 @@ const props = defineProps({
 const {query} = useVModels(props);
 
 
-const {db, loading: db_loading, ready} = useDuckDb()
+const {db, ready} = useDuckDb()
 const $projects = useProjects()
 const queryEditor = useTemplateRef('queryEditorRef');
 const results: any = ref(null);
@@ -95,7 +95,6 @@ const initEditor = () => {
         rectangularSelection(),
         crosshairCursor(),
         highlightActiveLine(),
-        syntaxHighlighting(defaultHighlightStyle, {fallback: true}),
         keymap.of([
           {
             key: 'Meta-Enter', // 'Mod' is Cmd on Mac, Ctrl on Windows/Linux
@@ -113,11 +112,11 @@ const initEditor = () => {
         EditorView.updateListener.of((update) => {
           if (update.docChanged) {
             console.log(`doc changed`, update)
-            query.value = editor.value?.state.doc.toString();
+            query.value = editor.value?.state.doc.toString() as string;
           }
         }),]
     }),
-    parent: queryEditor.value
+    parent: queryEditor.value as Element
   })
 }
 
@@ -223,7 +222,7 @@ onMounted(async () => {
     </div>
     <div class="info justify-end flex space-x-2">
       <span class="text-xs" v-if="results && lastQueryDuration != ''">query took: {{ lastQueryDuration }} s</span>
-      <span class="text-xs text-red-500" v-if="!!results && error != ''">{{ error }}</span>
+      <span class="text-xs text-red-500" v-if="error != ''">{{ error }}</span>
       <div class="i-ep:success-filled text-green-600 h-5 w-5" v-if="lastQueryDuration != '' && error == ''"></div>
       <div class="i-material-symbols:chat-error-outline text-red-600 h-5 w-5" v-if="error != ''"></div>
       <div class="i-line-md:loading-twotone-loop h-5 w-5" v-if="loading"></div>
