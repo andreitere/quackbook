@@ -9,6 +9,12 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@codemirror/basic-setup": "^0.20.0",
+    "@codemirror/commands": "^6.7.1",
+    "@codemirror/lang-sql": "^6.8.0",
+    "@codemirror/language": "^6.10.3",
+    "@codemirror/state": "^6.4.1",
+    "@codemirror/view": "^6.34.2",
     "@duckdb/duckdb-wasm": "^1.29.0",
     "@radix-icons/vue": "^1.0.0",
     "@shikijs/markdown-it": "^1.22.2",

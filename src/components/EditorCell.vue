@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import {Textarea} from "@/components/ui/textarea";
 import EditorCellToolbar from "@/components/EditorCellToolbar.vue";
-import {computed, onMounted, ref, watch} from "vue";
+import {computed, onMounted, ref, useTemplateRef, watch} from "vue";
 import {useDuckDb} from "@/hooks/useDuckDb.ts";
 import "https://cdn.jsdelivr.net/npm/@finos/perspective-viewer@3.1.3/dist/cdn/perspective-viewer.js";
 import "https://cdn.jsdelivr.net/npm/@finos/perspective-viewer-datagrid@3.1.3/dist/cdn/perspective-viewer-datagrid.js";
@@ -14,8 +13,24 @@ import perspective from "https://cdn.jsdelivr.net/npm/@finos/perspective/dist/cd
 
 import {arrowTypeToJsType} from "@/lib/utils.ts";
 import {db_events} from "@/store/meta.ts";
-import {useColorMode, useMagicKeys, useVModels} from "@vueuse/core";
+import {useColorMode, useVModels} from "@vueuse/core";
 import {useProjects} from "@/store/project.ts";
+import {defaultKeymap, history, historyKeymap} from "@codemirror/commands"
+import {
+  crosshairCursor,
+  drawSelection,
+  dropCursor,
+  EditorView,
+  highlightActiveLine,
+  highlightActiveLineGutter,
+  highlightSpecialChars,
+  keymap,
+  lineNumbers,
+  rectangularSelection,
+} from "@codemirror/view";
+import {defaultHighlightStyle, foldGutter, indentOnInput, syntaxHighlighting} from "@codemirror/language"
+import {EditorState} from "@codemirror/state";
+import {sql} from "@codemirror/lang-sql";
 
 const pView = ref(null)
 const color = useColorMode()
@@ -30,13 +45,17 @@ const {query} = useVModels(props);
 
 const {db, loading: db_loading, ready} = useDuckDb()
 const $projects = useProjects()
-const queryEditorRef = ref(null);
+const queryEditor = useTemplateRef('queryEditorRef');
 const results: any = ref(null);
 const error: any = ref('');
 const pWorker = ref(null);
 const inputFocused = ref(false);
 const lastQueryDuration = ref('')
 const loading = ref(false);
+
+const editor = ref<EditorView>();
+
+
 // -- start computed --
 
 const tableTheme = computed(() => {
@@ -55,6 +74,52 @@ const onClear = async () => {
   error.value = '';
 }
 
+const initEditor = () => {
+  console.log(queryEditor.value)
+  // if (!queryEditor.value) return console.log(`editor empty`);
+  // if (!editor.value) return console.log(`editor empty`);
+  editor.value = new EditorView({
+    state: EditorState.create({
+      doc: props.query,
+      extensions: [
+        lineNumbers(),
+        highlightActiveLineGutter(),
+        highlightSpecialChars(),
+        foldGutter(),
+        history(),
+        drawSelection(),
+        dropCursor(),
+        EditorState.allowMultipleSelections.of(true),
+        indentOnInput(),
+        syntaxHighlighting(defaultHighlightStyle, {fallback: true}),
+        rectangularSelection(),
+        crosshairCursor(),
+        highlightActiveLine(),
+        syntaxHighlighting(defaultHighlightStyle, {fallback: true}),
+        keymap.of([
+          {
+            key: 'Meta-Enter', // 'Mod' is Cmd on Mac, Ctrl on Windows/Linux
+            run() {
+              console.log(`run`)
+              onPlay(); // Emit an event for Cmd+Enter
+              return true;
+            },
+            preventDefault: true
+          },
+          ...defaultKeymap,
+          ...historyKeymap,
+        ]),
+        sql(),
+        EditorView.updateListener.of((update) => {
+          if (update.docChanged) {
+            console.log(`doc changed`, update)
+            query.value = editor.value?.state.doc.toString();
+          }
+        }),]
+    }),
+    parent: queryEditor.value
+  })
+}
 
 const onPlay = async () => {
   if (!inputFocused) return;
@@ -101,22 +166,24 @@ const onPlay = async () => {
   }
 }
 
-const {Meta_Enter, Ctrl_Enter} = useMagicKeys({
-  passive: false,
-  onEventFired(e) {
-    if (e.key === 'enter' && (e.metaKey || e.ctrlKey))
-      e.preventDefault()
-  },
-})
-
-watch([Meta_Enter, Ctrl_Enter], (v) => {
-  if ((v[0] || v[1]) && inputFocused.value)
-    onPlay()
-})
+// const {Meta_Enter, Ctrl_Enter} = useMagicKeys({
+//   passive: false,
+//   onEventFired(e) {
+//     if (e.key === 'enter' && (e.metaKey || e.ctrlKey))
+//       e.preventDefault()
+//   },
+// })
+//
+// watch([Meta_Enter, Ctrl_Enter], (v) => {
+//   if ((v[0] || v[1]) && inputFocused.value)
+//     onPlay()
+// })
 
 
 // -- end methods --
-
+watch(queryEditor, () => {
+  initEditor()
+})
 onMounted(async () => {
   pWorker.value = await perspective.worker();
 })
@@ -139,26 +206,24 @@ onMounted(async () => {
                        @trash="$projects.deleteCell(props.id)"
                        :edit="false"
                        :display_results="false"/>
-    <div class="flex items-start">
-      <Textarea tabindex="-1" class="max-h-[40vh] p-2 border-2 focus:border-slate-300 rounded"
-                v-model:model-value="query"
-                ref="queryEditorRef" :disabled="db_loading || loading"
-                style="field-sizing: content"/>
-      <div v-if="error" class="w-1/3 text-sm text-red-500 px-4">
-        {{ error }}
-      </div>
+    <div class="flex items-start flex-col">
+      <!--      <Textarea tabindex="-1" class="max-h-[40vh] p-2 border-2 focus:border-slate-300 rounded"-->
+      <!--                v-model:model-value="query"-->
+      <!--                ref="queryEditorRef" :disabled="db_loading || loading"-->
+      <!--                style="field-sizing: content"/>-->
+      <div ref="queryEditorRef" class="max-h-[40vh] overflow-y-scroll w-full nice-scrollbar" style="field-sizing: content"></div>
     </div>
 
-    <div class="bg-blue-200 flex-grow" v-show="results?.length">
+    <div class="bg-blue-200 flex-grow" v-show="results?.length" style="field-sizing: content">
       <perspective-viewer ref="pView" :class="[
         'overflow-hidden',
-        props.mode=='console' ? 'h-full' : 'h-[20vh] resize-y'
+        props.mode=='console' ? 'h-full' : 'h-[15vh] resize-y'
       ]"
                           :theme="tableTheme"></perspective-viewer>
     </div>
     <div class="info justify-end flex space-x-2">
       <span class="text-xs" v-if="results && lastQueryDuration != ''">query took: {{ lastQueryDuration }} s</span>
-      <span class="text-xs" v-if="!!results && error != ''">{{ error }}</span>
+      <span class="text-xs text-red-500" v-if="!!results && error != ''">{{ error }}</span>
       <div class="i-ep:success-filled text-green-600 h-5 w-5" v-if="lastQueryDuration != '' && error == ''"></div>
       <div class="i-material-symbols:chat-error-outline text-red-600 h-5 w-5" v-if="error != ''"></div>
       <div class="i-line-md:loading-twotone-loop h-5 w-5" v-if="loading"></div>
