@@ -135,11 +135,20 @@ watch([Meta_K, Ctrl_K], (v) => {
 
         </CommandGroup>
         <CommandGroup heading="Meta">
-          <CommandItem value="theme light dark"
-                       :data-umami-event="`switch-to-${colorMode == 'light' ? 'dark' : 'light'}`"
+          <CommandItem value="switch to light mode"
+                       v-if="colorMode == 'dark'"
+                       data-umami-event="switch-to-light"
                        @select="onColorModeToggle">
             <div class="flex justify-between items-center w-full">
-              <span>switch to {{ colorMode == 'light' ? 'dark' : 'light' }} mode</span>
+              <span>switch to light mode</span>
+            </div>
+          </CommandItem>
+          <CommandItem value="switch to dark mode"
+                       v-if="colorMode == 'light'"
+                       data-umami-event="switch-to-dark"
+                       @select="onColorModeToggle">
+            <div class="flex justify-between items-center w-full">
+              <span>switch to dark mode</span>
             </div>
           </CommandItem>
         </CommandGroup>
