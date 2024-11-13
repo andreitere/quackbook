@@ -156,10 +156,13 @@ export const useProjects = () => {
 	};
 
 	const updatePositions = () => {
-		// Reassign contiguous position values based on current order
-		activeProject.value.cells.forEach((cell, index) => {
-			cell.position = index + 1;
-		});
+		activeProject.value.cells = [
+			...activeProject.value.cells.map((cell: Cell, index: number) => {
+				cell.position = index + 1;
+				return cell;
+			}),
+		];
+		console.log(activeProject.value.cells);
 	};
 
 	const moveUp = (id: number) => {

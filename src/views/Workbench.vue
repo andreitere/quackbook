@@ -50,8 +50,8 @@ const doCopy = async () => {
     <div class="flex justify-center">
 
     </div>
-    <div class="overflow-y-scroll nice-scrollbar flex flex-col h-0 flex-grow space-y-6">
-      <div v-for="cell in $projects.sortedCells.value" v-if="$projects.activeProject.value.mode == 'notebook'" class="w-full">
+    <div class="overflow-y-scroll nice-scrollbar flex flex-col h-0 flex-grow space-y-6 pb-[200px]">
+      <div v-for="cell in $projects.sortedCells.value" :key="`${cell.position}-${cell.id}`" v-if="$projects.activeProject.value.mode == 'notebook'" class="w-full">
         <EditorCell :mode="$projects.activeProject.value.mode" v-model:query="cell.query" :id="cell.id" :position="cell.position" v-if="cell.type == 'sql'"/>
         <MarkdownCell :mode="$projects.activeProject.value.mode" v-model:markdown="cell.markdown" :id="cell.id" :position="cell.position" v-if="cell.type == 'markdown'"/>
       </div>

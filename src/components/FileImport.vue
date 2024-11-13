@@ -21,6 +21,7 @@ const $meta = useMetaStore();
 
 const files = ref<{ name: string; file: File }[]>([]);
 const { db, ready } = useDuckDb();
+const importing = ref<boolean>(false);
 
 const onFilesPicked = (event: Event) => {
 	files.value = [];
@@ -35,11 +36,13 @@ const onFilesPicked = (event: Event) => {
 };
 
 const doImport = async () => {
+	importing.value = true;
 	await ready;
 	if (!db.value) return;
 	for (const file of files.value) {
 		await insertFile(db.value, file.file, file.name);
 	}
+	importing.value = false;
 	$meta.showImportFiles = false;
 	files.value = [];
 	db_events.emit("UPDATE_SCHEMA");
@@ -75,16 +78,17 @@ const doCancel = () => {
         <h2 class="font-bold">Configure target table for each file</h2>
         <div class="space-y-4 flex flex-col">
           <div v-for="file in files" class="flex flex-col text-sm space-y-1">
-            <Label>Table name for: <span class="text-amber">{{ file.name }}</span></Label>
+            <Label>Table name for: <span class="text-amber">{{ file.file.name }}</span></Label>
             <Input v-model="file.name"/>
           </div>
         </div>
       </div>
-      <DialogFooter>
-        <Button @click="doCancel" variant="outline" data-umami-event="cancel-import-files">
+      <DialogFooter class="items-center">
+        <div class="i-line-md:loading-twotone-loop h-5 w-5" v-if="importing"></div>
+        <Button @click="doCancel" variant="outline" data-umami-event="cancel-import-files" :disabled="importing">
           Cancel
         </Button>
-        <Button @click="doImport" data-umami-event="do-import-files">
+        <Button @click="doImport" data-umami-event="do-import-files" :disabled="importing">
           Import
         </Button>
       </DialogFooter>
