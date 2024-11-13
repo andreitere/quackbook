@@ -98,7 +98,7 @@ html, body, #app {
   user-select: none;
 }
 
-.nice-scrollbar {
+.nice-scrollbar, .cm-editor,.cm-scroller {
   &::-webkit-scrollbar-thumb {
     background-color: #bdc3c7;
     border-radius: 5px;
@@ -109,6 +109,7 @@ html, body, #app {
   &::-webkit-scrollbar {
     background: white;
     width: 4px;
+    height: 4px;
     border-radius: 2px;
   }
 }

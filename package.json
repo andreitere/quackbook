@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc -b && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "prepare": "husky"
   },
   "dependencies": {
     "@codemirror/basic-setup": "^0.20.0",
@@ -33,6 +34,7 @@
     "shiki": "^1.22.2",
     "tailwind-merge": "^2.5.4",
     "tailwindcss-animate": "^1.0.7",
+    "thememirror": "^2.0.1",
     "vue": "^3.5.12",
     "vue-router": "4"
   },
@@ -48,6 +50,7 @@
     "@vue-macros/reactivity-transform": "^1.1.3",
     "@vue-macros/volar": "^0.30.5",
     "autoprefixer": "^10.4.20",
+    "husky": "^9.1.6",
     "sass-embedded": "^1.80.6",
     "tailwindcss": "^3.4.14",
     "typescript": "^5.6.3",

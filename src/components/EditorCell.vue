@@ -7,7 +7,6 @@ import "https://cdn.jsdelivr.net/npm/@finos/perspective-viewer-datagrid@3.1.3/di
 import "https://cdn.jsdelivr.net/npm/@finos/perspective-viewer-d3fc@3.1.3/dist/cdn/perspective-viewer-d3fc.js";
 import "@finos/perspective-viewer/dist/css/pro.css";
 import "@finos/perspective-viewer/dist/css/pro-dark.css";
-
 //@ts-ignore
 import perspective from "https://cdn.jsdelivr.net/npm/@finos/perspective/dist/cdn/perspective.js";
 
@@ -31,6 +30,7 @@ import {
 import {defaultHighlightStyle, foldGutter, indentOnInput, syntaxHighlighting} from "@codemirror/language"
 import {EditorState} from "@codemirror/state";
 import {sql} from "@codemirror/lang-sql";
+import {ayuLight, cobalt} from "thememirror";
 
 const pView = ref(null)
 const color = useColorMode()
@@ -60,11 +60,20 @@ const editor = ref<EditorView>();
 
 const tableTheme = computed(() => {
   if (color.value === 'light') {
-    return ''
+    return 'Pro Light';
   } else {
-    return 'Pro Dark'
+    return 'Pro Dark';
   }
 })
+
+const editorTheme = computed(() => {
+  if (color.value === 'light') {
+    return ayuLight
+  } else {
+    return cobalt
+  }
+})
+
 // -- end computed --
 
 
@@ -75,13 +84,14 @@ const onClear = async () => {
 }
 
 const initEditor = () => {
-  console.log(queryEditor.value)
-  // if (!queryEditor.value) return console.log(`editor empty`);
-  // if (!editor.value) return console.log(`editor empty`);
+  if (editor.value) {
+    editor.value.destroy()
+  }
   editor.value = new EditorView({
     state: EditorState.create({
       doc: props.query,
       extensions: [
+        editorTheme.value,
         lineNumbers(),
         highlightActiveLineGutter(),
         highlightSpecialChars(),
@@ -99,7 +109,6 @@ const initEditor = () => {
           {
             key: 'Meta-Enter', // 'Mod' is Cmd on Mac, Ctrl on Windows/Linux
             run() {
-              console.log(`run`)
               onPlay(); // Emit an event for Cmd+Enter
               return true;
             },
@@ -137,6 +146,7 @@ const onPlay = async () => {
     const mappedFields = results.value.schema.fields.reduce((acc: Record<string, string>, next: Record<string, any>) => {
       acc = acc ?? {};
       acc[next?.name] = arrowTypeToJsType(next.type);
+      console.log(`mapped ${next?.name} (${next.type}) -> ${acc[next?.name]}`);
       return acc;
     }, {})
     results.value = JSON.parse(
@@ -145,6 +155,15 @@ const onPlay = async () => {
             (_, value) => (typeof value === 'bigint' ? value.toString() : value) // return everything else unchanged
         )
     )
+    // let mappedR = []
+    // //@ts-ignore
+    // results.value.toArray().forEach(r => {
+    //   Object.keys(r).forEach(key => {
+    //     console.log(key, typeof key)
+    //   })
+    //   mappedR.push(JSON.parse(r.toString()))
+    // })
+    // results.value = mappedR;
     //@ts-ignore
     const table = await pWorker.value.table(mappedFields);
     table.update(results.value)
@@ -165,24 +184,14 @@ const onPlay = async () => {
   }
 }
 
-// const {Meta_Enter, Ctrl_Enter} = useMagicKeys({
-//   passive: false,
-//   onEventFired(e) {
-//     if (e.key === 'enter' && (e.metaKey || e.ctrlKey))
-//       e.preventDefault()
-//   },
-// })
-//
-// watch([Meta_Enter, Ctrl_Enter], (v) => {
-//   if ((v[0] || v[1]) && inputFocused.value)
-//     onPlay()
-// })
-
 
 // -- end methods --
 watch(queryEditor, () => {
   initEditor()
 })
+
+watch(color, initEditor)
+
 onMounted(async () => {
   pWorker.value = await perspective.worker();
 })
@@ -205,24 +214,24 @@ onMounted(async () => {
                        @trash="$projects.deleteCell(props.id)"
                        :edit="false"
                        :display_results="false"/>
-    <div class="flex items-start flex-col">
+    <div class="flex items-start flex-col overflow-hidden">
       <!--      <Textarea tabindex="-1" class="max-h-[40vh] p-2 border-2 focus:border-slate-300 rounded"-->
       <!--                v-model:model-value="query"-->
       <!--                ref="queryEditorRef" :disabled="db_loading || loading"-->
       <!--                style="field-sizing: content"/>-->
-      <div ref="queryEditorRef" class="max-h-[40vh] overflow-y-scroll w-full nice-scrollbar" style="field-sizing: content"></div>
+      <div ref="queryEditorRef" class=" p-2 overflow-y-scroll w-full nice-scrollbar max-h-[50vh]" style="field-sizing: content"></div>
     </div>
 
     <div class="bg-blue-200 flex-grow" v-show="results?.length" style="field-sizing: content">
       <perspective-viewer ref="pView" :class="[
         'overflow-hidden',
-        props.mode=='console' ? 'h-full' : 'h-[15vh] resize-y'
+        props.mode=='console' ? 'h-full' : 'h-[15vh] min-h-[50px] resize-y'
       ]"
                           :theme="tableTheme"></perspective-viewer>
     </div>
     <div class="info justify-end flex space-x-2">
       <span class="text-xs" v-if="results && lastQueryDuration != ''">query took: {{ lastQueryDuration }} s</span>
-      <span class="text-xs text-red-500" v-if="error != ''">{{ error }}</span>
+      <span class="text-xs text-red-500 text-wrap" v-if="error != ''">{{ error }}</span>
       <div class="i-ep:success-filled text-green-600 h-5 w-5" v-if="lastQueryDuration != '' && error == ''"></div>
       <div class="i-material-symbols:chat-error-outline text-red-600 h-5 w-5" v-if="error != ''"></div>
       <div class="i-line-md:loading-twotone-loop h-5 w-5" v-if="loading"></div>
