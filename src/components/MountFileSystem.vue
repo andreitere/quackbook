@@ -1,8 +1,14 @@
 <script setup lang="ts">
-
-import {Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle} from "@/components/ui/dialog";
-import {Button} from "@/components/ui/button";
-import {useMetaStore} from "@/store/meta.ts";
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { useMetaStore } from "@/store/meta.ts";
 
 const $meta = useMetaStore();
 </script>

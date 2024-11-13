@@ -1,56 +1,53 @@
 <script setup lang="ts">
-import {useMagicKeys, useMemory} from '@vueuse/core'
-import {watch} from "vue";
-import {Button} from './components/ui/button';
-import Toaster from '@/components/ui/toast/Toaster.vue'
-import {bytesToGB} from './lib/utils';
+import { useMagicKeys, useMemory } from "@vueuse/core";
+import { watch } from "vue";
+import { Button } from "./components/ui/button";
+import Toaster from "@/components/ui/toast/Toaster.vue";
+import { bytesToGB } from "./lib/utils";
 // import CommandMenu from "@/components/CommandMenu.vue";
-import {useMetaStore} from "@/store/meta.ts";
-import {useProjects} from "@/store/project.ts";
-import {Input} from "@/components/ui/input";
-import {useRoute} from "vue-router";
+import { useMetaStore } from "@/store/meta.ts";
+import { useProjects } from "@/store/project.ts";
+import { Input } from "@/components/ui/input";
+import { useRoute } from "vue-router";
 import CommandMenu from "@/components/CommandMenu.vue";
 import NotificationsCard from "@/components/NotificationsCard.vue";
 
-const $meta = useMetaStore()
+const $meta = useMetaStore();
 const $projects = useProjects();
-const $route = useRoute()
-const {isSupported: isUseMemSupported, memory} = useMemory()
-
+const $route = useRoute();
+const { isSupported: isUseMemSupported, memory } = useMemory();
 
 const openMenu = () => {
-  // if(!cmdMenu.value) return;
-  $meta.cmdMenu = true;
-}
-
+	// if(!cmdMenu.value) return;
+	$meta.cmdMenu = true;
+};
 
 const commandEvents = {
-  "add-cell-sql": () => {
-    console.log("add cell sql")
-  },
-  "new-project": () => {
-    $projects.createProject()
-  },
-  "save": () => {
-    console.log("save project")
-    $projects.saveProject()
-  }
-}
+	"add-cell-sql": () => {
+		console.log("add cell sql");
+	},
+	"new-project": () => {
+		$projects.createProject();
+	},
+	save: () => {
+		console.log("save project");
+		$projects.saveProject();
+	},
+};
 
-const {meta, shift, e} = useMagicKeys({
-  passive: false,
-  onEventFired: function (e) {
-    if (e.key === 'e' && (e.metaKey || e.ctrlKey) && e.shiftKey)
-      e.preventDefault()
-  },
-})
+const { meta, shift, e } = useMagicKeys({
+	passive: false,
+	onEventFired: (e) => {
+		if (e.key === "e" && (e.metaKey || e.ctrlKey) && e.shiftKey)
+			e.preventDefault();
+	},
+});
 
 watch([meta, shift, e], (v) => {
-  if ((v[0] && v[1] && v[2])) {
-    $meta.showToolbar = !$meta.showToolbar;
-  }
-})
-
+	if (v[0] && v[1] && v[2]) {
+		$meta.showToolbar = !$meta.showToolbar;
+	}
+});
 </script>
 
 <template>

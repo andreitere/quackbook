@@ -1,16 +1,18 @@
 <script setup lang="ts">
-
-import {HoverCard, HoverCardContent, HoverCardTrigger} from "@/components/ui/hover-card";
-import {Button} from "@/components/ui/button"
-import {useProjects} from "@/store/project.ts";
-import {computed} from "vue"
+import {
+	HoverCard,
+	HoverCardContent,
+	HoverCardTrigger,
+} from "@/components/ui/hover-card";
+import { Button } from "@/components/ui/button";
+import { useProjects } from "@/store/project.ts";
+import { computed } from "vue";
 
 const $projects = useProjects();
 
 const anyNotifications = computed(() => {
-  if ($projects.activeProject.value.dirty) return true;
-})
-
+	if ($projects.activeProject.value.dirty) return true;
+});
 </script>
 
 <template>

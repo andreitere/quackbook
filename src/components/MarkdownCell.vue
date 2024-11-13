@@ -1,37 +1,36 @@
 <script setup lang="ts">
-import {useVModels} from "@vueuse/core";
-import {onMounted, ref, watch} from "vue";
-import {useMarkdownRenderer} from "@/hooks/useMDShiki";
+import { useVModels } from "@vueuse/core";
+import { onMounted, ref, watch } from "vue";
+import { useMarkdownRenderer } from "@/hooks/useMDShiki";
 import EditorCellToolbar from "@/components/EditorCellToolbar.vue";
-import {Textarea} from "@/components/ui/textarea"
-import {useProjects} from "@/store/project.ts";
+import { Textarea } from "@/components/ui/textarea";
+import { useProjects } from "@/store/project.ts";
 
 const props = defineProps({
-  mode: {default: 'console', type: String},
-  markdown: {type: String, default: 'select 1+1 as result;'},
-  id: {type: Number, required: true},
-  position: {type: Number, required: true},
-})
-const {markdown} = useVModels(props)
-const $projects = useProjects()
-const {md, ready: md_ready} = useMarkdownRenderer()
+	mode: { default: "console", type: String },
+	markdown: { type: String, default: "select 1+1 as result;" },
+	id: { type: Number, required: true },
+	position: { type: Number, required: true },
+});
+const { markdown } = useVModels(props);
+const $projects = useProjects();
+const { md, ready: md_ready } = useMarkdownRenderer();
 
-
-let rendered = ref('');
+const rendered = ref<string>("");
 const editMode = ref(false);
 
 const doRender = async () => {
-  await md_ready;
-  rendered.value = md.render(markdown.value)
-}
+	await md_ready;
+	rendered.value = md.render(markdown.value);
+};
 
 watch(markdown, () => {
-  doRender()
-})
+	doRender();
+});
 
 onMounted(() => {
-  doRender()
-})
+	doRender();
+});
 </script>
 
 <template>

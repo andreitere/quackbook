@@ -1,19 +1,28 @@
 <script setup lang="ts">
-
-import {Button} from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 
 defineProps({
-  play: {default: true},
-  save: {default: true},
-  clear: {default: true},
-  duplicate: {default: true},
-  trash: {default: true},
-  edit: {default: false},
-  update: {default: false},
-})
+	play: { default: true },
+	save: { default: true },
+	clear: { default: true },
+	duplicate: { default: true },
+	trash: { default: true },
+	edit: { default: false },
+	update: { default: false },
+});
 
-const $emit = defineEmits(["save", "clear", "play", "edit", "update", "duplicate", "trash", "display_results", "moveup", "movedown"]);
-
+const $emit = defineEmits([
+	"save",
+	"clear",
+	"play",
+	"edit",
+	"update",
+	"duplicate",
+	"trash",
+	"display_results",
+	"moveup",
+	"movedown",
+]);
 </script>
 
 <template>

@@ -1,51 +1,58 @@
 <script setup lang="ts">
+import { Button } from "@/components/ui/button";
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useToast } from "@/components/ui/toast";
+import { useDuckDb } from "@/hooks/useDuckDb.ts";
+import { db_events, useMetaStore } from "@/store/meta.ts";
+import { insertFile } from "duckdb-wasm-kit";
+import { ref } from "vue";
 
-import {Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle} from "@/components/ui/dialog";
-import {Label} from "@/components/ui/label";
-import {Input} from "@/components/ui/input";
-import {Button} from "@/components/ui/button";
-import {db_events, useMetaStore} from "@/store/meta.ts";
-import {ref} from "vue";
-import {useDuckDb} from "@/hooks/useDuckDb.ts";
-import {insertFile} from "duckdb-wasm-kit";
-import {useToast} from "@/components/ui/toast";
+const { toast } = useToast();
+const $meta = useMetaStore();
 
-const {toast} = useToast()
-const $meta = useMetaStore()
-
-const files = ref<{ name: string, file: File }[]>([]);
-const {db, ready} = useDuckDb()
-
+const files = ref<{ name: string; file: File }[]>([]);
+const { db, ready } = useDuckDb();
 
 const onFilesPicked = (event: Event) => {
-  files.value = [];
-  const _files = (event.target as HTMLInputElement).files;
-  if (!_files) return;
-  for (const file of _files) {
-    files.value.push({
-      name: file.name.split('.')[0],
-      file: file
-    })
-  }
-}
+	files.value = [];
+	const _files = (event.target as HTMLInputElement).files;
+	if (!_files) return;
+	for (const file of _files) {
+		files.value.push({
+			name: file.name.split(".")[0],
+			file: file,
+		});
+	}
+};
 
 const doImport = async () => {
-  await ready;
-  if (!db.value) return;
-  for (const file of files.value) {
-    await insertFile(db.value, file.file, file.name);
-  }
-  $meta.showImportFiles = false;
-  files.value = [];
-  db_events.emit('UPDATE_SCHEMA')
-  toast({title: `Import succesfull`, description: `You can query your files now`})
-}
+	await ready;
+	if (!db.value) return;
+	for (const file of files.value) {
+		await insertFile(db.value, file.file, file.name);
+	}
+	$meta.showImportFiles = false;
+	files.value = [];
+	db_events.emit("UPDATE_SCHEMA");
+	toast({
+		title: "Import succesfull",
+		description: "You can query your files now",
+	});
+};
 
 const doCancel = () => {
-  $meta.showImportFiles = false;
-  files.value = [];
-}
-
+	$meta.showImportFiles = false;
+	files.value = [];
+};
 </script>
 
 <template>
