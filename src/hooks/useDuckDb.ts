@@ -4,9 +4,9 @@ import { type AsyncDuckDB, initializeDuckDb } from "duckdb-wasm-kit";
 import { type Ref, onMounted, ref } from "vue";
 
 const db = ref<AsyncDuckDB>();
+const loading = ref(false);
 
 export function useDuckDb(config?: DuckDBConfig) {
-	const loading = ref(false);
 	const error: Ref<unknown | null> = ref(null);
 	const _config = {
 		query: {

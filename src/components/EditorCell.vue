@@ -26,13 +26,11 @@ import {
 	EditorView,
 	crosshairCursor,
 	drawSelection,
-	dropCursor,
 	highlightActiveLine,
 	highlightActiveLineGutter,
 	highlightSpecialChars,
 	keymap,
 	lineNumbers,
-	rectangularSelection,
 } from "@codemirror/view";
 import { useColorMode, useVModels } from "@vueuse/core";
 import type { Field, Table } from "apache-arrow";
@@ -99,11 +97,9 @@ const initEditor = () => {
 				foldGutter(),
 				history(),
 				drawSelection(),
-				dropCursor(),
 				EditorState.allowMultipleSelections.of(true),
 				indentOnInput(),
 				syntaxHighlighting(defaultHighlightStyle, { fallback: true }),
-				rectangularSelection(),
 				crosshairCursor(),
 				highlightActiveLine(),
 				keymap.of([
@@ -219,11 +215,7 @@ onMounted(async () => {
                        :edit="false"
                        :display_results="false"/>
     <div class="flex items-start flex-col overflow-hidden">
-      <!--      <Textarea tabindex="-1" class="max-h-[40vh] p-2 border-2 focus:border-slate-300 rounded"-->
-      <!--                v-model:model-value="query"-->
-      <!--                ref="queryEditorRef" :disabled="db_loading || loading"-->
-      <!--                style="field-sizing: content"/>-->
-      <div ref="queryEditorRef" class=" p-2 overflow-y-scroll w-full nice-scrollbar max-h-[50vh]" style="field-sizing: content"></div>
+      <div ref="queryEditorRef" class=" p-2 overflow-y-scroll w-full nice-scrollbar max-h-[30vh]"  style="field-sizing: content"></div>
     </div>
 
     <div class="bg-blue-200 flex-grow" v-show="!!results" style="field-sizing: content">
