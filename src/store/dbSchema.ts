@@ -85,7 +85,6 @@ export const useDBSchema = () => {
 				id: database,
 				label: database,
 				type: "database",
-				open: false,
 				children: [],
 			};
 
