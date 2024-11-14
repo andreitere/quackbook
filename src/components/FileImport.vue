@@ -1,51 +1,61 @@
 <script setup lang="ts">
+import { Button } from "@/components/ui/button";
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useToast } from "@/components/ui/toast";
+import { useDuckDb } from "@/hooks/useDuckDb.ts";
+import { db_events, useMetaStore } from "@/store/meta.ts";
+import { insertFile } from "duckdb-wasm-kit";
+import { ref } from "vue";
 
-import {Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle} from "@/components/ui/dialog";
-import {Label} from "@/components/ui/label";
-import {Input} from "@/components/ui/input";
-import {Button} from "@/components/ui/button";
-import {db_events, useMetaStore} from "@/store/meta.ts";
-import {ref} from "vue";
-import {useDuckDb} from "@/hooks/useDuckDb.ts";
-import {insertFile} from "duckdb-wasm-kit";
-import {useToast} from "@/components/ui/toast";
+const { toast } = useToast();
+const $meta = useMetaStore();
 
-const {toast} = useToast()
-const $meta = useMetaStore()
-
-const files = ref<{ name: string, file: File }[]>([]);
-const {db, ready} = useDuckDb()
-
+const files = ref<{ name: string; file: File }[]>([]);
+const { db, ready } = useDuckDb();
+const importing = ref<boolean>(false);
 
 const onFilesPicked = (event: Event) => {
-  files.value = [];
-  const _files = (event.target as HTMLInputElement).files;
-  if (!_files) return;
-  for (const file of _files) {
-    files.value.push({
-      name: file.name.split('.')[0],
-      file: file
-    })
-  }
-}
+	files.value = [];
+	const _files = (event.target as HTMLInputElement).files;
+	if (!_files) return;
+	for (const file of _files) {
+		files.value.push({
+			name: file.name.split(".")[0],
+			file: file,
+		});
+	}
+};
 
 const doImport = async () => {
-  await ready;
-  if (!db.value) return;
-  for (const file of files.value) {
-    await insertFile(db.value, file.file, file.name);
-  }
-  $meta.showImportFiles = false;
-  files.value = [];
-  db_events.emit('UPDATE_SCHEMA')
-  toast({title: `Import succesfull`, description: `You can query your files now`})
-}
+	importing.value = true;
+	await ready;
+	if (!db.value) return;
+	for (const file of files.value) {
+		await insertFile(db.value, file.file, file.name);
+	}
+	importing.value = false;
+	$meta.showImportFiles = false;
+	files.value = [];
+	db_events.emit("UPDATE_SCHEMA");
+	toast({
+		title: "Import succesfull",
+		description: "You can query your files now",
+	});
+};
 
 const doCancel = () => {
-  $meta.showImportFiles = false;
-  files.value = [];
-}
-
+	$meta.showImportFiles = false;
+	files.value = [];
+};
 </script>
 
 <template>
@@ -68,16 +78,17 @@ const doCancel = () => {
         <h2 class="font-bold">Configure target table for each file</h2>
         <div class="space-y-4 flex flex-col">
           <div v-for="file in files" class="flex flex-col text-sm space-y-1">
-            <Label>Table name for: <span class="text-amber">{{ file.name }}</span></Label>
+            <Label>Table name for: <span class="text-amber">{{ file.file.name }}</span></Label>
             <Input v-model="file.name"/>
           </div>
         </div>
       </div>
-      <DialogFooter>
-        <Button @click="doCancel" variant="outline" data-umami-event="cancel-import-files">
+      <DialogFooter class="items-center">
+        <div class="i-line-md:loading-twotone-loop h-5 w-5" v-if="importing"></div>
+        <Button @click="doCancel" variant="outline" data-umami-event="cancel-import-files" :disabled="importing">
           Cancel
         </Button>
-        <Button @click="doImport" data-umami-event="do-import-files">
+        <Button @click="doImport" data-umami-event="do-import-files" :disabled="importing">
           Import
         </Button>
       </DialogFooter>

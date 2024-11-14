@@ -1,56 +1,54 @@
 <script setup lang="ts">
-import {useMagicKeys, useMemory} from '@vueuse/core'
-import {watch} from "vue";
-import {Button} from './components/ui/button';
-import Toaster from '@/components/ui/toast/Toaster.vue'
-import {bytesToGB} from './lib/utils';
-// import CommandMenu from "@/components/CommandMenu.vue";
-import {useMetaStore} from "@/store/meta.ts";
-import {useProjects} from "@/store/project.ts";
-import {Input} from "@/components/ui/input";
-import {useRoute} from "vue-router";
 import CommandMenu from "@/components/CommandMenu.vue";
 import NotificationsCard from "@/components/NotificationsCard.vue";
+import { Input } from "@/components/ui/input";
+import Toaster from "@/components/ui/toast/Toaster.vue";
+import { useDuckDb } from "@/hooks/useDuckDb.ts";
+// import CommandMenu from "@/components/CommandMenu.vue";
+import { useMetaStore } from "@/store/meta.ts";
+import { useProjects } from "@/store/project.ts";
+import { useMagicKeys, useMemory } from "@vueuse/core";
+import { watch } from "vue";
+import { useRoute } from "vue-router";
+import { Button } from "./components/ui/button";
+import { bytesToGB } from "./lib/utils";
 
-const $meta = useMetaStore()
+const $meta = useMetaStore();
 const $projects = useProjects();
-const $route = useRoute()
-const {isSupported: isUseMemSupported, memory} = useMemory()
-
-
+const $route = useRoute();
+const { isSupported: isUseMemSupported, memory } = useMemory();
+const { loading: db_loading } = useDuckDb();
 const openMenu = () => {
-  // if(!cmdMenu.value) return;
-  $meta.cmdMenu = true;
-}
-
+	// if(!cmdMenu.value) return;
+	$meta.cmdMenu = true;
+};
 
 const commandEvents = {
-  "add-cell-sql": () => {
-    console.log("add cell sql")
-  },
-  "new-project": () => {
-    $projects.createProject()
-  },
-  "save": () => {
-    console.log("save project")
-    $projects.saveProject()
-  }
-}
+	"add-cell-sql": () => {
+		console.log("add cell sql");
+	},
+	"new-project": () => {
+		$projects.createProject();
+	},
+	save: () => {
+		console.log("save project");
+		$projects.saveProject();
+	},
+};
 
-const {meta, shift, e} = useMagicKeys({
-  passive: false,
-  onEventFired: function (e) {
-    if (e.key === 'e' && (e.metaKey || e.ctrlKey) && e.shiftKey)
-      e.preventDefault()
-  },
-})
+const { meta, shift, e } = useMagicKeys({
+	passive: false,
+	onEventFired: (e) => {
+		if (e.key === "e" && (e.metaKey || e.ctrlKey) && e.shiftKey)
+			e.preventDefault();
+	},
+});
 
 watch([meta, shift, e], (v) => {
-  if ((v[0] && v[1] && v[2])) {
-    $meta.showToolbar = !$meta.showToolbar;
-  }
-})
-
+	if (v[0] && v[1] && v[2]) {
+		$meta.showToolbar = !$meta.showToolbar;
+	}
+});
 </script>
 
 <template>
@@ -66,11 +64,13 @@ watch([meta, shift, e], (v) => {
           <div class="i-pixelarticons:command h-4 w-4"></div>
         </Button>
       </div>
-      <div class="flex flex-grow justify-center space-x-2">
+      <div class="flex flex-grow justify-center space-x-2 items-center">
         <Input v-model:model-value="$projects.activeProject.value.name"
                v-if="$route.name === 'workbench'"
                class="max-w-[400px] border-slate-200  bg-slate-200 dark:bg-slate-500 text-center focus:bg-slate-100 dark:focus:bg-slate-900"/>
         <NotificationsCard/>
+        <div class="i-line-md:loading-twotone-loop h-5 w-5" v-if="db_loading"></div>
+
       </div>
       <div class="flex items-center space-x-2 text-xs hidden md:flex">
           <span v-if="isUseMemSupported && memory">Browser Mem (GB): {{ bytesToGB(memory.usedJSHeapSize) }} / {{

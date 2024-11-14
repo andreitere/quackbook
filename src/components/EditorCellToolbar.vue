@@ -1,19 +1,28 @@
 <script setup lang="ts">
-
-import {Button} from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 
 defineProps({
-  play: {default: true},
-  save: {default: true},
-  clear: {default: true},
-  duplicate: {default: true},
-  trash: {default: true},
-  edit: {default: false},
-  update: {default: false},
-})
+	play: { default: true },
+	save: { default: true },
+	clear: { default: true },
+	duplicate: { default: true },
+	trash: { default: true },
+	edit: { default: false },
+	update: { default: false },
+});
 
-const $emit = defineEmits(["save", "clear", "play", "edit", "update", "duplicate", "trash", "display_results", "moveup", "movedown"]);
-
+const $emit = defineEmits([
+	"save",
+	"clear",
+	"play",
+	"edit",
+	"update",
+	"duplicate",
+	"trash",
+	"display_results",
+	"moveup",
+	"movedown",
+]);
 </script>
 
 <template>
@@ -21,9 +30,6 @@ const $emit = defineEmits(["save", "clear", "play", "edit", "update", "duplicate
     <Button tabindex="-1" size="xs" data-umami-event="run-cell" class="cursor-pointer" variant="outline" v-if="play" @click="$emit('play')">
       <div class="i-pixelarticons:play h-4 w-4"></div>
     </Button>
-<!--    <Button tabindex="-1" size="xs" variant="outline" data-umami-event="save-cell" v-if="save" @click="$emit('save')">-->
-<!--      <div class="i-pixelarticons:save h-4 w-4"></div>-->
-<!--    </Button>-->
     <Button tabindex="-1" size="xs" variant="outline" data-umami-event="clear-cell" v-if="clear" @click="$emit('clear')">
       <div class="i-mingcute:broom-line h-4 w-4"></div>
     </Button>

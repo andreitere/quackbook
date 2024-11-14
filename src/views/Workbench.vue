@@ -1,52 +1,48 @@
 <script setup lang="ts">
-
 import DBSchemaDetails from "@/components/DBSchemaDetails.vue";
 import EditorCell from "@/components/EditorCell.vue";
-import {useClipboard, useMagicKeys} from '@vueuse/core'
-import {useMetaStore} from "@/store/meta.ts";
-import {useProjects} from "@/store/project.ts";
-import {reactive, ref, watch} from "vue";
-import MarkdownCell from "@/components/MarkdownCell.vue";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog'
 import FileImport from "@/components/FileImport.vue";
+import MarkdownCell from "@/components/MarkdownCell.vue";
 import MountFileSystem from "@/components/MountFileSystem.vue";
+import {
+	AlertDialog,
+	AlertDialogAction,
+	AlertDialogCancel,
+	AlertDialogContent,
+	AlertDialogDescription,
+	AlertDialogFooter,
+	AlertDialogHeader,
+	AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { useMetaStore } from "@/store/meta.ts";
+import { useProjects } from "@/store/project.ts";
+import { useClipboard, useMagicKeys } from "@vueuse/core";
+import { reactive, ref, watch } from "vue";
 
-const $meta = useMetaStore()
+const $meta = useMetaStore();
 const $projects = useProjects();
-const shareVal = ref()
+const shareVal = ref();
 
-const {copy} = useClipboard({source: $meta.shareLink})
+const { copy } = useClipboard({ source: $meta.shareLink });
 
 const show = reactive({
-  toolBar: true,
-  utilsBar: false,
-})
+	toolBar: true,
+	utilsBar: false,
+});
 
 const keys = useMagicKeys();
 
-const cmdShiftE = keys['Option+Shift+E'];
-
+const cmdShiftE = keys["Option+Shift+E"];
 
 watch(cmdShiftE, (v) => {
-  if (!v) return;
-  console.log(`cmdShiftE`, v);
-  show.toolBar = !show.toolBar;
-})
+	if (!v) return;
+	show.toolBar = !show.toolBar;
+});
 
 const doCopy = async () => {
-  await copy($meta.shareLink)
-  $meta.shareLink = ''
-}
-
+	await copy($meta.shareLink);
+	$meta.shareLink = "";
+};
 </script>
 
 <template>
@@ -54,8 +50,8 @@ const doCopy = async () => {
     <div class="flex justify-center">
 
     </div>
-    <div class="overflow-y-scroll nice-scrollbar flex flex-col h-0 flex-grow space-y-6">
-      <div v-for="cell in $projects.sortedCells.value" v-if="$projects.activeProject.value.mode == 'notebook'" class="w-full">
+    <div class="overflow-y-scroll nice-scrollbar flex flex-col h-0 flex-grow space-y-6 pb-[200px]">
+      <div v-for="cell in $projects.sortedCells.value" :key="`${cell.position}-${cell.id}`" v-if="$projects.activeProject.value.mode == 'notebook'" class="w-full">
         <EditorCell :mode="$projects.activeProject.value.mode" v-model:query="cell.query" :id="cell.id" :position="cell.position" v-if="cell.type == 'sql'"/>
         <MarkdownCell :mode="$projects.activeProject.value.mode" v-model:markdown="cell.markdown" :id="cell.id" :position="cell.position" v-if="cell.type == 'markdown'"/>
       </div>

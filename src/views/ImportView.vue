@@ -1,24 +1,30 @@
 <script setup lang="ts">
-import {useRoute, useRouter} from "vue-router";
-import {Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle} from "@/components/ui/card";
-import {Button} from "@/components/ui/button";
-import {computed} from "vue";
-import {decodeBase64UrlToJson} from "@/lib/utils.ts";
-import {useProjects} from "@/store/project.ts";
+import { useRoute, useRouter } from "vue-router";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardFooter,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { computed } from "vue";
+import { decodeBase64UrlToJson } from "@/lib/utils.ts";
+import { useProjects } from "@/store/project.ts";
 
-const $route = useRoute()
-const $router = useRouter()
+const $route = useRoute();
+const $router = useRouter();
 const $projects = useProjects();
 
 const parsedProject = computed(() => {
-  return decodeBase64UrlToJson($route.params.project_json as string)
-})
+	return decodeBase64UrlToJson($route.params.project_json as string);
+});
 
 const doImport = () => {
-  $projects.importSharedProject(parsedProject.value);
-  $router.replace("/")
-}
-
+	$projects.importSharedProject(parsedProject.value);
+	$router.replace("/");
+};
 </script>
 
 <template>

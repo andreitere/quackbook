@@ -1,51 +1,54 @@
 <script setup lang="ts">
 import {
-  Command,
-  CommandDialog,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-  CommandSeparator
-} from "@/components/ui/command"
+	Command,
+	CommandDialog,
+	CommandEmpty,
+	CommandGroup,
+	CommandInput,
+	CommandItem,
+	CommandList,
+	CommandSeparator,
+} from "@/components/ui/command";
 
-import {useColorMode, useMagicKeys,} from "@vueuse/core";
-import {watch} from "vue";
-import {useMetaStore} from "@/store/meta.ts";
-import {useProjects} from "@/store/project.ts";
-import {useRouter} from "vue-router"
+import { useColorMode, useMagicKeys } from "@vueuse/core";
+import { watch } from "vue";
+import { useMetaStore } from "@/store/meta.ts";
+import { useProjects } from "@/store/project.ts";
+import { useRouter } from "vue-router";
 
-const colorMode = useColorMode()
-const $meta = useMetaStore()
+const colorMode = useColorMode();
+const $meta = useMetaStore();
 
-defineEmits(["add-cell-sql", "add-cell-markdown", "new-project", "convert-to-console", "convert-to-notebook"])
+defineEmits([
+	"add-cell-sql",
+	"add-cell-markdown",
+	"new-project",
+	"convert-to-console",
+	"convert-to-notebook",
+]);
 
-const $projects = useProjects()
-const $router = useRouter()
-
+const $projects = useProjects();
+const $router = useRouter();
 
 const onColorModeToggle = () => {
-  if (colorMode.value === 'light') {
-    colorMode.value = 'dark'
-  } else {
-    colorMode.value = 'light'
-  }
-  $meta.cmdMenu = false;
-}
+	if (colorMode.value === "light") {
+		colorMode.value = "dark";
+	} else {
+		colorMode.value = "light";
+	}
+	$meta.cmdMenu = false;
+};
 
-const {Meta_K, Ctrl_K} = useMagicKeys({
-  passive: false,
-  onEventFired(e) {
-    if (e.key === 'k' && (e.metaKey || e.ctrlKey))
-      e.preventDefault()
-  },
-})
+const { Meta_K, Ctrl_K } = useMagicKeys({
+	passive: false,
+	onEventFired(e) {
+		if (e.key === "k" && (e.metaKey || e.ctrlKey)) e.preventDefault();
+	},
+});
 
 watch([Meta_K, Ctrl_K], (v) => {
-  if (v[0] || v[1])
-    $meta.cmdMenu = true
-})
+	if (v[0] || v[1]) $meta.cmdMenu = true;
+});
 </script>
 
 <template>
@@ -135,11 +138,20 @@ watch([Meta_K, Ctrl_K], (v) => {
 
         </CommandGroup>
         <CommandGroup heading="Meta">
-          <CommandItem value="theme light dark"
-                       :data-umami-event="`switch-to-${colorMode == 'light' ? 'dark' : 'light'}`"
+          <CommandItem value="switch to light mode"
+                       v-if="colorMode == 'dark'"
+                       data-umami-event="switch-to-light"
                        @select="onColorModeToggle">
             <div class="flex justify-between items-center w-full">
-              <span>switch to {{ colorMode == 'light' ? 'dark' : 'light' }} mode</span>
+              <span>switch to light mode</span>
+            </div>
+          </CommandItem>
+          <CommandItem value="switch to dark mode"
+                       v-if="colorMode == 'light'"
+                       data-umami-event="switch-to-dark"
+                       @select="onColorModeToggle">
+            <div class="flex justify-between items-center w-full">
+              <span>switch to dark mode</span>
             </div>
           </CommandItem>
         </CommandGroup>
