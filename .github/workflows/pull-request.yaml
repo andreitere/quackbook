@@ -26,11 +26,11 @@ jobs:
         with:
           node-version: '22' # Specify your Node.js version
 
-      - name: Install dependencies
-        run: npm install
+      - name: Install pnpm
+        run: npm install -g pnpm
 
       - name: Install dependencies
-        run: npm run build
+        run: pnpm install
 
       - name: Set Docker tag
         id: build-info

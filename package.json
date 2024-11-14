@@ -20,7 +20,6 @@
 		"@codemirror/state": "^6.4.1",
 		"@codemirror/view": "^6.34.2",
 		"@duckdb/duckdb-wasm": "^1.29.0",
-		"@grapoza/vue-tree": "^7.0.0",
 		"@he-tree/vue": "^2.9.1",
 		"@radix-icons/vue": "^1.0.0",
 		"@shikijs/markdown-it": "^1.22.2",
@@ -54,8 +53,6 @@
 		"@types/markdown-it": "^14.1.2",
 		"@unocss/preset-icons": "^0.64.0",
 		"@vitejs/plugin-vue": "^5.1.4",
-		"@vue-macros/reactivity-transform": "^1.1.3",
-		"@vue-macros/volar": "^0.30.5",
 		"autoprefixer": "^10.4.20",
 		"husky": "^9.1.6",
 		"sass-embedded": "^1.80.6",
@@ -67,6 +64,6 @@
 		"unplugin-vue-macros": "^2.13.3",
 		"vite": "^5.4.10",
 		"vite-plugin-wasm": "^3.3.0",
-		"vue-tsc": "^2.1.10"
+		"vue-tsc": "^2.1.6"
 	}
 }
