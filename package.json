@@ -12,6 +12,7 @@
 		"format": "biome format --write ./src"
 	},
 	"dependencies": {
+		"@codemirror/autocomplete": "^6.18.3",
 		"@codemirror/basic-setup": "^0.20.0",
 		"@codemirror/commands": "^6.7.1",
 		"@codemirror/lang-markdown": "^6.3.1",

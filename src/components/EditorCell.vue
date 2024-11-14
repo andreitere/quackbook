@@ -12,6 +12,12 @@ import perspective from "https://cdn.jsdelivr.net/npm/@finos/perspective/dist/cd
 import { arrowTypeToJsType } from "@/lib/utils.ts";
 import { db_events } from "@/store/meta.ts";
 import { useProjects } from "@/store/project.ts";
+import {
+	autocompletion,
+	closeBrackets,
+	closeBracketsKeymap,
+	completionKeymap,
+} from "@codemirror/autocomplete";
 import { defaultKeymap, history, historyKeymap } from "@codemirror/commands";
 import { markdown } from "@codemirror/lang-markdown";
 import { sql } from "@codemirror/lang-sql";
@@ -102,6 +108,8 @@ const initEditor = () => {
 				syntaxHighlighting(defaultHighlightStyle, { fallback: true }),
 				crosshairCursor(),
 				highlightActiveLine(),
+				autocompletion(),
+				closeBrackets(),
 				keymap.of([
 					{
 						key: "Meta-Enter", // 'Mod' is Cmd on Mac, Ctrl on Windows/Linux
@@ -113,6 +121,8 @@ const initEditor = () => {
 					},
 					...defaultKeymap,
 					...historyKeymap,
+					...completionKeymap,
+					...closeBracketsKeymap,
 				]),
 				sql(),
 				markdown(),
