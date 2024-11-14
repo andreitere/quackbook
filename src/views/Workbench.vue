@@ -5,29 +5,30 @@ import FileImport from "@/components/FileImport.vue";
 import MarkdownCell from "@/components/MarkdownCell.vue";
 import MountFileSystem from "@/components/MountFileSystem.vue";
 import {
-	AlertDialog,
-	AlertDialogAction,
-	AlertDialogCancel,
-	AlertDialogContent,
-	AlertDialogDescription,
-	AlertDialogFooter,
-	AlertDialogHeader,
-	AlertDialogTitle,
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { useMetaStore } from "@/store/meta.ts";
-import { useProjects } from "@/store/project.ts";
-import { useClipboard, useMagicKeys } from "@vueuse/core";
-import { reactive, ref, watch } from "vue";
+import {useMetaStore} from "@/store/meta.ts";
+import {useProjects} from "@/store/project.ts";
+import {useClipboard, useMagicKeys} from "@vueuse/core";
+import {reactive, ref, watch} from "vue";
+import {useDuckDb} from "@/hooks/useDuckDb.ts";
 
 const $meta = useMetaStore();
 const $projects = useProjects();
 const shareVal = ref();
 
-const { copy } = useClipboard({ source: $meta.shareLink });
-
+const {copy} = useClipboard({source: $meta.shareLink});
+const {loading: db_loading} = useDuckDb();
 const show = reactive({
-	toolBar: true,
-	utilsBar: false,
+  toolBar: true,
+  utilsBar: false,
 });
 
 const keys = useMagicKeys();
@@ -35,20 +36,21 @@ const keys = useMagicKeys();
 const cmdShiftE = keys["Option+Shift+E"];
 
 watch(cmdShiftE, (v) => {
-	if (!v) return;
-	show.toolBar = !show.toolBar;
+  if (!v) return;
+  show.toolBar = !show.toolBar;
 });
 
 const doCopy = async () => {
-	await copy($meta.shareLink);
-	$meta.shareLink = "";
+  await copy($meta.shareLink);
+  $meta.shareLink = "";
 };
 </script>
 
 <template>
   <div class="flex flex-grow w-1/3 flex-col h-full max-h-full px-2  py-4">
-    <div class="flex justify-center">
-
+    <div class="flex justify-center items-center gap-2 text-gray-400 py-4" v-if="db_loading">
+      <div class="i-line-md:loading-twotone-loop w-5 h-5"></div>
+      initializing duck db ❤️‍🔥
     </div>
     <div class="overflow-y-scroll nice-scrollbar flex flex-col h-0 flex-grow space-y-6 pb-[200px]">
       <div v-for="cell in $projects.sortedCells.value" :key="`${cell.position}-${cell.id}`" v-if="$projects.activeProject.value.mode == 'notebook'" class="w-full">
