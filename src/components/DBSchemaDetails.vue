@@ -35,7 +35,7 @@ onMounted(() => {
 <!--        <button @click="toggleNodeExpanded" :class="['i-material-symbols:table-rows w-5 h-5', data.type]" v-if="data.type == 'table'"></button>-->
 <!--      </template>-->
 <!--    </TreeView>-->
-     <BaseTree v-model="_schemaTree" ref="tree" :default-open="false">
+     <BaseTree v-model="_schemaTree" ref="tree" :default-open="true">
       <template #default="{ node, stat }">
         <div class="flex gap-1">
           <button @click="stat.open = !stat.open">
@@ -58,7 +58,9 @@ onMounted(() => {
               stat.open ? 'i-material-symbols:data-table-outline': 'i-material-symbols:data-table'
             ]"></div>
           </button>
-          <span>{{ node.label }}</span>
+          <span :class="[
+              node.type === 'column' ? 'text-sm': ''
+          ]">{{ node.label }}</span>
         </div>
       </template>
     </BaseTree>
