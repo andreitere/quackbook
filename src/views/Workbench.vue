@@ -19,6 +19,7 @@ import {useProjects} from "@/store/project.ts";
 import {useClipboard, useMagicKeys} from "@vueuse/core";
 import {reactive, ref, watch} from "vue";
 import {useDuckDb} from "@/hooks/useDuckDb.ts";
+import {Alert, AlertDescription, AlertTitle} from "@/components/ui/alert";
 
 const $meta = useMetaStore();
 const $projects = useProjects();
@@ -79,12 +80,23 @@ const doCopy = async () => {
           {{ $projects.activeProject.value.name }}
         </AlertDialogDescription>
       </AlertDialogHeader>
-      <div class="flex items-stretch">
+      <div class="flex flex-col items-stretch">
         <input type="text" class="flex-grow border-2 rounded text-sm p-1" :value="$meta.shareLink" ref="shareVal"/>
+        <Alert variant="destructive" class="mt-5" v-if="$meta.shareLink.length > 2048">
+
+          <AlertTitle class="flex">
+            <div class="i-mdi:exclamation-thick w-4 h-4"></div>
+            <span>Generated url looks a bit too long.</span>
+          </AlertTitle>
+          <AlertDescription>
+            This is fully based on the content of your cells. Check if you can reduce that a bit or try splitting it in different projects.
+            Limit: 2048. Current: {{ $meta.shareLink.length }}
+          </AlertDescription>
+        </Alert>
       </div>
       <AlertDialogFooter>
-        <AlertDialogCancel>Cancel</AlertDialogCancel>
-        <AlertDialogAction data-umami-event="copy-shared-link" @click="doCopy">Copy & Close</AlertDialogAction>
+        <AlertDialogCancel @click="$meta.shareLink = ''">Cancel</AlertDialogCancel>
+        <AlertDialogAction data-umami-event="copy-shared-link" @click="doCopy" v-if="$meta.shareLink.length <= 2048">Copy & Close</AlertDialogAction>
       </AlertDialogFooter>
     </AlertDialogContent>
   </AlertDialog>

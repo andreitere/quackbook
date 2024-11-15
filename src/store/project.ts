@@ -1,11 +1,12 @@
 import {useToast} from "@/components/ui/toast";
-import {encodeJsonToBase64Url} from "@/lib/utils.ts";
+import {encodeJsonToBase64Url, expandKeys, shortenKeys} from "@/lib/utils.ts";
 import {useMetaStore} from "@/store/meta.ts";
 import {useStorage} from "@vueuse/core";
 import {computed, type Ref} from "vue";
 import {useRouter} from "vue-router";
+import {projectKeyMap} from "@/lib/constants.ts";
 
-type Project = {
+export type Project = {
   id: number | string;
   name: string;
   mode: string;
@@ -243,7 +244,7 @@ export const useProjects = () => {
 
   const shareProject = () => {
     const project = {...activeProject.value, id: null};
-    const project_in_url = encodeJsonToBase64Url(project);
+    const project_in_url = encodeJsonToBase64Url(shortenKeys(project, projectKeyMap) as Record<string, string>);
     const url = `${window.location.origin}/import/${project_in_url}`;
     $meta.cmdMenu = false;
     $meta.shareLink = url;
@@ -253,7 +254,8 @@ export const useProjects = () => {
   const importSharedProject = (project_json: Project) => {
     saveProject();
     const existingProjectName = activeProject.value.name;
-    activeProject.value = {...project_json, id: Date.now().valueOf()};
+    const project = {...project_json, id: Date.now().valueOf()}
+    activeProject.value = expandKeys(project, projectKeyMap) as Project;
     toast({
       title: "Project has been imported!",
       description: `Existing project ${existingProjectName} has been backed up and ${project_json.name} set as active`,
