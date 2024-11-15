@@ -104,13 +104,13 @@ watch([Meta_K, Ctrl_K], (v) => {
         </CommandGroup>
         <CommandSeparator/>
         <CommandGroup heading="Projects">
-          <CommandItem :value="project.name" data-umami-event="open-project"
-                       v-for="project in $projects.projects.value.slice(0,3)"
-                       @select="$projects.setActiveProject(project)">
-            <div class="flex justify-between items-center w-full">
-              <span>{{ project.name }}</span>
-            </div>
-          </CommandItem>
+<!--          <CommandItem :value="project.name" data-umami-event="open-project"-->
+<!--                       v-for="project in $projects.projects.value.slice(0,3)"-->
+<!--                       @select="$projects.setActiveProject(project)">-->
+<!--            <div class="flex justify-between items-center w-full">-->
+<!--              <span>{{ project.name }}</span>-->
+<!--            </div>-->
+<!--          </CommandItem>-->
           <CommandSeparator/>
           <CommandItem value="list all projects" data-umami-event="list-projects" class="items-center flex"
                        @select="$router.push('/projects')">
