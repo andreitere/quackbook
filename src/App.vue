@@ -9,6 +9,7 @@ import {useMagicKeys} from "@vueuse/core";
 import {watch} from "vue";
 import {useRoute} from "vue-router";
 import {Button} from "./components/ui/button";
+import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@/components/ui/tooltip";
 
 const $meta = useMetaStore();
 const $projects = useProjects();
