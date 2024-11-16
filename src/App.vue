@@ -18,6 +18,11 @@ const openMenu = () => {
   $meta.cmdMenu = true;
 };
 
+const quack = new Audio("/assets/duck_quack.mp3");
+const clickOnDuckDoQuack = () => {
+  quack.play()
+}
+
 const commandEvents = {
   "add-cell-sql": () => {
     console.log("add cell sql");
@@ -49,9 +54,19 @@ watch([meta, shift, e], (v) => {
 <template>
   <div class="w-full h-full flex flex-col relative">
     <header class="flex items-center p-3 space-x-4 border-b-[1px] border-solid border-slate-200">
-      <router-link as-child to="/">
-        <h1 class="text-xl">QuackBook</h1>
-      </router-link>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger>
+            <router-link as-child to="/">
+              <h1 class="text-xl">QuackBook</h1>
+            </router-link>
+          </TooltipTrigger>
+          <TooltipContent align="center" hide-when-detached>
+            <div @click="clickOnDuckDoQuack">quack 🦆</div>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+
 
       <div class="h-[50%] w-[1px] mx-5 bg-gray-500"></div>
       <div class="flex items-center space-x-4">

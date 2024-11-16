@@ -8,39 +8,55 @@ import Icons from "unplugin-icons/vite";
 import UnoCSS from "unocss/vite";
 
 // https://vitejs.dev/config/
-export default defineConfig({
-  build: {
-    sourcemap: true
-  },
-  css: {
-    postcss: {
-      plugins: [tailwind(), autoprefixer()],
+export default defineConfig(({mode}) => {
+  const isProd = mode === "production"; // Adjust the condition as needed
+
+  return {
+    build: {
+      sourcemap: true,
     },
-  },
-  plugins: [
-    vue({
-      template: {
-        compilerOptions: {
-          // treat all tags with a dash as custom elements
-          isCustomElement: (tag) => tag.includes('perspective-viewer')
-        }
-      }
-    }),
-    UnoCSS(),
-    Unfonts({
-      google: {
-        preconnect: true,
-        families: ["Roboto Mono", "Poppins"],
+    css: {
+      postcss: {
+        plugins: [tailwind(), autoprefixer()],
       },
-    }),
-    Icons({
-      // experimental
-      autoInstall: true,
-    })
-  ],
-  resolve: {
-    alias: {
-      "@": path.resolve(__dirname, "./src"),
     },
-  },
+    plugins: [
+      vue({
+        template: {
+          compilerOptions: {
+            // treat all tags with a dash as custom elements
+            isCustomElement: (tag) => tag.includes("perspective-viewer"),
+          },
+        },
+      }),
+      UnoCSS(),
+      Unfonts({
+        google: {
+          preconnect: true,
+          families: ["Roboto Mono", "Poppins"],
+        },
+      }),
+      Icons({
+        // experimental
+        autoInstall: true,
+      }),
+      {
+        name: "html-transform",
+        transformIndexHtml(html) {
+          if (isProd) {
+            return html.replace(
+                "</head>",
+                `<script defer src="https://analytics.cloudcrafts.club/script.js" data-website-id="918cc775-65fc-418c-be8c-8597cdd1a450"></script>\n</body>`
+            );
+          }
+          return html;
+        },
+      },
+    ],
+    resolve: {
+      alias: {
+        "@": path.resolve(__dirname, "./src"),
+      },
+    },
+  };
 });
