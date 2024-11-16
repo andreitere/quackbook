@@ -54,6 +54,13 @@ watch([meta, shift, e], (v) => {
 
 <template>
   <div class="w-full h-full flex flex-col relative">
+    <div class="flex items-center p-1">
+      <div class="flex items-center space-x-4">
+        <Button size="xs" class="p-2 cursor-pointer" @click="openMenu" data-umami-event="command-menu">
+          <div class="i-pixelarticons:command h-3 w-3"></div>
+        </Button>
+      </div>
+    </div>
     <header class="flex items-center p-3 space-x-4 border-b-[1px] border-solid border-slate-200">
       <TooltipProvider>
         <Tooltip>

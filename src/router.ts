@@ -4,6 +4,7 @@ import Workbench from "@/views/Workbench.vue";
 import { useMetaStore } from "@/store/meta.ts";
 import About from "@/views/AboutView.vue";
 import ProjectsView from "@/views/ProjectsView.vue";
+import MountFileSystem from "@/views/MountFileSystem.vue";
 
 const routes = [
 	{
@@ -19,6 +20,11 @@ const routes = [
 		path: "/about",
 		name: "about",
 		component: About,
+	},
+		{
+		path: "/mount-file-system",
+		name: "mount-file-system",
+		component: MountFileSystem,
 	},
 	{
 		path: "/projects",
