@@ -1,7 +1,5 @@
 <script setup lang="ts">
 import CommandMenu from "@/components/CommandMenu.vue";
-import NotificationsCard from "@/components/NotificationsCard.vue";
-import {Input} from "@/components/ui/input";
 import Toaster from "@/components/ui/toast/Toaster.vue";
 import {useMetaStore} from "@/store/meta.ts";
 import {useProjects} from "@/store/project.ts";
@@ -54,14 +52,10 @@ watch([meta, shift, e], (v) => {
 
 <template>
   <div class="w-full h-full flex flex-col relative">
-    <div class="flex items-center p-1">
-      <div class="flex items-center space-x-4">
-        <Button size="xs" class="p-2 cursor-pointer" @click="openMenu" data-umami-event="command-menu">
-          <div class="i-pixelarticons:command h-3 w-3"></div>
-        </Button>
-      </div>
-    </div>
     <header class="flex items-center p-3 space-x-4 border-b-[1px] border-solid border-slate-200">
+      <Button size="xs" class="text-xs space-x-1 cursor-pointer" @click="openMenu" data-umami-event="command-menu">
+        <div class="i-pixelarticons:command h-4 w-4"></div>
+      </Button>
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger>
@@ -78,15 +72,14 @@ watch([meta, shift, e], (v) => {
 
       <div class="h-[50%] w-[1px] mx-5 bg-gray-500"></div>
       <div class="flex items-center space-x-4">
-        <Button size="xs" class="text-xs space-x-1 cursor-pointer" @click="openMenu" data-umami-event="command-menu">
-          <div class="i-pixelarticons:command h-4 w-4"></div>
-        </Button>
-      </div>
-      <div class="flex flex-grow justify-center space-x-2 items-center">
-        <Input v-model:model-value="$projects.activeProject.value.name"
-               v-if="$route.name === 'workbench'"
-               class="max-w-[400px] border-slate-200  bg-slate-200 dark:bg-slate-500 text-center focus:bg-slate-100 dark:focus:bg-slate-900"/>
-        <NotificationsCard v-if="$route.name === 'workbench'"/>
+
+        <router-link to="/about">
+          about
+        </router-link>
+        <router-link to="/help">
+          help
+        </router-link>
+
       </div>
       <div class="flex items-center">
         <Button variant="ghost">

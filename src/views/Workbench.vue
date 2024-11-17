@@ -20,6 +20,11 @@ import {useClipboard, useMagicKeys} from "@vueuse/core";
 import {reactive, ref, watch} from "vue";
 import {useDuckDb} from "@/hooks/useDuckDb.ts";
 import {Alert, AlertDescription, AlertTitle} from "@/components/ui/alert";
+import {Button} from "@/components/ui/button";
+import NotificationsCard from "@/components/NotificationsCard.vue";
+import {Input} from "@/components/ui/input";
+import {Popover, PopoverContent, PopoverTrigger,} from '@/components/ui/popover'
+import SQLBackendSelector from "@/components/SQLBackendSelector.vue";
 
 const $meta = useMetaStore();
 const $projects = useProjects();
@@ -48,11 +53,48 @@ const doCopy = async () => {
 </script>
 
 <template>
-  <div class="flex flex-grow w-1/3 flex-col h-full max-h-full px-2  py-4">
-    <div class="flex justify-center items-center gap-2 text-gray-400 py-4" v-if="db_loading">
-      <div class="i-line-md:loading-twotone-loop w-5 h-5"></div>
-      initializing duck db ❤️‍🔥
+  <div class="flex flex-grow w-1/3 flex-col h-full max-h-full px-2  py-0">
+    <div class="flex justify-start items-center gap-2 text-gray-400 py-4">
+      <div v-if="db_loading" class="flex items-center justify-center w-full">
+        <div class="i-line-md:loading-twotone-loop w-5 h-5"></div>
+        initializing duck db ❤️‍🔥
+      </div>
+      <div v-else class="flex gap-2 items-center">
+        <div class="flex flex-grow space-x-2 items-center">
+          <Input v-model:model-value="$projects.activeProject.value.name"
+                 v-if="$route.name === 'workbench'"
+                 class="max-w-[400px] border-slate-200  bg-slate-200 dark:bg-slate-500 text-center focus:bg-slate-100 dark:focus:bg-slate-900"/>
+          <NotificationsCard v-if="$route.name === 'workbench'"/>
+        </div>
+        <Button variant="outline" size="sm">
+          <div class="i-ion:logo-markdown w-4 h-4 mr-2"></div>
+          add markdown
+        </Button>
+        <Button variant="outline" size="sm">
+          <div class="i-tabler:file-type-sql w-4 h-4 mr-2"></div>
+
+          add sql
+        </Button>
+        <Button variant="outline" size="sm">
+          <div class="i-pixelarticons:open w-4 h-4 mr-2"></div>
+          share
+        </Button>
+        <div class="flex flex-grow"></div>
+
+        <Popover>
+          <PopoverTrigger as-child>
+            <Button variant="outline" size="sm">
+              <div class="i-material-symbols:settings-cinematic-blur-outline-rounded w-4-h-4 mr-2"></div>
+              sql backend
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent class="w-80">
+            <SQLBackendSelector/>
+          </PopoverContent>
+        </Popover>
+      </div>
     </div>
+
     <div class="overflow-y-scroll nice-scrollbar flex flex-col h-0 flex-grow space-y-6 pb-[200px]">
       <div v-for="cell in $projects.sortedCells.value" :key="`${cell.position}-${cell.id}`" v-if="$projects.activeProject.value.mode == 'notebook'" class="w-full">
         <EditorCell :mode="$projects.activeProject.value.mode" v-model:query="cell.query" :id="cell.id" :position="cell.position" v-if="cell.type == 'sql'"/>

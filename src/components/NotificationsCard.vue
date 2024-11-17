@@ -18,7 +18,7 @@ const anyNotifications = computed(() => {
 <template>
   <HoverCard :open-delay="50">
     <HoverCardTrigger as-child>
-      <Button variant="outline" :class="[anyNotifications ? 'text-red-600': 'text-gray-200']">
+      <Button variant="outline" size="sm"  :class="[anyNotifications ? 'text-red-600': 'text-gray-200']">
         <div class="i-material-symbols-light:notifications-active"></div>
       </Button>
     </HoverCardTrigger>

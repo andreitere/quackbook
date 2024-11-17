@@ -6,12 +6,18 @@ import {computed, type Ref} from "vue";
 import {useRouter} from "vue-router";
 import {projectKeyMap} from "@/lib/constants.ts";
 
+export type SQLConfig = {
+  backend: string;
+  port: number;
+}
+
 export type Project = {
   id: number | string;
   name: string;
   mode: string;
   dirty: boolean;
   order?: number;
+  sql: SQLConfig
   cells: Cell[];
 };
 type CellType = "markdown" | "sql";
@@ -77,6 +83,10 @@ export const useProjects = () => {
   const activeProject: Ref<Project> = useStorage("activeProject", {
     id: Date.now().valueOf(),
     name: generateProjectName(),
+    sql: {
+      backend: "duckdb_wasm",
+      port: 9999
+    },
     cells: [
       {
         id: Date.now().valueOf(),
@@ -93,6 +103,10 @@ export const useProjects = () => {
     const project: Project = {
       id: Date.now().valueOf(),
       name: generateProjectName(),
+      sql: {
+        backend: "duckdb_wasm",
+        port: 9999
+      },
       cells: [
         {
           id: Date.now().valueOf(),
