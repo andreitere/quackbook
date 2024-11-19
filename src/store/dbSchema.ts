@@ -36,11 +36,11 @@ export const useDBSchema = () => {
 		console.log("updateSchemaDetails");
 		await ready();
 		if (!db.value) {
-			console.log("here");
-			// throw Error("duckdb not instantiated");
+			console.log("not initialized");
+			return;
 		}
 		console.log("connecting...");
-		const conn = await db.value.connect();
+		const conn = await db.value?.connect();
 		console.log("connected...");
 		// Step 1: Get all schemas
 		const schemasResult = await conn.query(`
