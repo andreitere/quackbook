@@ -8,7 +8,7 @@ import {projectKeyMap} from "@/lib/constants.ts";
 
 export type SQLConfig = {
   backend: string;
-  port: number;
+  host: string;
 }
 
 export type Project = {
@@ -85,7 +85,7 @@ export const useProjects = () => {
     name: generateProjectName(),
     sql: {
       backend: "duckdb_wasm",
-      port: 9999
+      host: "http://localhost:8000"
     },
     cells: [
       {
@@ -105,7 +105,7 @@ export const useProjects = () => {
       name: generateProjectName(),
       sql: {
         backend: "duckdb_wasm",
-        port: 9999
+        host: "http://localhost:8000"
       },
       cells: [
         {

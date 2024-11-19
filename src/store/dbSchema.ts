@@ -34,10 +34,10 @@ export const useDBSchema = () => {
 
 	const updateSchemaDetails = async () => {
 		console.log("updateSchemaDetails");
-		await ready;
+		await ready();
 		if (!db.value) {
 			console.log("here");
-			throw Error("duckdb not instantiated");
+			// throw Error("duckdb not instantiated");
 		}
 		console.log("connecting...");
 		const conn = await db.value.connect();

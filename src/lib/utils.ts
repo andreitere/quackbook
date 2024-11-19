@@ -73,7 +73,7 @@ export const arrowTypeToJsType = (arrowType: DataType) => {
     case Type.Bool:
       return "boolean"; // Boolean maps to JavaScript 'boolean'Timestamps can also map to JavaScript's Date
     case Type.Struct:
-      return "object"; // Structs map to JavaScript objects
+      return "string"; // Structs map to JavaScript objects
     case Type.List:
       return "string"; // Lists map to JavaScript arrays
     case Type.Dictionary:

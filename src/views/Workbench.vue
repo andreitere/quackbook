@@ -59,39 +59,41 @@ const doCopy = async () => {
         <div class="i-line-md:loading-twotone-loop w-5 h-5"></div>
         initializing duck db ❤️‍🔥
       </div>
-      <div v-else class="flex gap-2 items-center">
-        <div class="flex flex-grow space-x-2 items-center">
+      <div v-else class="flex gap-2 items-center w-full flex-col md:flex-row">
+        <div class="flex  flex-shrink space-x-2 items-center w-full md:w-auto items-center ">
           <Input v-model:model-value="$projects.activeProject.value.name"
                  v-if="$route.name === 'workbench'"
-                 class="max-w-[400px] border-slate-200  bg-slate-200 dark:bg-slate-500 text-center focus:bg-slate-100 dark:focus:bg-slate-900"/>
+                 class="min-w-[300px] flex-grow md:flex-grow-0 md:flex-grow-0 border-slate-200  bg-slate-200 dark:bg-slate-500 text-center focus:bg-slate-100 dark:focus:bg-slate-900"/>
           <NotificationsCard v-if="$route.name === 'workbench'"/>
         </div>
-        <Button variant="outline" size="sm">
-          <div class="i-ion:logo-markdown w-4 h-4 mr-2"></div>
+        <div class="flex overflow-x-scroll flex-grow space-x-2 nice-scrollbar items-center">
+          <Button variant="outline" size="sm">
+            <div class="i-ion:logo-markdown w-4 h-4 mr-2"></div>
           add markdown
-        </Button>
-        <Button variant="outline" size="sm">
-          <div class="i-tabler:file-type-sql w-4 h-4 mr-2"></div>
+          </Button>
+          <Button variant="outline" size="sm">
+            <div class="i-tabler:file-type-sql w-4 h-4 mr-2"></div>
 
-          add sql
-        </Button>
-        <Button variant="outline" size="sm">
-          <div class="i-pixelarticons:open w-4 h-4 mr-2"></div>
-          share
-        </Button>
-        <div class="flex flex-grow"></div>
+            add sql
+          </Button>
+          <Button variant="outline" size="sm">
+            <div class="i-pixelarticons:open w-4 h-4 mr-2"></div>
+            share
+          </Button>
+          <div class="flex flex-grow"></div>
 
-        <Popover>
-          <PopoverTrigger as-child>
-            <Button variant="outline" size="sm">
-              <div class="i-material-symbols:settings-cinematic-blur-outline-rounded w-4-h-4 mr-2"></div>
-              sql backend
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent class="w-80">
-            <SQLBackendSelector/>
-          </PopoverContent>
-        </Popover>
+          <Popover>
+            <PopoverTrigger as-child>
+              <Button variant="outline" size="sm">
+                <div class="i-material-symbols:settings-cinematic-blur-outline-rounded w-4-h-4 mr-2"></div>
+                sql backend
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent class="w-80">
+              <SQLBackendSelector/>
+            </PopoverContent>
+          </Popover>
+        </div>
       </div>
     </div>
 

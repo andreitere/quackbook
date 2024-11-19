@@ -81,6 +81,7 @@ watch([meta, shift, e], (v) => {
         </router-link>
 
       </div>
+      <div class="flex flex-grow"></div>
       <div class="flex items-center">
         <Button variant="ghost">
           <a href="https://github.com/andreitere/quackbook" data-umami-event="github" target="_blank" class="i-bi:github w-5 h-5"></a>

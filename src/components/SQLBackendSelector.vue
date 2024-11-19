@@ -30,8 +30,8 @@ const backends = [
       <span v-if="backend.link">(<a :href="backend.link" class="underline">read more</a>)</span>
     </div>
     <div class="flex w-full max-w-sm items-center gap-1.5" v-if="$project.activeProject.value.sql.backend=='duckdb_server'">
-      <Label for="port">Port</Label>
-      <Input id="port" type="port" placeholder="port" v-model:model-value="$project.activeProject.value.sql.port"/>
+      <Label for="host">Host</Label>
+      <Input id="host" type="text" placeholder="eg: http://localhost:8000" v-model:model-value="$project.activeProject.value.sql.host"/>
     </div>
   </RadioGroup>
 </template>

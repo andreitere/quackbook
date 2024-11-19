@@ -62,6 +62,9 @@ importers:
       github-markdown-css:
         specifier: ^5.7.0
         version: 5.7.0
+      ky:
+        specifier: ^1.7.2
+        version: 1.7.2
       leaflet:
         specifier: ^1.9.4
         version: 1.9.4
@@ -2058,6 +2061,10 @@ packages:
 
   kolorist@1.8.0:
     resolution: {integrity: sha512-Y+60/zizpJ3HRH8DCss+q95yr6145JXZo46OTpFvDZWLfRCE4qChOyk1b26nMaNpfHHgxagk9dXT5OP0Tfe+dQ==}
+
+  ky@1.7.2:
+    resolution: {integrity: sha512-OzIvbHKKDpi60TnF9t7UUVAF1B4mcqc02z5PIvrm08Wyb+yOcz63GRvEuVxNT18a9E1SrNouhB4W2NNLeD7Ykg==}
+    engines: {node: '>=18'}
 
   leaflet@1.9.4:
     resolution: {integrity: sha512-nxS1ynzJOmOlHp+iL3FyWqK89GtNL8U8rvlMOsQdTTssxZwCXh8N2NB3GDQOL+YR3XnWyZAxwQixURb+FA74PA==}
@@ -5115,6 +5122,8 @@ snapshots:
   json-bignum@0.0.3: {}
 
   kolorist@1.8.0: {}
+
+  ky@1.7.2: {}
 
   leaflet@1.9.4: {}
 
