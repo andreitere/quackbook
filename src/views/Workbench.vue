@@ -65,13 +65,24 @@ const doCopy = async () => {
                  v-if="$route.name === 'workbench'"
                  class="min-w-[300px] flex-grow md:flex-grow-0 md:flex-grow-0 border-slate-200  bg-slate-200 dark:bg-slate-500 text-center focus:bg-slate-100 dark:focus:bg-slate-900"/>
           <NotificationsCard v-if="$route.name === 'workbench'"/>
+          <Popover>
+            <PopoverTrigger as-child>
+              <Button variant="outline" size="sm">
+                <div class="i-material-symbols:settings-cinematic-blur-outline-rounded w-4-h-4"></div>
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent class="w-80">
+              <SQLBackendSelector/>
+            </PopoverContent>
+          </Popover>
         </div>
-        <div class="flex overflow-x-scroll flex-grow space-x-2 nice-scrollbar items-center">
-          <Button variant="outline" size="sm">
-            <div class="i-ion:logo-markdown w-4 h-4 mr-2"></div>
-          add markdown
+        <div class="flex flex-grow"></div>
+        <div class="flex overflow-x-scroll flex-grow space-x-2 nice-scrollbar items-center md:justify-end">
+          <Button variant="outline" size="sm" @click="$projects.addCell('markdown', null)">
+            <div class="i-ion:logo-markdown w-4 h-4 mr-2" ></div>
+            add markdown
           </Button>
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" @click="$projects.addCell('sql', null)">
             <div class="i-tabler:file-type-sql w-4 h-4 mr-2"></div>
 
             add sql
@@ -80,19 +91,6 @@ const doCopy = async () => {
             <div class="i-pixelarticons:open w-4 h-4 mr-2"></div>
             share
           </Button>
-          <div class="flex flex-grow"></div>
-
-          <Popover>
-            <PopoverTrigger as-child>
-              <Button variant="outline" size="sm">
-                <div class="i-material-symbols:settings-cinematic-blur-outline-rounded w-4-h-4 mr-2"></div>
-                sql backend
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent class="w-80">
-              <SQLBackendSelector/>
-            </PopoverContent>
-          </Popover>
         </div>
       </div>
     </div>
