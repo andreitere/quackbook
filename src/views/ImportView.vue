@@ -24,20 +24,20 @@ const doImport = () => {
 
 <template>
   <div class="flex flex-grow flex-col items-center justify-center h-full max-h-full px-2  py-4">
-    <Card class="w-[max(400px,90vw)]">
+    <Card class="w-[max(400px,90vw)] flex-col flex">
       <CardHeader>
         <CardTitle>Import project</CardTitle>
         <CardDescription>Review and import project</CardDescription>
       </CardHeader>
-      <CardContent>
-        <h2 class="font-bold">{{ parsedProject.name }}</h2>
-        <div class="nice-scrollbar overflow-y-scroll">
-          <div v-for="cell in parsedProject.cells" class="my-2 p-2 border-2 rounded text-sm whitespace-pre-wrap">
+      <CardContent class="flex flex-col flex-grow max-h-[40vh]">
+        <h2 class="font-bold mb-2">{{ parsedProject.name }}</h2>
+        <div class="nice-scrollbar overflow-y-scroll flex-grow grid gap-4 grid-cols-2">
+          <div v-for="cell in parsedProject.cells" class="p-2 border-2 rounded text-xs whitespace-pre-wrap">
             {{ cell['query'] || cell['markdown'] }}
           </div>
         </div>
       </CardContent>
-      <CardFooter class="flex justify-center px-6 pb-6 space-x-2">
+      <CardFooter class="flex justify-end px-6 pb-6 space-x-2 ">
         <Button variant="outline" @click="$router.replace('/')">
           Cancel
         </Button>
