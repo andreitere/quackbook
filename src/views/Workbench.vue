@@ -63,7 +63,7 @@ const doCopy = async () => {
         <div class="flex  flex-shrink space-x-2 items-center w-full md:w-auto items-center ">
           <Input v-model:model-value="$projects.activeProject.value.name"
                  v-if="$route.name === 'workbench'"
-                 class="min-w-[300px] flex-grow md:flex-grow-0 md:flex-grow-0 border-slate-200  bg-slate-200 dark:bg-slate-500 text-center focus:bg-slate-100 dark:focus:bg-slate-900"/>
+                 class="md:min-w-[300px] flex-grow md:flex-grow-0 md:flex-grow-0 border-slate-200  bg-slate-200 dark:bg-slate-500 text-center focus:bg-slate-100 dark:focus:bg-slate-900"/>
           <NotificationsCard v-if="$route.name === 'workbench'"/>
           <Popover>
             <PopoverTrigger as-child>
@@ -79,16 +79,20 @@ const doCopy = async () => {
         <div class="flex flex-grow"></div>
         <div class="flex overflow-x-scroll flex-grow space-x-2 nice-scrollbar items-center md:justify-end">
           <Button variant="outline" size="sm" @click="$projects.addCell('markdown', null)">
-            <div class="i-ion:logo-markdown w-4 h-4 mr-2" ></div>
+            <div class="i-ion:logo-markdown w-4 h-4 mr-2"></div>
             add markdown
           </Button>
-          <Button variant="outline" size="sm" @click="$projects.addCell('sql', null)">
-            <div class="i-tabler:file-type-sql w-4 h-4 mr-2"></div>
 
+          <Button variant="outline" size="sm" @click="$projects.addCell('sql', null)">
+            <div class="i-hugeicons:sql w-4 h-4 mr-2"></div>
             add sql
           </Button>
+          <Button variant="outline" size="sm" @click="$projects.saveProject">
+            <div class="i-lucide:save w-4 h-4 mr-2"></div>
+            save
+          </Button>
           <Button variant="outline" size="sm">
-            <div class="i-pixelarticons:open w-4 h-4 mr-2"></div>
+            <div class="i-lucide:share w-4 h-4 mr-2"></div>
             share
           </Button>
         </div>

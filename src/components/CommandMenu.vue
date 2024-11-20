@@ -61,11 +61,11 @@ watch([Meta_K, Ctrl_K], (v) => {
         <CommandGroup heading="Actions">
 
           <CommandItem value="save" @select="$projects.saveProject" data-umami-event="save-project">
-            <div class="i-pixelarticons:save w-4 h-4 mr-2"></div>
+            <div class="i-lucide:save w-4 h-4 mr-2"></div>
             <span>save project</span>
           </CommandItem>
           <CommandItem value="share" @select="$projects.shareProject" data-umami-event="share-project">
-            <div class="i-pixelarticons:open w-4 h-4 mr-2"></div>
+            <div class="i-lucide:share w-4 h-4 mr-2"></div>
             <span>share</span>
           </CommandItem>
           <CommandItem value="convert-to-notebook" data-umami-event="convert-to-notebook" class="items-center flex"
@@ -74,15 +74,15 @@ watch([Meta_K, Ctrl_K], (v) => {
             <div class="i-mdi:notebook-edit-outline w-4 h-4 mr-2"></div>
             <span>convert to notebook</span>
           </CommandItem>
-          <CommandItem value="convert-to-console" data-umami-event="convert-to-console" class="items-center flex"
-                       v-if="$projects.activeProject.value.mode == 'notebook'"
-                       @select="$projects.convertToConsole">
-            <div class="i-fluent:window-console-20-filled w-4 h-4 mr-2"></div>
-            <span>convert to console</span>
-          </CommandItem>
+<!--          <CommandItem value="convert-to-console" data-umami-event="convert-to-console" class="items-center flex"-->
+<!--                       v-if="$projects.activeProject.value.mode == 'notebook'"-->
+<!--                       @select="$projects.convertToConsole">-->
+<!--            <div class="i-fluent:window-console-20-filled w-4 h-4 mr-2"></div>-->
+<!--            <span>convert to console</span>-->
+<!--          </CommandItem>-->
           <CommandItem value="new-add-cell-sql" data-umami-event="add-sql-cell" class="items-center flex"
                        @select="$projects.addCell('sql', null)">
-            <div class="i-material-symbols:sheets-add-on w-4 h-4 mr-2"></div>
+            <div class="i-hugeicons:sql w-4 h-4 mr-2"></div>
             <span>add sql cell</span>
           </CommandItem>
           <CommandItem value="new-add-cell-markdown" data-umami-event="add-markdown-cell" class="items-center flex"
@@ -93,12 +93,12 @@ watch([Meta_K, Ctrl_K], (v) => {
         </CommandGroup>
         <CommandGroup heading="Files import">
           <CommandItem value="import file" data-umami-event="start-import-files" @select="$meta.startFilesImport">
-            <div class="i-pixelarticons:calendar-import w-4 h-4 mr-2"></div>
+            <div class="i-lucide:import w-4 h-4 mr-2"></div>
             <span>import file (csv, arrow, parquet)</span>
           </CommandItem>
           <CommandItem value="mount local filesystem" data-umami-event="mount-file-system"
                        @select="$meta.startMountFileSystem">
-            <div class="i-eos-icons:file-system-outlined w-4 h-4 mr-2"></div>
+            <div class="i-lucide:file-stack w-4 h-4 mr-2"></div>
             <span>mount file system</span>
           </CommandItem>
         </CommandGroup>
@@ -114,12 +114,12 @@ watch([Meta_K, Ctrl_K], (v) => {
           <CommandSeparator/>
           <CommandItem value="list all projects" data-umami-event="list-projects" class="items-center flex"
                        @select="$router.push('/projects')">
-            <div class="i-ic:baseline-menu-book w-4 h-4 mr-2"></div>
+            <div class="i-lucide:layout-list w-4 h-4 mr-2"></div>
             <span>all projects</span>
           </CommandItem>
           <CommandItem value="new project" data-umami-event="new-project" class="items-center flex"
                        @select="$emit('new-project')">
-            <div class="i-pixelarticons:briefcase-plus w-4 h-4 mr-2"></div>
+            <div class="i-lucide:list-plus w-4 h-4 mr-2"></div>
             <span>new project</span>
           </CommandItem>
         </CommandGroup>
