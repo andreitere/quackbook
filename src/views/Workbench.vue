@@ -30,7 +30,7 @@ const $meta = useMetaStore();
 const $projects = useProjects();
 const shareVal = ref();
 
-const {copy} = useClipboard({source: $meta.shareLink});
+const {copy} = useClipboard();
 const {loading: db_loading} = useDuckDb();
 const show = reactive({
   toolBar: true,
@@ -77,7 +77,8 @@ const doCopy = async () => {
           </Popover>
         </div>
         <div class="flex flex-grow"></div>
-        <div class="flex overflow-x-scroll flex-grow space-x-2 nice-scrollbar items-center md:justify-end">
+        <div class="flex overflow-x-scroll max-w-[100vw] flex-grow space-x-2 nice-scrollbar items-center md:justify-end">
+
           <Button variant="outline" size="sm" @click="$projects.addCell('markdown', null)">
             <div class="i-ion:logo-markdown w-4 h-4 mr-2"></div>
             add markdown
@@ -91,7 +92,7 @@ const doCopy = async () => {
             <div class="i-lucide:save w-4 h-4 mr-2"></div>
             save
           </Button>
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" @click="$projects.shareProject">
             <div class="i-lucide:share w-4 h-4 mr-2"></div>
             share
           </Button>
@@ -126,8 +127,29 @@ const doCopy = async () => {
           {{ $projects.activeProject.value.name }}
         </AlertDialogDescription>
       </AlertDialogHeader>
-      <div class="flex flex-col items-stretch">
-        <input type="text" class="flex-grow border-2 rounded text-sm p-1" :value="$meta.shareLink" ref="shareVal"/>
+      <div class="flex flex-col items-stretch gap-4">
+        <div class="flex w-full items-stretch border-2 rounded">
+          <input type="text" class="flex-grow  text-sm p-1" :value="$meta.shareLink" ref="shareVal"/>
+          <Button variant="ghost" @click="copy($meta.shareLink)" class="rounded-none">
+            <div class="i-lucide:clipboard-copy w-4 h-4"></div>
+          </Button>
+        </div>
+        <div class="flex gap-4">
+          <div class="flex-shrink p-5 border-2 rounded-lg">
+            <div class="i-lucide:file-json w-20 h-full text-gray-200"></div>
+          </div>
+          <div class="flex-grow w-full flex flex-col gap-4  ">
+            <h3 class="font-bold">Project Contents</h3>
+            <Button variant="outline" class="flex gap-1">
+              <div class="i-lucide:download w-4 h-4"></div>
+              download project file
+            </Button>
+            <Button variant="outline" class="flex gap-1 " @click="copy($projects.shareableProject.value)">
+              <div class="i-lucide:clipboard-copy w-4 h-4"></div>
+              copy to clipboard
+            </Button>
+          </div>
+        </div>
         <Alert variant="destructive" class="mt-5" v-if="$meta.shareLink.length > 2048">
 
           <AlertTitle class="flex">
@@ -141,7 +163,9 @@ const doCopy = async () => {
         </Alert>
       </div>
       <AlertDialogFooter>
-        <AlertDialogCancel @click="$meta.shareLink = ''">Cancel</AlertDialogCancel>
+        <AlertDialogCancel @click="$meta.shareLink = ''">
+          close
+        </AlertDialogCancel>
         <AlertDialogAction data-umami-event="copy-shared-link" @click="doCopy" v-if="$meta.shareLink.length <= 2048">Copy & Close</AlertDialogAction>
       </AlertDialogFooter>
     </AlertDialogContent>

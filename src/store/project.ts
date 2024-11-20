@@ -2,7 +2,7 @@ import {useToast} from "@/components/ui/toast";
 import {encodeJsonToBase64Url, expandKeys, shortenKeys} from "@/lib/utils.ts";
 import {useMetaStore} from "@/store/meta.ts";
 import {useStorage} from "@vueuse/core";
-import {computed, type Ref} from "vue";
+import {computed, ref, type Ref} from "vue";
 import {useRouter} from "vue-router";
 import {projectKeyMap} from "@/lib/constants.ts";
 
@@ -78,7 +78,7 @@ export const useProjects = () => {
   const {toast} = useToast();
   const $meta = useMetaStore();
   const $router = useRouter();
-
+  const shareableProject = ref();
   const projects: Ref<Project[]> = useStorage("projects", []);
   const activeProject: Ref<Project> = useStorage("activeProject", {
     id: Date.now().valueOf(),
@@ -257,8 +257,8 @@ export const useProjects = () => {
   };
 
   const shareProject = () => {
-    const project = {...activeProject.value, id: null};
-    const project_in_url = encodeJsonToBase64Url(shortenKeys(project, projectKeyMap) as Record<string, string>);
+    shareableProject.value = JSON.stringify(shortenKeys({...activeProject.value, id: null}, projectKeyMap));
+    const project_in_url = encodeJsonToBase64Url(shareableProject.value as Record<string, string>);
     const url = `${window.location.origin}/import/${project_in_url}`;
     $meta.cmdMenu = false;
     $meta.shareLink = url;
@@ -295,6 +295,7 @@ export const useProjects = () => {
     saveProject,
     setActiveProject,
     shareProject,
+    shareableProject,
     importSharedProject,
     convertProjectTo,
   };
