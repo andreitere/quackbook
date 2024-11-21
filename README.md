@@ -18,7 +18,7 @@ desire to deepen my understanding. Sure, there are other similar tools out there
 
 Pretty much whatever you can imagine combining SQL and markdown!
 
-QuackBook isn’t just for running SQL in the browser—it’s also a learning tool.
+QuackBook is not just for running SQL in the browser—it’s also a learning tool.
 
 For instance, you can find a quick (yet, unpolished) tutorial on left joins here. The interface offers two types of cells: markdown and SQL, so feel free to combine explanations
 with code.
