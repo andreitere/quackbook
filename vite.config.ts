@@ -14,9 +14,6 @@ export default defineConfig(({mode}) => {
   return {
     build: {
       sourcemap: true,
-      rollupOptions: {
-        external: ["react-async-hook"]
-      }
     },
     css: {
       postcss: {
