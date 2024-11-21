@@ -84,7 +84,9 @@ watch([meta, shift, e], (v) => {
       <div class="flex flex-grow"></div>
       <div class="flex items-center">
         <Button variant="ghost">
-          <a href="https://github.com/andreitere/quackbook" data-umami-event="github" target="_blank" class="i-bi:github w-5 h-5"></a>
+          <a href="https://github.com/andreitere/quackbook" data-umami-event="github" target="_blank">
+            <div class="i-bi:github w-4 h-4"></div>
+          </a>
         </Button>
         <Button variant="ghost" data-umami-event="show-db-schema" @click="$meta.showToolbar = !$meta.showToolbar" v-if="$route.name === 'workbench'">
           <div :class="[
