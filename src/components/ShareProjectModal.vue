@@ -24,6 +24,26 @@ const copySource = ref("");
 const {copy} = useClipboard({source: copySource});
 const {toast} = useToast();
 
+const doDownload = () => {
+  const jsonString = JSON.stringify($projects.activeProject, null, 2);
+
+  // Create a Blob with the JSON string
+  const blob = new Blob([jsonString], {type: 'application/json'});
+
+  // Create a temporary anchor element
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `${$projects.activeProject.name.replace(' ', '_')}.json`;
+
+  // Trigger the download
+  document.body.appendChild(a);
+  a.click();
+
+  // Clean up
+  document.body.removeChild(a);
+  URL.revokeObjectURL(a.href);
+}
+
 const doCopy = async (type: string) => {
   let msg = "";
   if (type === "contents") {
@@ -63,7 +83,7 @@ const doCopy = async (type: string) => {
           </div>
           <div class="flex-grow w-full flex flex-col gap-4  ">
             <h3 class="font-bold">Project Contents</h3>
-            <Button variant="outline" class="flex gap-1">
+            <Button variant="outline" class="flex gap-1" @click="doDownload">
               <div class="i-lucide:download w-4 h-4"></div>
               download project file
             </Button>

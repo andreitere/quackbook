@@ -71,13 +71,22 @@ watch([meta, shift, e], (v) => {
 
 
       <div class="h-[50%] w-[1px] mx-5 bg-gray-500"></div>
-      <div class="flex items-center space-x-4">
+      <div class="flex items-center space-x-1">
 
+        <router-link to="/import">
+          <Button variant="ghost" size="xs" class="text-sm">
+            import
+          </Button>
+        </router-link>
         <router-link to="/about">
-          about
+          <Button variant="ghost" size="xs" class="text-sm">
+            about
+          </Button>
         </router-link>
         <router-link to="/help">
-          help
+          <Button variant="ghost" size="xs" class="text-sm">
+            help
+          </Button>
         </router-link>
 
       </div>

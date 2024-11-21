@@ -30,9 +30,9 @@
         The interface offers two types of cells: markdown and SQL, so feel free to combine
         explanations with code.</p>
 
-      <p>To explore available commands, just press <span class="bg-amber-600 text-white p-1 ">CMD/CTRL + K.</span></p>
+      <p>To explore available commands, just press <span class="cmd-btn">CMD/CTRL + K.</span></p>
 
-      <p>And if you import or create tables or attach other databases, you can even inspect schemas with <span class="bg-amber-600 text-white p-1">CMD/CTRL + SHIFT + E.</span></p>
+      <p>And if you import or create tables or attach other databases, you can even inspect schemas with <span class="cmd-btn">CMD/CTRL + SHIFT + E.</span></p>
 
       <div class="bg-gray-700 p-5 text-white">
         Bear in mind that this is under active development at the moment. Expect the worst. Hope for the best.

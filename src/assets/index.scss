@@ -125,3 +125,7 @@ html, body, #app {
 .page {
 
 }
+
+.cmd-btn {
+  @apply bg-amber-600 text-white py-1 px-2 text-sm leading-tight rounded;
+}
