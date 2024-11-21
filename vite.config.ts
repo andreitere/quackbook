@@ -14,6 +14,9 @@ export default defineConfig(({mode}) => {
   return {
     build: {
       sourcemap: true,
+      rollupOptions: {
+        external: ["react-async-hook"]
+      }
     },
     css: {
       postcss: {
@@ -58,5 +61,6 @@ export default defineConfig(({mode}) => {
         "@": path.resolve(__dirname, "./src"),
       },
     },
+
   };
 });
