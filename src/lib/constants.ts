@@ -12,4 +12,5 @@ export const projectKeyMap = {
   markdown: 'md',
   position: 'p',
   type: 't',
+  host: 'h'
 };

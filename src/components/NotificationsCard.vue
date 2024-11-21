@@ -11,7 +11,7 @@ import { computed } from "vue";
 const $projects = useProjects();
 
 const anyNotifications = computed(() => {
-	if ($projects.activeProject.value.dirty) return true;
+	if ($projects.activeProject.dirty) return true;
 });
 </script>
 

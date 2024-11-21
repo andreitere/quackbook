@@ -97,6 +97,10 @@ html, body, #app {
 * {
   user-select: none;
 }
+.prose, .prose * {
+  user-select: text;
+}
+
 
 .nice-scrollbar, .cm-editor,.cm-scroller {
   &::-webkit-scrollbar-thumb {

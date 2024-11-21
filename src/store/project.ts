@@ -5,6 +5,7 @@ import {useStorage} from "@vueuse/core";
 import {computed, ref, type Ref} from "vue";
 import {useRouter} from "vue-router";
 import {projectKeyMap} from "@/lib/constants.ts";
+import {defineStore} from "pinia";
 
 export type SQLConfig = {
   backend: string;
@@ -74,11 +75,11 @@ const generateProjectName = () => {
   return `${prefix}${noun}${suffix}`;
 };
 
-export const useProjects = () => {
+export const useProjects = defineStore("projects", () => {
   const {toast} = useToast();
   const $meta = useMetaStore();
   const $router = useRouter();
-  const shareableProject = ref();
+  const shareableProject = ref("");
   const projects: Ref<Project[]> = useStorage("projects", []);
   const activeProject: Ref<Project> = useStorage("activeProject", {
     id: Date.now().valueOf(),
@@ -258,7 +259,7 @@ export const useProjects = () => {
 
   const shareProject = () => {
     shareableProject.value = JSON.stringify(shortenKeys({...activeProject.value, id: null}, projectKeyMap));
-    const project_in_url = encodeJsonToBase64Url(shareableProject.value as Record<string, string>);
+    const project_in_url = encodeJsonToBase64Url(shareableProject.value);
     const url = `${window.location.origin}/import/${project_in_url}`;
     $meta.cmdMenu = false;
     $meta.shareLink = url;
@@ -299,4 +300,4 @@ export const useProjects = () => {
     importSharedProject,
     convertProjectTo,
   };
-};
+});

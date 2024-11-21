@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import EditorCellToolbar from "@/components/EditorCellToolbar.vue";
-import { useMarkdownRenderer } from "@/hooks/useMDShiki";
+import { useMDRenderer } from "@/hooks/useMDShiki";
 import { useProjects } from "@/store/project.ts";
 import {
 	defaultKeymap,
@@ -28,7 +28,7 @@ import {
 import { useColorMode, useVModels } from "@vueuse/core";
 import { ayuLight, cobalt } from "thememirror";
 import { computed, onMounted, ref, watch } from "vue";
-
+const md_renderer = useMDRenderer()
 const props = defineProps({
 	mode: { default: "console", type: String },
 	markdown: { type: String, default: "select 1+1 as result;" },
@@ -37,7 +37,7 @@ const props = defineProps({
 });
 const { markdown } = useVModels(props);
 const $projects = useProjects();
-const { md, ready: md_ready } = useMarkdownRenderer();
+
 const color = useColorMode();
 const rendered = ref<string>("");
 const editMode = ref(false);
@@ -46,8 +46,8 @@ const markdownEditor = ref();
 const editor = ref();
 
 const doRender = async () => {
-	await md_ready;
-	rendered.value = md.render(markdown.value);
+	await md_renderer.ready;
+	rendered.value = md_renderer.md.render(markdown.value);
 };
 const editorTheme = computed(() => {
 	if (color.value === "light") {
@@ -60,7 +60,6 @@ const initEditor = () => {
 	if (editor.value) {
 		editor.value.destroy();
 	}
-	console.log(editor);
 	editor.value = new EditorView({
 		state: EditorState.create({
 			doc: props.markdown,
@@ -105,8 +104,8 @@ onMounted(() => {
 
 <template>
   <div :class="[
-    'transition-all duration-200 w-full flex h-auto flex-col rounded space-y-2 group p-3',
-    'focus-within:shadow-lg border-l-[2px] border-transparent hover:border-gray-500',
+    'transition-all duration-200 w-full flex h-auto flex-col space-y-2 group p-3',
+    'focus-within:shadow-lg border-l-[2px] border-transparent hover:border-gray-200',
     editMode ? ' border-solid border-slate-200 hover:shadow-md' : ''
   ]"
   >

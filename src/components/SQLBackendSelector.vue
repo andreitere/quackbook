@@ -23,15 +23,15 @@ const backends = [
 
 <template>
   <h2 class="mb-2">Choose the SQL Backend</h2>
-  <RadioGroup default-value="duckdb_wasm" class="text-sm" v-model:model-value="$project.activeProject.value.sql.backend">
+  <RadioGroup default-value="duckdb_wasm" class="text-sm" v-model:model-value="$project.activeProject.sql.backend">
     <div class="flex items-center space-x-2 " v-for="backend in backends">
       <RadioGroupItem :id="backend.value" :value="backend.value"/>
       <Label class="cursor-pointer" :for="backend.value">{{ backend.label }}</Label>
       <span v-if="backend.link">(<a :href="backend.link" class="underline">read more</a>)</span>
     </div>
-    <div class="flex w-full max-w-sm items-center gap-1.5" v-if="$project.activeProject.value.sql.backend=='duckdb_server'">
+    <div class="flex w-full max-w-sm items-center gap-1.5" v-if="$project.activeProject.sql.backend=='duckdb_server'">
       <Label for="host">Host</Label>
-      <Input id="host" type="text" placeholder="eg: http://localhost:8000" v-model:model-value="$project.activeProject.value.sql.host"/>
+      <Input id="host" type="text" placeholder="eg: http://localhost:8000" v-model:model-value="$project.activeProject.sql.host"/>
     </div>
   </RadioGroup>
 </template>

@@ -8,9 +8,8 @@ export function cn(...inputs: ClassValue[]) {
 
 export const bytesToGB = (bytes: number) => (bytes / 1024 ** 3).toFixed(2);
 
-export const encodeJsonToBase64Url = (jsonObject: Record<string, unknown>) => {
+export const encodeJsonToBase64Url = (jsonString: string) => {
   // Convert the JSON object to a JSON string
-  const jsonString = JSON.stringify(jsonObject);
 
   // Encode to Base64 using TextEncoder and Uint8Array to handle Unicode
   const utf8Bytes = new TextEncoder().encode(jsonString);

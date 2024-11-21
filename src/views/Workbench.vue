@@ -4,33 +4,22 @@ import EditorCell from "@/components/EditorCell.vue";
 import FileImport from "@/components/FileImport.vue";
 import MarkdownCell from "@/components/MarkdownCell.vue";
 import MountFileSystem from "@/components/MountFileSystem.vue";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+
 import {useMetaStore} from "@/store/meta.ts";
 import {useProjects} from "@/store/project.ts";
-import {useClipboard, useMagicKeys} from "@vueuse/core";
-import {reactive, ref, watch} from "vue";
+import {useMagicKeys} from "@vueuse/core";
+import {reactive, watch} from "vue";
 import {useDuckDb} from "@/hooks/useDuckDb.ts";
-import {Alert, AlertDescription, AlertTitle} from "@/components/ui/alert";
 import {Button} from "@/components/ui/button";
 import NotificationsCard from "@/components/NotificationsCard.vue";
 import {Input} from "@/components/ui/input";
 import {Popover, PopoverContent, PopoverTrigger,} from '@/components/ui/popover'
 import SQLBackendSelector from "@/components/SQLBackendSelector.vue";
+import ShareProjectModal from "@/components/ShareProjectModal.vue";
 
 const $meta = useMetaStore();
 const $projects = useProjects();
-const shareVal = ref();
 
-const {copy} = useClipboard();
 const {loading: db_loading} = useDuckDb();
 const show = reactive({
   toolBar: true,
@@ -46,10 +35,7 @@ watch(cmdShiftE, (v) => {
   show.toolBar = !show.toolBar;
 });
 
-const doCopy = async () => {
-  await copy($meta.shareLink);
-  $meta.shareLink = "";
-};
+
 </script>
 
 <template>
@@ -60,10 +46,10 @@ const doCopy = async () => {
         initializing duck db ❤️‍🔥
       </div>
       <div v-else class="flex gap-2 items-center w-full flex-col md:flex-row">
-        <div class="flex  flex-shrink space-x-2 items-center w-full md:w-auto items-center ">
-          <Input v-model:model-value="$projects.activeProject.value.name"
+        <div class="flex  flex-shrink space-x-2 w-full md:w-auto items-center ">
+          <Input v-model:model-value="$projects.activeProject.name"
                  v-if="$route.name === 'workbench'"
-                 class="md:min-w-[300px] flex-grow md:flex-grow-0 md:flex-grow-0 border-slate-200  bg-slate-200 dark:bg-slate-500 text-center focus:bg-slate-100 dark:focus:bg-slate-900"/>
+                 class="md:min-w-[300px] flex-grow md:flex-grow-0 border-slate-200  bg-slate-200 dark:bg-slate-500 text-center focus:bg-slate-100 dark:focus:bg-slate-900"/>
           <NotificationsCard v-if="$route.name === 'workbench'"/>
           <Popover>
             <PopoverTrigger as-child>
@@ -101,14 +87,14 @@ const doCopy = async () => {
     </div>
 
     <div class="overflow-y-scroll nice-scrollbar flex flex-col h-0 flex-grow space-y-6 pb-[200px]">
-      <div v-for="cell in $projects.sortedCells.value" :key="`${cell.position}-${cell.id}`" v-if="$projects.activeProject.value.mode == 'notebook'" class="w-full">
-        <EditorCell :mode="$projects.activeProject.value.mode" v-model:query="cell.query" :id="cell.id" :position="cell.position" v-if="cell.type == 'sql'"/>
-        <MarkdownCell :mode="$projects.activeProject.value.mode" v-model:markdown="cell.markdown" :id="cell.id" :position="cell.position" v-if="cell.type == 'markdown'"/>
+      <div v-for="cell in $projects.sortedCells" :key="`${cell.position}-${cell.id}`" v-if="$projects.activeProject.mode == 'notebook'" class="w-full">
+        <EditorCell :mode="$projects.activeProject.mode" v-model:query="cell.query" :id="cell.id" :position="cell.position" v-if="cell.type == 'sql'"/>
+        <MarkdownCell :mode="$projects.activeProject.mode" v-model:markdown="cell.markdown" :id="cell.id" :position="cell.position" v-if="cell.type == 'markdown'"/>
       </div>
-      <EditorCell v-if="$projects.activeProject.value.mode == 'console'" :mode="$projects.activeProject.value.mode"
-                  :id="$projects.activeProject.value.cells[0].id"
-                  :position="$projects.activeProject.value.cells[0].position"
-                  v-model:query="$projects.activeProject.value.cells[0].query"/>
+      <EditorCell v-if="$projects.activeProject.mode == 'console'" :mode="$projects.activeProject.mode"
+                  :id="$projects.activeProject.cells[0].id"
+                  :position="$projects.activeProject.cells[0].position"
+                  v-model:query="$projects.activeProject.cells[0].query"/>
     </div>
   </div>
   <div :class="[
@@ -119,57 +105,7 @@ const doCopy = async () => {
       <DBSchemaDetails class="w-full"/>
     </div>
   </div>
-  <AlertDialog :open="$meta.shareLink != ''">
-    <AlertDialogContent>
-      <AlertDialogHeader>
-        <AlertDialogTitle>Share project</AlertDialogTitle>
-        <AlertDialogDescription>
-          {{ $projects.activeProject.value.name }}
-        </AlertDialogDescription>
-      </AlertDialogHeader>
-      <div class="flex flex-col items-stretch gap-4">
-        <div class="flex w-full items-stretch border-2 rounded">
-          <input type="text" class="flex-grow  text-sm p-1" :value="$meta.shareLink" ref="shareVal"/>
-          <Button variant="ghost" @click="copy($meta.shareLink)" class="rounded-none">
-            <div class="i-lucide:clipboard-copy w-4 h-4"></div>
-          </Button>
-        </div>
-        <div class="flex gap-4">
-          <div class="flex-shrink p-5 border-2 rounded-lg">
-            <div class="i-lucide:file-json w-20 h-full text-gray-200"></div>
-          </div>
-          <div class="flex-grow w-full flex flex-col gap-4  ">
-            <h3 class="font-bold">Project Contents</h3>
-            <Button variant="outline" class="flex gap-1">
-              <div class="i-lucide:download w-4 h-4"></div>
-              download project file
-            </Button>
-            <Button variant="outline" class="flex gap-1 " @click="copy($projects.shareableProject.value)">
-              <div class="i-lucide:clipboard-copy w-4 h-4"></div>
-              copy to clipboard
-            </Button>
-          </div>
-        </div>
-        <Alert variant="destructive" class="mt-5" v-if="$meta.shareLink.length > 2048">
-
-          <AlertTitle class="flex">
-            <div class="i-mdi:exclamation-thick w-4 h-4"></div>
-            <span>Generated url looks a bit too long.</span>
-          </AlertTitle>
-          <AlertDescription>
-            This is fully based on the content of your cells. Check if you can reduce that a bit or try splitting it in different projects.
-            Limit: 2048. Current: {{ $meta.shareLink.length }}
-          </AlertDescription>
-        </Alert>
-      </div>
-      <AlertDialogFooter>
-        <AlertDialogCancel @click="$meta.shareLink = ''">
-          close
-        </AlertDialogCancel>
-        <AlertDialogAction data-umami-event="copy-shared-link" @click="doCopy" v-if="$meta.shareLink.length <= 2048">Copy & Close</AlertDialogAction>
-      </AlertDialogFooter>
-    </AlertDialogContent>
-  </AlertDialog>
+  <ShareProjectModal/>
   <FileImport/>
   <MountFileSystem/>
 </template>

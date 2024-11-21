@@ -69,7 +69,7 @@ watch([Meta_K, Ctrl_K], (v) => {
             <span>share</span>
           </CommandItem>
           <CommandItem value="convert-to-notebook" data-umami-event="convert-to-notebook" class="items-center flex"
-                       v-if="$projects.activeProject.value.mode == 'console'"
+                       v-if="$projects.activeProject.mode == 'console'"
                        @select="$projects.convertToNotebook">
             <div class="i-mdi:notebook-edit-outline w-4 h-4 mr-2"></div>
             <span>convert to notebook</span>

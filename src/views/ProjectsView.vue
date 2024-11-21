@@ -28,7 +28,7 @@ const $projects = useProjects()
         <Input placeholder="search..."/>
       </div>
       <div class="flex-grow flex flex-wrap items-start justify-start h-0 nice-scrollbar overflow-y-scroll gap-4">
-        <Card v-for="project in [...$projects.projects.value, ...$projects.projects.value, ...$projects.projects.value]" :key="`project-${project.id}`">
+        <Card v-for="project in [...$projects.projects]" :key="`project-${project.id}`">
           <CardHeader>
             <CardTitle class="m-0">{{project.name}}</CardTitle>
             <CardDescription>Card Description</CardDescription>

@@ -6,7 +6,7 @@ import {arrowTypeToJsType} from "@/lib/utils.ts";
 export const useDuckDBServer = () => {
   const $project = useProjects()
   const query = async (queryStr: string) => {
-    const json = await ky.post<{ rows: any[], schema: Record<string, string>[] }>(`${$project.activeProject.value.sql.host}/`, {json: {query: queryStr}}).json();
+    const json = await ky.post<{ rows: any[], schema: Record<string, string>[] }>(`${$project.activeProject.sql.host}/`, {json: {query: queryStr}}).json();
     const schema = json.schema.reduce(
         //@ts-ignore
         (acc: Record<string, string>, next: Field) => {
