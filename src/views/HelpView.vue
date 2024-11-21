@@ -16,7 +16,7 @@
         <div>
           <h3>Option 2: Simple access over http</h3>
           <p>Run a HTTP server in any folder on your system, allowing DuckDB WASM to access files served by that server.</p>
-          <div class="flex gap-4">
+          <div class="flex flex-col md:flex-row gap-4">
             <div class="flex-1">
               <h4 class="font-bold">Using Node</h4>
               <pre class="select-all text-sm">npx serve --cors</pre>
