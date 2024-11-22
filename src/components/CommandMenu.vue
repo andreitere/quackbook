@@ -92,9 +92,9 @@ watch([Meta_K, Ctrl_K], (v) => {
           </CommandItem>
         </CommandGroup>
         <CommandGroup heading="Files import">
-          <CommandItem value="import file" data-umami-event="start-import-files" @select="$meta.startFilesImport">
+          <CommandItem value="upload file" data-umami-event="start-upload-files" @select="$meta.startFilesImport">
             <div class="i-lucide:import w-4 h-4 mr-2"></div>
-            <span>import file (csv, arrow, parquet)</span>
+            <span>upload file (csv, arrow, parquet)</span>
           </CommandItem>
           <CommandItem value="mount local filesystem" data-umami-event="mount-file-system"
                        @select="$meta.startMountFileSystem">
@@ -104,13 +104,13 @@ watch([Meta_K, Ctrl_K], (v) => {
         </CommandGroup>
         <CommandSeparator/>
         <CommandGroup heading="Projects">
-<!--          <CommandItem :value="project.name" data-umami-event="open-project"-->
-<!--                       v-for="project in $projects.projects.value.slice(0,3)"-->
-<!--                       @select="$projects.setActiveProject(project)">-->
-<!--            <div class="flex justify-between items-center w-full">-->
-<!--              <span>{{ project.name }}</span>-->
-<!--            </div>-->
-<!--          </CommandItem>-->
+          <CommandItem :value="project.name" data-umami-event="open-project"
+                       v-for="project in $projects.projects.slice(0,3)"
+                       @select="$projects.setActiveProject(project)">
+            <div class="flex justify-between items-center w-full">
+              <span>{{ project.name }}</span>
+            </div>
+          </CommandItem>
           <CommandSeparator/>
           <CommandItem value="list all projects" data-umami-event="list-projects" class="items-center flex"
                        @select="$router.push('/projects')">
@@ -124,19 +124,19 @@ watch([Meta_K, Ctrl_K], (v) => {
           </CommandItem>
         </CommandGroup>
         <CommandSeparator/>
-        <CommandGroup heading="Navigation">
-          <CommandItem value="home" data-umami-event="home" @select="$router.push('/')">
-            <div class="flex justify-between items-center w-full">
-              <span>home</span>
-            </div>
-          </CommandItem>
-          <CommandItem value="about" data-umami-event="about" @select="$router.push('/about')">
-            <div class="flex justify-between items-center w-full">
-              <span>about</span>
-            </div>
-          </CommandItem>
+<!--        <CommandGroup heading="Navigation">-->
+<!--          <CommandItem value="home" data-umami-event="home" @select="$router.push('/')">-->
+<!--            <div class="flex justify-between items-center w-full">-->
+<!--              <span>home</span>-->
+<!--            </div>-->
+<!--          </CommandItem>-->
+<!--          <CommandItem value="about" data-umami-event="about" @select="$router.push('/about')">-->
+<!--            <div class="flex justify-between items-center w-full">-->
+<!--              <span>about</span>-->
+<!--            </div>-->
+<!--          </CommandItem>-->
 
-        </CommandGroup>
+<!--        </CommandGroup>-->
         <CommandGroup heading="Meta">
           <CommandItem value="switch to light mode"
                        v-if="colorMode == 'dark'"

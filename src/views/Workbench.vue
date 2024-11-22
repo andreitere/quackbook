@@ -63,7 +63,7 @@ watch(cmdShiftE, (v) => {
           </Popover>
         </div>
         <div class="flex flex-grow"></div>
-        <div class="flex overflow-x-scroll max-w-[100vw] flex-grow space-x-2 nice-scrollbar items-center md:justify-end">
+        <div class="flex overflow-x-scroll max-w-[100vw] flex-grow space-x-2 nice-scrollbar items-center md:justify-end px-2 md:px-0">
 
           <Button variant="outline" size="sm" @click="$projects.addCell('markdown', null)">
             <div class="i-ion:logo-markdown w-4 h-4 mr-2"></div>
