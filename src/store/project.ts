@@ -116,7 +116,7 @@ export const useProjects = defineStore("projects", () => {
           position: 0,
         },
       ],
-      mode: "console",
+      mode: "notebook",
       dirty: false,
     };
     projects.value.push(project);

@@ -63,25 +63,34 @@ watch(cmdShiftE, (v) => {
           </Popover>
         </div>
         <div class="flex flex-grow"></div>
-        <div class="flex overflow-x-scroll max-w-[100vw] flex-grow space-x-2 nice-scrollbar items-center md:justify-end px-2 md:px-0">
+        <div class="flex md:min-w-0 max-w-[100vw] flex-grow  px-2 md:px-0 w-full">
+          <div class="overflow-x-scroll min-w-full nice-scrollbar flex space-x-2 items-center md:justify-end">
+            <Button class="flex-grow md:flex-grow-0" variant="outline" size="sm">
+              <div class="i-lucide:undo"></div>
+              <span class="ml-1 hidden md:block">undo</span>
+            </Button>
+            <Button class="flex-grow md:flex-grow-0" variant="outline" size="sm">
+              <div class="i-lucide:redo"></div>
+              <span class="ml-1 hidden md:block">redo</span>
+            </Button>
+            <Button class="flex-grow md:flex-grow-0" variant="outline" size="sm" @click="$projects.addCell('markdown', null)">
+              <div class="i-ion:logo-markdown"></div>
+              <span class="ml-1 hidden md:block">add md</span>
+            </Button>
 
-          <Button variant="outline" size="sm" @click="$projects.addCell('markdown', null)">
-            <div class="i-ion:logo-markdown w-4 h-4 mr-2"></div>
-            add markdown
-          </Button>
-
-          <Button variant="outline" size="sm" @click="$projects.addCell('sql', null)">
-            <div class="i-hugeicons:sql w-4 h-4 mr-2"></div>
-            add sql
-          </Button>
-          <Button variant="outline" size="sm" @click="$projects.saveProject">
-            <div class="i-lucide:save w-4 h-4 mr-2"></div>
-            save
-          </Button>
-          <Button variant="outline" size="sm" @click="$projects.shareProject">
-            <div class="i-lucide:share w-4 h-4 mr-2"></div>
-            share
-          </Button>
+            <Button class="flex-grow md:flex-grow-0" variant="outline" size="sm" @click="$projects.addCell('sql', null)">
+              <div class="i-hugeicons:sql"></div>
+              <span class="ml-1 hidden md:block">add sql</span>
+            </Button>
+            <Button class="flex-grow md:flex-grow-0" variant="outline" size="sm" @click="$projects.saveProject">
+              <div class="i-lucide:save"></div>
+              <span class="ml-1 hidden md:block">save</span>
+            </Button>
+            <Button class="flex-grow md:flex-grow-0" variant="outline" size="sm" @click="$projects.shareProject">
+              <div class="i-lucide:share"></div>
+              <span class="ml-1 hidden md:block">share</span>
+            </Button>
+          </div>
         </div>
       </div>
     </div>

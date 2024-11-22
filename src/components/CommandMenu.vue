@@ -55,9 +55,8 @@ watch([Meta_K, Ctrl_K], (v) => {
   <CommandDialog v-model:open="$meta.cmdMenu">
     <Command class="rounded-lg border shadow-md ">
       <CommandInput placeholder="Type a command or search..."/>
-      <CommandList class="max-h-[60vh]">
+      <CommandList class="max-h-[70vh]">
         <CommandEmpty>No results found.</CommandEmpty>
-
         <CommandGroup heading="Actions">
 
           <CommandItem value="save" @select="$projects.saveProject" data-umami-event="save-project">

@@ -3,7 +3,12 @@ import {defineConfig} from 'unocss'
 
 export default defineConfig({
   presets: [
-    presetIcons({ /* options */}),
+    presetIcons({
+      extraProperties: {
+        width: "1rem",
+        height: "1rem",
+      }
+    }),
     // ...other presets
   ],
 })

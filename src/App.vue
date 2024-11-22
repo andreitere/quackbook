@@ -8,7 +8,9 @@ import {watch} from "vue";
 import {useRoute} from "vue-router";
 import {Button} from "./components/ui/button";
 import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@/components/ui/tooltip";
+import {useQuackDuck} from "@/hooks/useQuackDuck.ts";
 
+const {playQuack} = useQuackDuck()
 const $meta = useMetaStore();
 const $projects = useProjects();
 const $route = useRoute();
@@ -17,10 +19,6 @@ const openMenu = () => {
   $meta.cmdMenu = true;
 };
 
-const quack = new Audio("/assets/duck_quack.mp3");
-const clickOnDuckDoQuack = () => {
-  quack.play()
-}
 
 const commandEvents = {
   "add-cell-sql": () => {
@@ -64,7 +62,7 @@ watch([meta, shift, e], (v) => {
             </router-link>
           </TooltipTrigger>
           <TooltipContent align="center" hide-when-detached>
-            <div @click="clickOnDuckDoQuack">quack 🦆</div>
+            <div @click="playQuack">quack 🦆</div>
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>

@@ -18,7 +18,9 @@ import {useColorMode, useVModels} from "@vueuse/core";
 import {ayuLight, cobalt} from "thememirror";
 import {useSQLBackend} from "@/hooks/useSQLBackend.ts";
 import {useSQLExtensions} from "@/hooks/useSQLEditor.ts";
+import {useQuackDuck} from "@/hooks/useQuackDuck.ts";
 
+const {playQuack} = useQuackDuck()
 const pView = ref(null);
 const color = useColorMode();
 const props = defineProps({
@@ -110,18 +112,17 @@ const onPlay = async () => {
     loading.value = true;
     const start = performance.now();
     const {records} = await backend.value.query(query.value);
-    if (!records.length) {
-      // return;
-    }
-
-    hasResults.value = true
-    await nextTick();
-    //@ts-ignore
-    const table = await pWorker.value.table(records);
-    // @ts-ignore
-    pView.value.load(table, {configure: true});
     const end = performance.now();
     lastQueryDuration.value = ((end - start) / 1000).toFixed(5);
+    if (records.length) {
+      hasResults.value = true
+      await nextTick();
+      //@ts-ignore
+      const table = await pWorker.value.table(records);
+      // @ts-ignore
+      pView.value.load(table, {configure: true});
+    }
+
     if (/create|attach|copy/ig.test(query.value)) {
       db_events.emit("UPDATE_SCHEMA");
     }
@@ -132,6 +133,7 @@ const onPlay = async () => {
     } else {
       error.value = "An unknown error occured";
     }
+    playQuack()
   } finally {
     loading.value = false;
   }
@@ -177,7 +179,7 @@ onMounted(async () => {
                           :theme="tableTheme"></perspective-viewer>
     </div>
     <div class="info justify-end flex space-x-2">
-      <span class="text-xs" v-if="hasResults && lastQueryDuration != ''">query took: {{ lastQueryDuration }} s</span>
+      <span class="text-xs" v-if="lastQueryDuration && !error">query took: {{ lastQueryDuration }} s</span>
       <span class="text-xs text-red-500 text-wrap" v-if="error != ''">{{ error }}</span>
       <div class="i-ep:success-filled text-green-600 h-5 w-5" v-if="lastQueryDuration != '' && error == ''"></div>
       <div class="i-material-symbols:chat-error-outline text-red-600 h-5 w-5" v-if="error != ''"></div>
