@@ -46,41 +46,53 @@ export const decodeBase64UrlToJson = (base64UrlString: string) => {
 };
 
 export const arrowTypeToJsType = (arrowType: DataType) => {
+  let _rType = null
   switch (arrowType.typeId) {
     case Type.Int:
-      return "integer"; // All smaller integers can be represented as 'number'
+      _rType = "integer";
+      break;// All smaller integers can be represented as 'number'
     case Type.Int8:
     case Type.Int16:
     case Type.Int32:
     case Type.Int64:
-      return "string"; // Int64 can map to 'bigint' in JavaScript
+      _rType = "integer";
+      break;
     case Type.Decimal:
     case Type.Float:
     case Type.Float16:
     case Type.Float32:
     case Type.Float64:
-      return "string"; // Both Float32 and Float64 map to 'number'
+      _rType = "float";
+      break;
     case Type.Utf8:
-      return "string"; // UTF-8 strings map to JavaScript 'string'
+      _rType = "string";
+      break;
       // case Type.Date32:
       // case Type.Date64:
     case Type.Date:
     case Type.DateDay:
     case Type.DateMillisecond:
     case Type.Timestamp:
-      return "date"; // Date32 and Date64 map to JavaScript's Date object
+      _rType = "datetime";
+      break;
     case Type.Bool:
-      return "boolean"; // Boolean maps to JavaScript 'boolean'Timestamps can also map to JavaScript's Date
+      _rType = "boolean";
+      break;
     case Type.Struct:
-      return "string"; // Structs map to JavaScript objects
+      _rType = "string";
+      break;
     case Type.List:
-      return "string"; // Lists map to JavaScript arrays
+      _rType = "json";
+      break;
     case Type.Dictionary:
-      return "string"; // Dictionary types (often categorical) can be strings
+      _rType = "json";
+      break;
     default:
       console.log(arrowType);
-      return "unknown"; // Fallback for any types not covered
+      _rType = "unknown";
   }
+  console.log(arrowType, _rType)
+  return _rType;
 };
 
 type SomeObj = Record<string, unknown>;

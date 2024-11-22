@@ -37,7 +37,7 @@ const onFilesPicked = (event: Event) => {
 
 const doImport = async () => {
 	importing.value = true;
-	await ready;
+	await ready();
 	if (!db.value) return;
 	for (const file of files.value) {
 		await insertFile(db.value, file.file, file.name);

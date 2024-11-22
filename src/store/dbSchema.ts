@@ -33,15 +33,11 @@ export const useDBSchema = () => {
 	const schema = ref<SchemaTree>();
 
 	const updateSchemaDetails = async () => {
-		console.log("updateSchemaDetails");
 		await ready();
 		if (!db.value) {
-			console.log("not initialized");
 			return;
 		}
-		console.log("connecting...");
 		const conn = await db.value?.connect();
-		console.log("connected...");
 		// Step 1: Get all schemas
 		const schemasResult = await conn.query(`
 			SELECT table_catalog as database, table_schema as schema, table_name as table
@@ -49,9 +45,7 @@ export const useDBSchema = () => {
 			WHERE table_catalog NOT IN ('system')
 			AND table_schema NOT IN ('information_schema', 'pg_catalog')
 		`);
-		console.log("got schema...");
 		const schemas = schemasResult.toArray().map((t) => t.toJSON());
-		console.log(schemas);
 		// Step 2: For each schema, get all tables and build the tree
 		const schemaTree: SchemaTree = {};
 
@@ -74,7 +68,6 @@ export const useDBSchema = () => {
 		);
 
 		schema.value = schemaTree;
-		console.log(schema.value);
 	};
 
 	const schemaTree = computed(() => {
