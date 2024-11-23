@@ -1,2 +1,2 @@
 biome lint --error-on-warnings ./src
-pnpm run build
+vue-tsc -b

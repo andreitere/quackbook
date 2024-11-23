@@ -4,32 +4,9 @@ import {useMetaStore} from "@/store/meta.ts";
 import {useStorage} from "@vueuse/core";
 import {computed, ref, type Ref} from "vue";
 import {useRouter} from "vue-router";
-import {projectKeyMap} from "@/lib/constants.ts";
+import {defaultProjectCells, projectKeyMap} from "@/lib/constants.ts";
 import {defineStore} from "pinia";
 
-export type SQLConfig = {
-  backend: string;
-  host: string;
-}
-
-export type Project = {
-  id: number | string;
-  name: string;
-  mode: string;
-  dirty: boolean;
-  order?: number;
-  sql: SQLConfig
-  cells: Cell[];
-};
-type CellType = "markdown" | "sql";
-
-type Cell = {
-  id: number;
-  query?: string;
-  markdown?: string;
-  position: number;
-  type: CellType;
-};
 
 const prefixes = [
   "Data",
@@ -81,46 +58,34 @@ export const useProjects = defineStore("projects", () => {
   const $router = useRouter();
   const shareableProject = ref("");
   const projects: Ref<Project[]> = useStorage("projects", []);
-  const activeProject: Ref<Project> = useStorage("activeProject", {
+  const activeProjectCells = useStorage<Cell[]>("activeProjectCells", [
+    ...defaultProjectCells
+  ]);
+  const activeProjectMeta = useStorage<ProjectMeta>("activeProjectMeta", {
     id: Date.now().valueOf(),
     name: generateProjectName(),
     sql: {
       backend: "duckdb_wasm",
       host: "http://localhost:8000"
     },
-    cells: [
-      {
-        id: Date.now().valueOf(),
-        query: "select 1 + 1 as result;",
-        type: "sql",
-        position: 0,
-      },
-    ],
     mode: "notebook",
     dirty: false,
-  });
+  })
 
   const createProject = () => {
-    const project: Project = {
+    activeProjectMeta.value = {
       id: Date.now().valueOf(),
       name: generateProjectName(),
       sql: {
         backend: "duckdb_wasm",
         host: "http://localhost:8000"
       },
-      cells: [
-        {
-          id: Date.now().valueOf(),
-          query: "select 1 + 1 as result;",
-          type: "sql",
-          position: 0,
-        },
-      ],
       mode: "notebook",
       dirty: false,
     };
-    projects.value.push(project);
-    activeProject.value = project;
+    activeProjectCells.value = [
+      ...defaultProjectCells
+    ]
   };
 
   const addCell = (cell_type: CellType, query: string | null) => {
@@ -128,7 +93,7 @@ export const useProjects = defineStore("projects", () => {
       id: Date.now().valueOf(),
       type: cell_type,
       position:
-          Math.max(...activeProject.value.cells.map((x) => x.position)) + 1,
+          Math.max(...activeProjectCells.value.map((x) => x.position)) + 1,
       query: "",
       markdown: "",
     };
@@ -137,12 +102,12 @@ export const useProjects = defineStore("projects", () => {
     } else {
       obj.markdown = query ?? "#hello";
     }
-    activeProject.value.cells.push(obj);
-    activeProject.value.dirty = true;
+    activeProjectCells.value.push(obj);
+    activeProjectMeta.value.dirty = true;
   };
 
   const convertToConsole = () => {
-    const singleCell = activeProject.value.cells.reduce(
+    const singleCell = activeProjectCells.value.filter(c => c.type === 'sql').reduce(
         (acc, next) => {
           acc.query += next.query || "";
           return acc;
@@ -154,97 +119,93 @@ export const useProjects = defineStore("projects", () => {
           position: 0,
         },
     );
-    activeProject.value = {
-      ...activeProject.value,
-      cells: [singleCell],
-      mode: "console",
-    };
-    activeProject.value.dirty = true;
+    activeProjectCells.value = [singleCell];
+    activeProjectMeta.value = {
+      ...activeProjectMeta.value,
+      mode: 'console',
+      dirty: true
+    }
     $meta.cmdMenu = false;
   };
 
   const convertToNotebook = () => {
-    activeProject.value = {
-      ...activeProject.value,
-      cells: [{...activeProject.value.cells[0]}],
-      mode: "notebook",
-    };
-    activeProject.value.dirty = true;
+    activeProjectMeta.value.mode = "notebook";
+    activeProjectMeta.value.dirty = true
+    activeProjectCells.value = [{...activeProjectCells.value[0]}];
     $meta.cmdMenu = false;
   };
 
   const updatePositions = () => {
-    activeProject.value.cells = [
-      ...activeProject.value.cells.map((cell: Cell, index: number) => {
+    activeProjectCells.value = [
+      ...activeProjectCells.value.map((cell: Cell, index: number) => {
         cell.position = index + 1;
         return cell;
       }),
     ];
-    console.log(activeProject.value.cells);
   };
 
   const moveUp = (id: number) => {
-    const index = activeProject.value.cells.findIndex((c) => c.id === id);
+    const index = activeProjectCells.value.findIndex((c) => c.id === id);
     if (index <= 0) return; // Can't move up the first element
 
     // Swap current cell with the previous one
-    const prevCell = activeProject.value.cells[index - 1];
-    activeProject.value.cells[index - 1] = activeProject.value.cells[index];
-    activeProject.value.cells[index] = prevCell;
+    const prevCell = activeProjectCells.value[index - 1];
+    activeProjectCells.value[index - 1] = activeProjectCells.value[index];
+    activeProjectCells.value[index] = prevCell;
 
     // Update all positions to be contiguous
     updatePositions();
-    activeProject.value.dirty = true;
+    activeProjectMeta.value.dirty = true;
   };
 
   const moveDown = (id: number) => {
-    const index = activeProject.value.cells.findIndex((c) => c.id === id);
-    if (index === -1 || index === activeProject.value.cells.length - 1) return; // Can't move down the last element
+    const index = activeProjectCells.value.findIndex((c) => c.id === id);
+    if (index === -1 || index === activeProjectCells.value.length - 1) return; // Can't move down the last element
 
     // Swap current cell with the next one
-    const nextCell = activeProject.value.cells[index + 1];
-    activeProject.value.cells[index + 1] = activeProject.value.cells[index];
-    activeProject.value.cells[index] = nextCell;
+    const nextCell = activeProjectCells.value[index + 1];
+    activeProjectCells.value[index + 1] = activeProjectCells.value[index];
+    activeProjectCells.value[index] = nextCell;
 
     // Update all positions to be contiguous
     updatePositions();
-    activeProject.value.dirty = true;
+    activeProjectMeta.value.dirty = true;
   };
 
   const sortedCells = computed(() => {
     //@ts-ignore
-    return activeProject.value.cells.toSorted(
+    return activeProjectCells.value.toSorted(
         (a: Cell, b: Cell) => a.position - b.position,
     );
   });
 
   const deleteCell = (id: number) => {
-    activeProject.value.cells.sort((a, b) => a.position - b.position);
+    activeProjectCells.value.sort((a, b) => a.position - b.position);
 
     // Find the index of the item to delete
-    const index = activeProject.value.cells.findIndex((c) => c.id === id);
+    const index = activeProjectCells.value.findIndex((c) => c.id === id);
 
     // If item not found, do nothing
     if (index === -1) return;
 
     // Remove the item from the array
-    activeProject.value.cells.splice(index, 1);
+    activeProjectCells.value.splice(index, 1);
 
     updatePositions();
-    activeProject.value.dirty = true;
+    activeProjectMeta.value.dirty = true;
     $meta.cmdMenu = false;
     toast({title: "Cell deleted 🗑"});
   };
 
   const saveProject = () => {
-    const project = {...activeProject.value};
+    const project = {...activeProjectMeta.value, cells: [...activeProjectCells.value]};
     const newProjects = [
       ...projects.value.filter((p) => p.id !== project.id),
       project,
     ];
     projects.value = [...newProjects];
     $meta.cmdMenu = false;
-    activeProject.value.dirty = false;
+    activeProjectMeta.value.dirty = false;
     toast({
       title: "Project has been saved ❤",
       description: `${project.name} saved. Now you can safely switch to another or continue your work`,
@@ -253,12 +214,15 @@ export const useProjects = defineStore("projects", () => {
 
   const setActiveProject = (project: Project) => {
     $router.push("/");
-    activeProject.value = project;
+    const {cells, ...meta} = project;
+    activeProjectMeta.value = meta;
+    activeProjectCells.value = cells;
     $meta.cmdMenu = false;
   };
 
   const shareProject = () => {
-    shareableProject.value = JSON.stringify(shortenKeys({...activeProject.value, id: null}, projectKeyMap));
+    const project = {...activeProjectMeta.value, cells: [...activeProjectCells.value]};
+    shareableProject.value = JSON.stringify(shortenKeys({...project, id: null}, projectKeyMap));
     const project_in_url = encodeJsonToBase64Url(shareableProject.value);
     const url = `${window.location.origin}/import/${project_in_url}`;
     $meta.cmdMenu = false;
@@ -268,9 +232,11 @@ export const useProjects = defineStore("projects", () => {
 
   const importSharedProject = (project_json: Project) => {
     saveProject();
-    const existingProjectName = activeProject.value.name;
+    const existingProjectName = activeProjectMeta.value.name;
     const project = {...project_json, id: Date.now().valueOf()}
-    activeProject.value = expandKeys(project, projectKeyMap) as Project;
+    const {cells, ...meta} = expandKeys(project, projectKeyMap) as Project;
+    activeProjectCells.value = cells;
+    activeProjectMeta.value = meta;
     toast({
       title: "Project has been imported!",
       description: `Existing project ${existingProjectName} has been backed up and ${project_json.name} set as active`,
@@ -278,13 +244,14 @@ export const useProjects = defineStore("projects", () => {
   };
   const convertProjectTo = (what: string) => {
     if (!["notebook", "console"].includes(what)) return;
-    activeProject.value.mode = what;
+    activeProjectMeta.value.mode = what;
     $meta.cmdMenu = false;
   };
 
   return {
     projects,
-    activeProject,
+    activeProjectMeta,
+    activeProjectCells,
     createProject,
     addCell,
     convertToConsole,

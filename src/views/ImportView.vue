@@ -2,7 +2,7 @@
 import {useRoute, useRouter} from "vue-router";
 import {computed, ref} from "vue";
 import {decodeBase64UrlToJson, expandKeys} from "@/lib/utils.ts";
-import {type Project, useProjects} from "@/store/project.ts";
+import {useProjects} from "@/store/project.ts";
 import {projectKeyMap} from "@/lib/constants.ts";
 import {Textarea} from "@/components/ui/textarea";
 

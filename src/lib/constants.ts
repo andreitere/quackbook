@@ -14,3 +14,19 @@ export const projectKeyMap = {
   type: 't',
   host: 'h'
 };
+
+
+export const defaultProjectCells: Cell[] = [
+  {
+    id: Date.now().valueOf() + 1,
+    type: "markdown",
+    markdown: "# test markdown",
+    position: 0
+  },
+  {
+    id: Date.now().valueOf(),
+    query: "select 1 + 1 as result;",
+    type: "sql",
+    position: 1,
+  },
+]

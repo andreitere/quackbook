@@ -7,7 +7,7 @@ import {createSharedComposable} from "@vueuse/core";
 export const useSQLBackend = createSharedComposable(() => {
   const $project = useProjects();
   const backend = computed<any>(() => {
-    switch ($project.activeProject.sql.backend) {
+    switch ($project.activeProjectMeta.sql.backend) {
       case 'duckdb_server':
         console.log('is duckdb_server');
         return useDuckDBServer()

@@ -47,7 +47,7 @@ watch(cmdShiftE, (v) => {
       </div>
       <div v-else class="flex gap-2 items-center w-full flex-col md:flex-row">
         <div class="flex  flex-shrink space-x-2 w-full md:w-auto items-center ">
-          <Input v-model:model-value="$projects.activeProject.name"
+          <Input v-model:model-value="$projects.activeProjectMeta.name"
                  v-if="$route.name === 'workbench'"
                  class="md:min-w-[300px] flex-grow md:flex-grow-0 border-slate-200  bg-slate-200 dark:bg-slate-500 text-center focus:bg-slate-100 dark:focus:bg-slate-900"/>
           <NotificationsCard v-if="$route.name === 'workbench'"/>
@@ -96,14 +96,14 @@ watch(cmdShiftE, (v) => {
     </div>
 
     <div class="overflow-y-scroll nice-scrollbar flex flex-col h-0 flex-grow space-y-6 pb-[200px]">
-      <div v-for="cell in $projects.sortedCells" :key="`${cell.position}-${cell.id}`" v-if="$projects.activeProject.mode == 'notebook'" class="w-full">
-        <EditorCell :mode="$projects.activeProject.mode" v-model:query="cell.query" :id="cell.id" :position="cell.position" v-if="cell.type == 'sql'"/>
-        <MarkdownCell :mode="$projects.activeProject.mode" v-model:markdown="cell.markdown" :id="cell.id" :position="cell.position" v-if="cell.type == 'markdown'"/>
+      <div v-for="cell in $projects.sortedCells" :key="`${cell.position}-${cell.id}`" v-if="$projects.activeProjectMeta.mode == 'notebook'" class="w-full">
+        <EditorCell :mode="$projects.activeProjectMeta.mode" v-model:query="cell.query" :id="cell.id" :position="cell.position" v-if="cell.type == 'sql'"/>
+        <MarkdownCell :mode="$projects.activeProjectMeta.mode" v-model:markdown="cell.markdown" :id="cell.id" :position="cell.position" v-if="cell.type == 'markdown'"/>
       </div>
-      <EditorCell v-if="$projects.activeProject.mode == 'console'" :mode="$projects.activeProject.mode"
-                  :id="$projects.activeProject.cells[0].id"
-                  :position="$projects.activeProject.cells[0].position"
-                  v-model:query="$projects.activeProject.cells[0].query"/>
+      <EditorCell v-if="$projects.activeProjectMeta.mode == 'console'" :mode="$projects.activeProjectMeta.mode"
+                  :id="$projects.activeProjectCells[0].id"
+                  :position="$projects.activeProjectCells[0].position"
+                  v-model:query="$projects.activeProjectCells[0].query"/>
     </div>
   </div>
   <div :class="[

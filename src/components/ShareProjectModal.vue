@@ -25,7 +25,11 @@ const {copy} = useClipboard({source: copySource});
 const {toast} = useToast();
 
 const doDownload = () => {
-  const jsonString = JSON.stringify($projects.activeProject, null, 2);
+  const project = {
+    cells: $projects.activeProjectCells,
+    ...$projects.activeProjectMeta
+  }
+  const jsonString = JSON.stringify(project, null, 2);
 
   // Create a Blob with the JSON string
   const blob = new Blob([jsonString], {type: 'application/json'});
@@ -33,7 +37,7 @@ const doDownload = () => {
   // Create a temporary anchor element
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = `${$projects.activeProject.name.replace(' ', '_')}.json`;
+  a.download = `${$projects.activeProjectMeta.name.replace(' ', '_')}.json`;
 
   // Trigger the download
   document.body.appendChild(a);
@@ -66,7 +70,7 @@ const doCopy = async (type: string) => {
       <AlertDialogHeader>
         <AlertDialogTitle>Share project</AlertDialogTitle>
         <AlertDialogDescription>
-          {{ $projects.activeProject.name }}
+          {{ $projects.activeProjectMeta.name }}
         </AlertDialogDescription>
       </AlertDialogHeader>
       <div class="flex flex-col items-stretch gap-4">
