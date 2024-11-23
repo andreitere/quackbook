@@ -95,7 +95,7 @@ export const arrowTypeToJsType = (arrowType: DataType) => {
   return _rType;
 };
 
-type SomeObj = Record<string, unknown>;
+
 // Recursively shorten keys based on provided keyMap
 export const shortenKeys = (obj: SomeObj, keyMap: SomeObj): SomeObj | SomeObj[] => {
   if (Array.isArray(obj)) {
@@ -118,16 +118,17 @@ export const shortenKeys = (obj: SomeObj, keyMap: SomeObj): SomeObj | SomeObj[] 
 // Recursively expand keys based on provided reverseKeyMap
 export const expandKeys = (obj: SomeObj, keyMap: SomeObj): SomeObj | SomeObj[] => {
   const reverseKeyMap = generateReverseKeyMap(keyMap)
+  console.log({reverseKeyMap})
   if (Array.isArray(obj)) {
     //@ts-ignore
-    return obj.map((item) => expandKeys(item, reverseKeyMap));
+    return obj.map((item) => expandKeys(item, keyMap));
   }
 
   if (typeof obj === 'object' && obj !== null) {
     return Object.entries(obj).reduce((acc, [key, value]) => {
       const originalKey = reverseKeyMap[key] || key;
       //@ts-ignore
-      acc[originalKey] = expandKeys(value, reverseKeyMap); // Recursively expand nested objects/arrays
+      acc[originalKey] = expandKeys(value, keyMap); // Recursively expand nested objects/arrays
       return acc;
     }, {});
   }

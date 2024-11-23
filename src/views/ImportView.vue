@@ -1,16 +1,24 @@
 <script setup lang="ts">
 import {useRoute, useRouter} from "vue-router";
-import {computed, ref} from "vue";
+import {computed, ref, watch} from "vue";
 import {decodeBase64UrlToJson, expandKeys} from "@/lib/utils.ts";
 import {useProjects} from "@/store/project.ts";
 import {projectKeyMap} from "@/lib/constants.ts";
 import {Textarea} from "@/components/ui/textarea";
+import Ajv from "ajv";
+import projectSchemaRaw from "@/lib/schemas/project.schema.json"
+import {useToast} from "@/components/ui/toast";
+
+const {toast} = useToast()
+
+const ajv = new Ajv();
+const projectSchema = ajv.compile(projectSchemaRaw);
 
 const $route = useRoute();
 const $router = useRouter();
 const $projects = useProjects();
 const fileInput = ref()
-
+const configInput = ref("");
 const parsedProject = computed(() => {
   if (!$route.params.project_json) return;
   const project = decodeBase64UrlToJson($route.params.project_json as string);
@@ -21,6 +29,63 @@ const doImport = () => {
   $projects.importSharedProject(parsedProject.value as Project);
   $router.replace("/");
 };
+
+const onProjectUploaded = (event: Event) => {
+  const _files = (event.target as HTMLInputElement).files;
+  const file = _files?.[0];
+  if (!file) {
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    tryImport(e.target?.result);
+  };
+  reader.readAsText(file);
+};
+
+const tryImport = (v: unknown) => {
+  if (!v) return;
+  let _project = v as string;
+  let wasFromUrl = false;
+  if (_project.includes("/import/")) {
+    _project = _project.split("/import/")[1];
+    wasFromUrl = true;
+  }
+  try {
+    _project = decodeBase64UrlToJson(_project);
+  } catch (e) {
+    console.warn(`${v} is not a valid project.`);
+  }
+  try {
+    if (!wasFromUrl) {
+      //@ts-ignore
+      _project = JSON.parse(_project) as SomeObj;
+    }
+    //@ts-ignore
+    const _maybeProject = expandKeys(_project, projectKeyMap) as Project;
+    const valid = projectSchema(_maybeProject);
+    if (valid) {
+      //@ts-ignore
+      $projects.importSharedProject(_maybeProject);
+      $router.push("/")
+    } else {
+      toast({
+        title: "Import error",
+        description: "Project configuration doesn't seem to be valid.",
+      })
+    }
+  } catch (e) {
+    console.log(e)
+  }
+}
+
+
+watch(configInput, (v) => {
+  tryImport(v)
+})
+
+
 </script>
 
 <template>
@@ -30,11 +95,11 @@ const doImport = () => {
       <div class="grid md:grid-cols-3 gap-10 px-5">
         <div>
           <h4>paste project config</h4>
-          <Textarea class="w-full aspect-square rounded max-w-[300px]" style="resize:none;"></Textarea>
+          <Textarea class="w-full aspect-square rounded max-w-[300px]" style="resize:none;" v-model="configInput"></Textarea>
         </div>
         <div>
           <h4>upload file</h4>
-          <input type="file" class="w-full aspect-square" ref="fileInput" style="resize:none;" hidden/>
+          <input type="file" class="w-full aspect-square" ref="fileInput" accept="json" style="resize:none;" hidden @change="onProjectUploaded"/>
           <div class="w-full aspect-square p-20 bg-gray-100 rounded max-w-[300px]" @click="fileInput.click">
             <div class="i-lucide:import w-full h-full"></div>
           </div>

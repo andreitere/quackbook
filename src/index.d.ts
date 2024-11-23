@@ -23,3 +23,5 @@ type Cell = {
   position: number;
   type: CellType;
 };
+
+type SomeObj = Record<string, unknown>;
