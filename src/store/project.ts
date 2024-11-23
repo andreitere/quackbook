@@ -265,6 +265,6 @@ export const useProjects = defineStore("projects", () => {
     shareProject,
     shareableProject,
     importSharedProject,
-    convertProjectTo,
+    convertProjectTo
   };
 });

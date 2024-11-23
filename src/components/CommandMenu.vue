@@ -1,53 +1,44 @@
 <script setup lang="ts">
-import {
-	Command,
-	CommandDialog,
-	CommandEmpty,
-	CommandGroup,
-	CommandInput,
-	CommandItem,
-	CommandList,
-	CommandSeparator,
-} from "@/components/ui/command";
+import {Command, CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator,} from "@/components/ui/command";
 
-import { useColorMode, useMagicKeys } from "@vueuse/core";
-import { watch } from "vue";
-import { useMetaStore } from "@/store/meta.ts";
-import { useProjects } from "@/store/project.ts";
-import { useRouter } from "vue-router";
+import {useColorMode, useMagicKeys} from "@vueuse/core";
+import {watch} from "vue";
+import {useMetaStore} from "@/store/meta.ts";
+import {useProjects} from "@/store/project.ts";
+import {useRoute, useRouter} from "vue-router";
 
 const colorMode = useColorMode();
 const $meta = useMetaStore();
 
 defineEmits([
-	"add-cell-sql",
-	"add-cell-markdown",
-	"new-project",
-	"convert-to-console",
-	"convert-to-notebook",
+  "add-cell-sql",
+  "add-cell-markdown",
+  "new-project",
+  "convert-to-console",
+  "convert-to-notebook",
 ]);
 
 const $projects = useProjects();
 const $router = useRouter();
-
+const $route = useRoute();
 const onColorModeToggle = () => {
-	if (colorMode.value === "light") {
-		colorMode.value = "dark";
-	} else {
-		colorMode.value = "light";
-	}
-	$meta.cmdMenu = false;
+  if (colorMode.value === "light") {
+    colorMode.value = "dark";
+  } else {
+    colorMode.value = "light";
+  }
+  $meta.cmdMenu = false;
 };
 
-const { Meta_K, Ctrl_K } = useMagicKeys({
-	passive: false,
-	onEventFired(e) {
-		if (e.key === "k" && (e.metaKey || e.ctrlKey)) e.preventDefault();
-	},
+const {Meta_K, Ctrl_K} = useMagicKeys({
+  passive: false,
+  onEventFired(e) {
+    if (e.key === "k" && (e.metaKey || e.ctrlKey)) e.preventDefault();
+  },
 });
 
 watch([Meta_K, Ctrl_K], (v) => {
-	if (v[0] || v[1]) $meta.cmdMenu = true;
+  if (v[0] || v[1]) $meta.cmdMenu = true;
 });
 </script>
 
@@ -57,7 +48,7 @@ watch([Meta_K, Ctrl_K], (v) => {
       <CommandInput placeholder="Type a command or search..."/>
       <CommandList class="max-h-[70vh]">
         <CommandEmpty>No results found.</CommandEmpty>
-        <CommandGroup heading="Actions">
+        <CommandGroup heading="Actions" v-if="$route.name === 'workbench'">
 
           <CommandItem value="save" @select="$projects.saveProject" data-umami-event="save-project">
             <div class="i-lucide:save w-4 h-4 mr-2"></div>
@@ -73,12 +64,12 @@ watch([Meta_K, Ctrl_K], (v) => {
             <div class="i-mdi:notebook-edit-outline w-4 h-4 mr-2"></div>
             <span>convert to notebook</span>
           </CommandItem>
-<!--          <CommandItem value="convert-to-console" data-umami-event="convert-to-console" class="items-center flex"-->
-<!--                       v-if="$projects.activeProject.value.mode == 'notebook'"-->
-<!--                       @select="$projects.convertToConsole">-->
-<!--            <div class="i-fluent:window-console-20-filled w-4 h-4 mr-2"></div>-->
-<!--            <span>convert to console</span>-->
-<!--          </CommandItem>-->
+          <!--          <CommandItem value="convert-to-console" data-umami-event="convert-to-console" class="items-center flex"-->
+          <!--                       v-if="$projects.activeProject.value.mode == 'notebook'"-->
+          <!--                       @select="$projects.convertToConsole">-->
+          <!--            <div class="i-fluent:window-console-20-filled w-4 h-4 mr-2"></div>-->
+          <!--            <span>convert to console</span>-->
+          <!--          </CommandItem>-->
           <CommandItem value="new-add-cell-sql" data-umami-event="add-sql-cell" class="items-center flex"
                        @select="$projects.addCell('sql', null)">
             <div class="i-hugeicons:sql w-4 h-4 mr-2"></div>
@@ -90,7 +81,7 @@ watch([Meta_K, Ctrl_K], (v) => {
             <span>add markdown cell</span>
           </CommandItem>
         </CommandGroup>
-        <CommandGroup heading="Files import">
+        <CommandGroup heading="Files import" v-if="$route.name === 'workbench'">
           <CommandItem value="upload file" data-umami-event="start-upload-files" @select="$meta.startFilesImport">
             <div class="i-lucide:import w-4 h-4 mr-2"></div>
             <span>upload file (csv, arrow, parquet)</span>
@@ -123,19 +114,19 @@ watch([Meta_K, Ctrl_K], (v) => {
           </CommandItem>
         </CommandGroup>
         <CommandSeparator/>
-<!--        <CommandGroup heading="Navigation">-->
-<!--          <CommandItem value="home" data-umami-event="home" @select="$router.push('/')">-->
-<!--            <div class="flex justify-between items-center w-full">-->
-<!--              <span>home</span>-->
-<!--            </div>-->
-<!--          </CommandItem>-->
-<!--          <CommandItem value="about" data-umami-event="about" @select="$router.push('/about')">-->
-<!--            <div class="flex justify-between items-center w-full">-->
-<!--              <span>about</span>-->
-<!--            </div>-->
-<!--          </CommandItem>-->
+        <!--        <CommandGroup heading="Navigation">-->
+        <!--          <CommandItem value="home" data-umami-event="home" @select="$router.push('/')">-->
+        <!--            <div class="flex justify-between items-center w-full">-->
+        <!--              <span>home</span>-->
+        <!--            </div>-->
+        <!--          </CommandItem>-->
+        <!--          <CommandItem value="about" data-umami-event="about" @select="$router.push('/about')">-->
+        <!--            <div class="flex justify-between items-center w-full">-->
+        <!--              <span>about</span>-->
+        <!--            </div>-->
+        <!--          </CommandItem>-->
 
-<!--        </CommandGroup>-->
+        <!--        </CommandGroup>-->
         <CommandGroup heading="Meta">
           <CommandItem value="switch to light mode"
                        v-if="colorMode == 'dark'"

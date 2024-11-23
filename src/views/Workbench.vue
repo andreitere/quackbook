@@ -65,14 +65,6 @@ watch(cmdShiftE, (v) => {
         <div class="flex flex-grow"></div>
         <div class="flex md:min-w-0 max-w-[100vw] flex-grow  px-2 md:px-0 w-full">
           <div class="overflow-x-scroll min-w-full nice-scrollbar flex space-x-2 items-center md:justify-end">
-            <Button class="flex-grow md:flex-grow-0" variant="outline" size="sm">
-              <div class="i-lucide:undo"></div>
-              <span class="ml-1 hidden md:block">undo</span>
-            </Button>
-            <Button class="flex-grow md:flex-grow-0" variant="outline" size="sm">
-              <div class="i-lucide:redo"></div>
-              <span class="ml-1 hidden md:block">redo</span>
-            </Button>
             <Button class="flex-grow md:flex-grow-0" variant="outline" size="sm" @click="$projects.addCell('markdown', null)">
               <div class="i-ion:logo-markdown"></div>
               <span class="ml-1 hidden md:block">add md</span>

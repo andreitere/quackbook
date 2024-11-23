@@ -154,7 +154,7 @@ onMounted(async () => {
 <template>
   <div :class="[
     'transition-all duration-200 w-full flex h-auto flex-col p-3 rounded space-y-2',
-    props.mode == 'console' ? 'h-full' : 'border-[2px] border-solid border-slate-200 hover:shadow-md focus-within:border-slate-400 focus-within:shadow-lg',
+    props.mode == 'console' ? 'h-full' : 'border-[1px] border-solid border-slate-200 hover:shadow-md focus-within:border-slate-300 focus-within:shadow-lg',
   ]"
        @focusin="inputFocused = true" @focusout="inputFocused = false"
   >

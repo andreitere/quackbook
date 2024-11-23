@@ -20,7 +20,7 @@ export const defaultProjectCells: Cell[] = [
   {
     id: Date.now().valueOf() + 1,
     type: "markdown",
-    markdown: "# test markdown",
+    markdown: "### Welcome to your new project",
     position: 0
   },
   {
