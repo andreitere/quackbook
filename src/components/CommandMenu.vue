@@ -43,10 +43,10 @@ watch([Meta_K, Ctrl_K], (v) => {
 </script>
 
 <template>
-  <CommandDialog v-model:open="$meta.cmdMenu">
+  <CommandDialog v-model:open="$meta.cmdMenu" class="max-h-[70dvh]">
     <Command class="rounded-lg border shadow-md ">
       <CommandInput placeholder="Type a command or search..."/>
-      <CommandList class="max-h-[70vh]">
+      <CommandList >
         <CommandEmpty>No results found.</CommandEmpty>
         <CommandGroup heading="Actions" v-if="$route.name === 'workbench'">
 

@@ -81,20 +81,19 @@ watch([meta, shift, e], (v) => {
             about
           </Button>
         </router-link>
-        <router-link to="/help">
-          <Button variant="ghost" size="xs" class="text-sm">
-            help
-          </Button>
-        </router-link>
-
       </div>
       <div class="flex flex-grow"></div>
       <div class="flex items-center">
-        <Button variant="ghost">
-          <a href="https://github.com/andreitere/quackbook" data-umami-event="github" target="_blank">
+        <router-link to="/help">
+          <Button variant="ghost">
+            <div class="i-lucide:circle-help"></div>
+          </Button>
+        </router-link>
+        <a href="https://github.com/andreitere/quackbook" data-umami-event="github" target="_blank">
+          <Button variant="ghost">
             <div class="i-bi:github w-4 h-4"></div>
-          </a>
-        </Button>
+          </Button>
+        </a>
         <Button variant="ghost" data-umami-event="show-db-schema" @click="$meta.showToolbar = !$meta.showToolbar" v-if="$route.name === 'workbench'">
           <div :class="[
           $meta.showToolbar ? `i-octicon:sidebar-collapse-24` : `i-octicon:sidebar-expand-24`,
