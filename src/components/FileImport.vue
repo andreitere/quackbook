@@ -60,7 +60,7 @@ const doCancel = () => {
 
 <template>
   <Dialog v-model:open="$meta.showImportFiles">
-    <DialogContent class="sm:max-w-[525px]">
+    <DialogContent class="sm:max-w-[800px]">
       <DialogHeader>
         <DialogTitle>Import files</DialogTitle>
         <DialogDescription>
@@ -78,7 +78,7 @@ const doCancel = () => {
         <h2 class="font-bold">Configure target table for each file</h2>
         <div class="space-y-4 flex flex-col">
           <div v-for="file in files" class="flex flex-col text-sm space-y-1">
-            <Label>Table name for: <span class="text-amber">{{ file.file.name }}</span></Label>
+            <Label>Table name for: <span class="bg-amber-600 text-white px-1.5 rounded text-xs">{{ file.file.name }}</span></Label>
             <Input v-model="file.name"/>
           </div>
         </div>

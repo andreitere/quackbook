@@ -5,25 +5,25 @@ import FileImport from "@/components/FileImport.vue";
 import MarkdownCell from "@/components/MarkdownCell.vue";
 import MountFileSystem from "@/components/MountFileSystem.vue";
 
-import {useMetaStore} from "@/store/meta.ts";
-import {useProjects} from "@/store/project.ts";
-import {useMagicKeys} from "@vueuse/core";
-import {reactive, watch} from "vue";
-import {useDuckDb} from "@/hooks/useDuckDb.ts";
-import {Button} from "@/components/ui/button";
 import NotificationsCard from "@/components/NotificationsCard.vue";
-import {Input} from "@/components/ui/input";
-import {Popover, PopoverContent, PopoverTrigger,} from '@/components/ui/popover'
-import SQLBackendSelector from "@/components/SQLBackendSelector.vue";
+// import {Popover, PopoverContent, PopoverTrigger,} from '@/components/ui/popover'
+// import SQLBackendSelector from "@/components/SQLBackendSelector.vue";
 import ShareProjectModal from "@/components/ShareProjectModal.vue";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { useDuckDb } from "@/hooks/useDuckDb.ts";
+import { useMetaStore } from "@/store/meta.ts";
+import { useProjects } from "@/store/project.ts";
+import { useMagicKeys } from "@vueuse/core";
+import { reactive, watch } from "vue";
 
 const $meta = useMetaStore();
 const $projects = useProjects();
 
-const {loading: db_loading} = useDuckDb();
+const { loading: db_loading } = useDuckDb();
 const show = reactive({
-  toolBar: true,
-  utilsBar: false,
+	toolBar: true,
+	utilsBar: false,
 });
 
 const keys = useMagicKeys();
@@ -31,11 +31,9 @@ const keys = useMagicKeys();
 const cmdShiftE = keys["Option+Shift+E"];
 
 watch(cmdShiftE, (v) => {
-  if (!v) return;
-  show.toolBar = !show.toolBar;
+	if (!v) return;
+	show.toolBar = !show.toolBar;
 });
-
-
 </script>
 
 <template>
@@ -43,7 +41,7 @@ watch(cmdShiftE, (v) => {
     <div class="flex justify-start items-center gap-2 text-gray-400 py-4">
       <div v-if="db_loading" class="flex items-center justify-center w-full">
         <div class="i-line-md:loading-twotone-loop w-5 h-5"></div>
-        initializing duck db ❤️‍🔥
+        initializing duck db ❤
       </div>
       <div v-else class="flex gap-2 items-center w-full flex-col md:flex-row">
         <div class="flex  flex-shrink space-x-2 w-full md:w-auto items-center ">
@@ -51,16 +49,16 @@ watch(cmdShiftE, (v) => {
                  v-if="$route.name === 'workbench'"
                  class="md:min-w-[300px] flex-grow md:flex-grow-0 border-slate-200  bg-slate-200 dark:bg-slate-500 text-center focus:bg-slate-100 dark:focus:bg-slate-900"/>
           <NotificationsCard v-if="$route.name === 'workbench'"/>
-          <Popover>
-            <PopoverTrigger as-child>
-              <Button variant="outline" size="sm">
-                <div class="i-material-symbols:settings-cinematic-blur-outline-rounded w-4-h-4"></div>
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent class="w-80">
-              <SQLBackendSelector/>
-            </PopoverContent>
-          </Popover>
+<!--          <Popover>-->
+<!--            <PopoverTrigger as-child>-->
+<!--              <Button variant="outline" size="sm">-->
+<!--                <div class="i-material-symbols:settings-cinematic-blur-outline-rounded w-4-h-4"></div>-->
+<!--              </Button>-->
+<!--            </PopoverTrigger>-->
+<!--            <PopoverContent class="w-80">-->
+<!--              <SQLBackendSelector/>-->
+<!--            </PopoverContent>-->
+<!--          </Popover>-->
         </div>
         <div class="flex flex-grow"></div>
         <div class="flex md:min-w-0 max-w-[100vw] flex-grow  px-2 md:px-0 w-full">
