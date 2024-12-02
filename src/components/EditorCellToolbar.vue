@@ -9,7 +9,7 @@ defineProps({
   trash: {default: true},
   edit: {default: false},
   update: {default: false},
-  format: {default: true}
+  format: {default: false}
 });
 
 const $emit = defineEmits([

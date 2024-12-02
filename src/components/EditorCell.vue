@@ -224,20 +224,21 @@ onMounted(async () => {
 
 <template>
 	<div :class="[
-		'transition-all duration-200 w-full flex h-auto flex-col p-3 rounded space-y-2',
+		'transition-all duration-200 w-full flex h-auto flex-col p-3 rounded space-y-2 group',
 		props.mode == 'console' ? 'h-full' : 'border-[1px] border-solid border-slate-200 hover:shadow-md focus-within:border-slate-300 focus-within:shadow-lg',
 	]" @focusin="inputFocused = true" @focusout="inputFocused = false">
-		<EditorCellToolbar :delete="props.mode == 'notebook'" :trash="props.mode == 'notebook'"
-			:duplicate="props.mode == 'notebook'" @play="onPlay" @clear="onClear"
+		<EditorCellToolbar class="opacity-0 group-hover:opacity-100 duration-200" :delete="props.mode == 'notebook'"
+			:trash="props.mode == 'notebook'" :duplicate="props.mode == 'notebook'" @play="onPlay" @clear="onClear"
 			@movedown="$projects.moveDown(props.id)" @moveup="$projects.moveUp(props.id)"
-			@trash="$projects.deleteCell(props.id)" @format="onFormat" :edit="false" :display_results="false" />
+			@trash="$projects.deleteCell(props.id)" @format="onFormat" :edit="false" :display_results="false"
+			:format="true" />
 		<div class="flex items-start flex-col overflow-hidden">
 			<div ref="queryEditorRef" class=" p-2 overflow-y-scroll w-full nice-scrollbar max-h-[30vh]"
 				style="field-sizing: content"></div>
 		</div>
 
 		<div class="bg-blue-200 flex-shrink" style="field-sizing: content" v-if="hasResults">
-			<perspective-viewer style="--column-width: 200px;" ref="pView" :class="[
+			<perspective-viewer ref="pView" :class="[
 				'overflow-hidden',
 				props.mode == 'console' ? 'h-full' : 'h-[25vh] flex-shrink min-h-[150px] resize-y'
 			]" :theme="tableTheme"></perspective-viewer>
