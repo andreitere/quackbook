@@ -10,15 +10,20 @@
 		"ignore": []
 	},
 	"formatter": {
-		"ignore": ["./src/components/FileManager.vue"],
+		"ignore": [
+			"./src/components/FileManager.vue"
+		],
 		"enabled": true,
-		"indentStyle": "tab"
+		"indentStyle": "tab",
+		"lineWidth": 140
 	},
 	"organizeImports": {
 		"enabled": true
 	},
 	"linter": {
-		"ignore": ["./src/components/FileManager.vue"],
+		"ignore": [
+			"./src/components/FileManager.vue"
+		],
 		"enabled": true,
 		"rules": {
 			"recommended": true,

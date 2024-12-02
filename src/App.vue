@@ -1,56 +1,60 @@
 <script setup lang="ts">
 import CommandMenu from "@/components/CommandMenu.vue";
 import Toaster from "@/components/ui/toast/Toaster.vue";
-import {useMetaStore} from "@/store/meta.ts";
-import {useProjects} from "@/store/project.ts";
-import {useMagicKeys} from "@vueuse/core";
-import {watch} from "vue";
-import {useRoute} from "vue-router";
-import {Button} from "./components/ui/button";
-import {Tooltip, TooltipContent, TooltipProvider, TooltipTrigger} from "@/components/ui/tooltip";
-import {useQuackDuck} from "@/hooks/useQuackDuck.ts";
+import {
+	Tooltip,
+	TooltipContent,
+	TooltipProvider,
+	TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { useQuackDuck } from "@/hooks/useQuackDuck.ts";
+import { useMetaStore } from "@/store/meta.ts";
+import { useProjects } from "@/store/project.ts";
+import { useMagicKeys } from "@vueuse/core";
+import { watch } from "vue";
+import { useRoute } from "vue-router";
+import { Button } from "./components/ui/button";
 
-const {playQuack} = useQuackDuck()
+const { playQuack } = useQuackDuck();
 const $meta = useMetaStore();
 const $projects = useProjects();
 const $route = useRoute();
 const openMenu = () => {
-  // if(!cmdMenu.value) return;
-  $meta.cmdMenu = true;
+	// if(!cmdMenu.value) return;
+	$meta.cmdMenu = true;
 };
-
 
 const commandEvents = {
-  "add-cell-sql": () => {
-    console.log("add cell sql");
-  },
-  "new-project": () => {
-    $projects.createProject();
-  },
-  save: () => {
-    console.log("save project");
-    $projects.saveProject();
-  },
+	"add-cell-sql": () => {
+		console.log("add cell sql");
+	},
+	"new-project": () => {
+		$projects.createProject();
+	},
+	save: () => {
+		console.log("save project");
+		$projects.saveProject();
+	},
 };
 
-const {meta, shift, e} = useMagicKeys({
-  passive: false,
-  onEventFired: (e) => {
-    if (e.key === "e" && (e.metaKey || e.ctrlKey) && e.shiftKey)
-      e.preventDefault();
-  },
+const { meta, shift, e } = useMagicKeys({
+	passive: false,
+	onEventFired: (e) => {
+		if (e.key === "e" && (e.metaKey || e.ctrlKey) && e.shiftKey)
+			e.preventDefault();
+	},
 });
 
 watch([meta, shift, e], (v) => {
-  if (v[0] && v[1] && v[2]) {
-    $meta.showToolbar = !$meta.showToolbar;
-  }
+	if (v[0] && v[1] && v[2]) {
+		$meta.showToolbar = !$meta.showToolbar;
+	}
 });
 </script>
 
 <template>
   <div class="w-full h-full flex flex-col relative">
-    <header class="flex items-center p-3 space-x-4 border-b-[1px] border-solid border-slate-200">
+    <header class="flex items-center p-3 space-x-2 md:space-x-4 border-b-[1px] border-solid border-slate-200">
       <Button size="xs" class="text-xs space-x-1 cursor-pointer" @click="openMenu" data-umami-event="command-menu">
         <div class="i-pixelarticons:command h-4 w-4"></div>
       </Button>
@@ -58,7 +62,8 @@ watch([meta, shift, e], (v) => {
         <Tooltip>
           <TooltipTrigger>
             <router-link as-child to="/">
-              <h1 class="text-xl">QuackBook</h1>
+              <h1 class="text-xl hidden md:block">QuackBook</h1>
+              <h1 class="text-xl md:hidden">QB</h1>
             </router-link>
           </TooltipTrigger>
           <TooltipContent align="center" hide-when-detached>
@@ -68,7 +73,7 @@ watch([meta, shift, e], (v) => {
       </TooltipProvider>
 
 
-      <div class="h-[50%] w-[1px] mx-5 bg-gray-500"></div>
+      <div class="h-[50%] w-[1px] mx-5 bg-gray-500 hidden md:block"></div>
       <div class="flex items-center space-x-1">
 
         <router-link to="/import">

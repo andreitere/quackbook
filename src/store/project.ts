@@ -1,12 +1,11 @@
-import {useToast} from "@/components/ui/toast";
-import {encodeJsonToBase64Url, expandKeys, shortenKeys} from "@/lib/utils.ts";
-import {useMetaStore} from "@/store/meta.ts";
-import {useStorage} from "@vueuse/core";
-import {computed, ref, type Ref} from "vue";
-import {useRouter} from "vue-router";
-import {defaultProjectCells, projectKeyMap} from "@/lib/constants.ts";
-import {defineStore} from "pinia";
-
+import { useToast } from "@/components/ui/toast";
+import { encodeJsonToBase64Url, expandKeys, shortenKeys } from "@/lib/utils.ts";
+import { useMetaStore } from "@/store/meta.ts";
+import { useStorage } from "@vueuse/core";
+import { computed, ref, type Ref } from "vue";
+import { useRouter } from "vue-router";
+import { defaultProjectCells, projectKeyMap } from "@/lib/constants.ts";
+import { defineStore } from "pinia";
 
 const prefixes = [
   "Data",
@@ -53,24 +52,24 @@ const generateProjectName = () => {
 };
 
 export const useProjects = defineStore("projects", () => {
-  const {toast} = useToast();
+  const { toast } = useToast();
   const $meta = useMetaStore();
   const $router = useRouter();
   const shareableProject = ref("");
   const projects: Ref<Project[]> = useStorage("projects", []);
   const activeProjectCells = useStorage<Cell[]>("activeProjectCells", [
-    ...defaultProjectCells
+    ...defaultProjectCells,
   ]);
   const activeProjectMeta = useStorage<ProjectMeta>("activeProjectMeta", {
     id: Date.now().valueOf(),
     name: generateProjectName(),
     sql: {
       backend: "duckdb_wasm",
-      host: "http://localhost:8000"
+      host: "http://localhost:8000",
     },
     mode: "notebook",
     dirty: false,
-  })
+  });
 
   const createProject = () => {
     activeProjectMeta.value = {
@@ -78,14 +77,12 @@ export const useProjects = defineStore("projects", () => {
       name: generateProjectName(),
       sql: {
         backend: "duckdb_wasm",
-        host: "http://localhost:8000"
+        host: "http://localhost:8000",
       },
       mode: "notebook",
       dirty: false,
     };
-    activeProjectCells.value = [
-      ...defaultProjectCells
-    ]
+    activeProjectCells.value = [...defaultProjectCells];
   };
 
   const addCell = (cell_type: CellType, query: string | null) => {
@@ -93,7 +90,7 @@ export const useProjects = defineStore("projects", () => {
       id: Date.now().valueOf(),
       type: cell_type,
       position:
-          Math.max(...activeProjectCells.value.map((x) => x.position)) + 1,
+        Math.max(...activeProjectCells.value.map((x) => x.position)) + 1,
       query: "",
       markdown: "",
     };
@@ -107,7 +104,9 @@ export const useProjects = defineStore("projects", () => {
   };
 
   const convertToConsole = () => {
-    const singleCell = activeProjectCells.value.filter(c => c.type === 'sql').reduce(
+    const singleCell = activeProjectCells.value
+      .filter((c) => c.type === "sql")
+      .reduce(
         (acc, next) => {
           acc.query += next.query || "";
           return acc;
@@ -117,21 +116,21 @@ export const useProjects = defineStore("projects", () => {
           type: "sql",
           query: "",
           position: 0,
-        },
-    );
+        }
+      );
     activeProjectCells.value = [singleCell];
     activeProjectMeta.value = {
       ...activeProjectMeta.value,
-      mode: 'console',
-      dirty: true
-    }
+      mode: "console",
+      dirty: true,
+    };
     $meta.cmdMenu = false;
   };
 
   const convertToNotebook = () => {
     activeProjectMeta.value.mode = "notebook";
-    activeProjectMeta.value.dirty = true
-    activeProjectCells.value = [{...activeProjectCells.value[0]}];
+    activeProjectMeta.value.dirty = true;
+    activeProjectCells.value = [{ ...activeProjectCells.value[0] }];
     $meta.cmdMenu = false;
   };
 
@@ -175,7 +174,7 @@ export const useProjects = defineStore("projects", () => {
   const sortedCells = computed(() => {
     //@ts-ignore
     return activeProjectCells.value.toSorted(
-        (a: Cell, b: Cell) => a.position - b.position,
+      (a: Cell, b: Cell) => a.position - b.position
     );
   });
 
@@ -194,11 +193,14 @@ export const useProjects = defineStore("projects", () => {
     updatePositions();
     activeProjectMeta.value.dirty = true;
     $meta.cmdMenu = false;
-    toast({title: "Cell deleted 🗑"});
+    toast({ title: "Cell deleted 🗑" });
   };
 
   const saveProject = () => {
-    const project = {...activeProjectMeta.value, cells: [...activeProjectCells.value]};
+    const project = {
+      ...activeProjectMeta.value,
+      cells: [...activeProjectCells.value],
+    };
     const newProjects = [
       ...projects.value.filter((p) => p.id !== project.id),
       project,
@@ -214,15 +216,20 @@ export const useProjects = defineStore("projects", () => {
 
   const setActiveProject = (project: Project) => {
     $router.push("/");
-    const {cells, ...meta} = project;
+    const { cells, ...meta } = project;
     activeProjectMeta.value = meta;
     activeProjectCells.value = cells;
     $meta.cmdMenu = false;
   };
 
   const shareProject = () => {
-    const project = {...activeProjectMeta.value, cells: [...activeProjectCells.value]};
-    shareableProject.value = JSON.stringify(shortenKeys({...project, id: null}, projectKeyMap));
+    const project = {
+      ...activeProjectMeta.value,
+      cells: [...activeProjectCells.value],
+    };
+    shareableProject.value = JSON.stringify(
+      shortenKeys({ ...project, id: null }, projectKeyMap)
+    );
     const project_in_url = encodeJsonToBase64Url(shareableProject.value);
     const url = `${window.location.origin}/import/${project_in_url}`;
     $meta.cmdMenu = false;
@@ -233,8 +240,8 @@ export const useProjects = defineStore("projects", () => {
   const importSharedProject = (project_json: Project) => {
     saveProject();
     const existingProjectName = activeProjectMeta.value.name;
-    const project = {...project_json, id: Date.now().valueOf()}
-    const {cells, ...meta} = expandKeys(project, projectKeyMap) as Project;
+    const project = { ...project_json, id: Date.now().valueOf() };
+    const { cells, ...meta } = expandKeys(project, projectKeyMap) as Project;
     activeProjectCells.value = cells;
     activeProjectMeta.value = meta;
     toast({
@@ -248,10 +255,18 @@ export const useProjects = defineStore("projects", () => {
     $meta.cmdMenu = false;
   };
 
+  const activeProject = computed(() => {
+    return {
+      ...activeProjectMeta.value,
+      cells: [...activeProjectCells.value],
+    };
+  });
+
   return {
     projects,
     activeProjectMeta,
     activeProjectCells,
+    activeProject,
     createProject,
     addCell,
     convertToConsole,
@@ -265,6 +280,6 @@ export const useProjects = defineStore("projects", () => {
     shareProject,
     shareableProject,
     importSharedProject,
-    convertProjectTo
+    convertProjectTo,
   };
 });

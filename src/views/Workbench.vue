@@ -6,11 +6,15 @@ import MarkdownCell from "@/components/MarkdownCell.vue";
 import MountFileSystem from "@/components/MountFileSystem.vue";
 
 import NotificationsCard from "@/components/NotificationsCard.vue";
-// import {Popover, PopoverContent, PopoverTrigger,} from '@/components/ui/popover'
-// import SQLBackendSelector from "@/components/SQLBackendSelector.vue";
+import SQLBackendSelector from "@/components/SQLBackendSelector.vue";
 import ShareProjectModal from "@/components/ShareProjectModal.vue";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+	Popover,
+	PopoverContent,
+	PopoverTrigger,
+} from "@/components/ui/popover";
 import { useDuckDb } from "@/hooks/useDuckDb.ts";
 import { useMetaStore } from "@/store/meta.ts";
 import { useProjects } from "@/store/project.ts";
@@ -34,6 +38,19 @@ watch(cmdShiftE, (v) => {
 	if (!v) return;
 	show.toolBar = !show.toolBar;
 });
+
+// const doMount = async () => {
+// 	const opfsRoot = await navigator.storage.getDirectory();
+// 	const fileHandle = await opfsRoot.getFileHandle("output.csv", {
+// 		create: true,
+// 	});
+// 	console.log(fileHandle);
+// 	console.log(opfsRoot);
+// 	const docsDir = await opfsRoot.getDirectoryHandle("docs", { create: true });
+// 	for await (const [name, handle] of docsDir) {
+// 		console.log(name, handle);
+// 	}
+// };
 </script>
 
 <template>
@@ -49,16 +66,17 @@ watch(cmdShiftE, (v) => {
                  v-if="$route.name === 'workbench'"
                  class="md:min-w-[300px] flex-grow md:flex-grow-0 border-slate-200  bg-slate-200 dark:bg-slate-500 text-center focus:bg-slate-100 dark:focus:bg-slate-900"/>
           <NotificationsCard v-if="$route.name === 'workbench'"/>
-<!--          <Popover>-->
-<!--            <PopoverTrigger as-child>-->
-<!--              <Button variant="outline" size="sm">-->
-<!--                <div class="i-material-symbols:settings-cinematic-blur-outline-rounded w-4-h-4"></div>-->
-<!--              </Button>-->
-<!--            </PopoverTrigger>-->
-<!--            <PopoverContent class="w-80">-->
-<!--              <SQLBackendSelector/>-->
-<!--            </PopoverContent>-->
-<!--          </Popover>-->
+          <!-- <Button variant="outline" @click="doMount">mount</Button>
+          <Popover>
+            <PopoverTrigger as-child>
+              <Button variant="outline" size="sm">
+                <div class="i-material-symbols:settings-cinematic-blur-outline-rounded w-4-h-4"></div>
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent class="w-80">
+              <SQLBackendSelector/>
+            </PopoverContent>
+          </Popover> -->
         </div>
         <div class="flex flex-grow"></div>
         <div class="flex md:min-w-0 max-w-[100vw] flex-grow  px-2 md:px-0 w-full">

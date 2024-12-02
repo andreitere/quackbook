@@ -1,13 +1,12 @@
 <script setup lang="ts">
-import EditorCellToolbar from "@/components/EditorCellToolbar.vue";
-import { computed, nextTick, onMounted, ref, useTemplateRef, watch } from "vue";
-
 //@ts-ignore
 import perspective from "https://cdn.jsdelivr.net/npm/@finos/perspective/dist/cdn/perspective.js";
+import EditorCellToolbar from "@/components/EditorCellToolbar.vue";
+import { RecordBatchReader } from "apache-arrow";
+import { computed, nextTick, onMounted, ref, useTemplateRef, watch } from "vue";
 
 import { format } from "sql-formatter";
 
-import { useQuackDuck } from "@/hooks/useQuackDuck.ts";
 import { useSQLBackend } from "@/hooks/useSQLBackend.ts";
 import { useSQLExtensions } from "@/hooks/useSQLEditor.ts";
 import { db_events } from "@/store/meta.ts";
@@ -26,7 +25,6 @@ import { EditorView, keymap } from "@codemirror/view";
 import { useColorMode, useVModels } from "@vueuse/core";
 import { ayuLight, cobalt } from "thememirror";
 
-const { playQuack } = useQuackDuck();
 const pView = ref(null);
 const color = useColorMode();
 const props = defineProps({
@@ -39,6 +37,7 @@ const { query } = useVModels(props);
 
 const { backend } = useSQLBackend();
 const $projects = useProjects();
+const { activeProject } = $projects;
 const queryEditor = useTemplateRef("queryEditorRef");
 const hasResults = ref<boolean>(false);
 const error = ref<string>("");
@@ -117,46 +116,68 @@ const onPlay = async () => {
 		error.value = "";
 		loading.value = true;
 		const start = performance.now();
-
-		let { records, schema } = await backend.value.query(query.value);
-		if (Object.values(schema).includes("json")) {
-			//@ts-ignore
-			records = records.map((row) => {
-				const _row = Object.entries(row).reduce((acc, [k, v]) => {
-					if (schema[k] === "json") {
-						//@ts-ignore
-						acc[k] = JSON.stringify(v);
-					} else {
-						//@ts-ignore
-						acc[k] = v;
-					}
-					return acc; // Ensure the accumulator is returned
-				}, {});
-
-				console.log(_row);
-				return _row; // Return the modified _row
-			});
-			schema = Object.entries(schema).reduce((acc, [k, v]) => {
-				if (v === "json") {
-					//@ts-ignore
-					acc[k] = "string";
-				} else {
-					//@ts-ignore
-					acc[k] = v;
-				}
-				return acc;
-			}, {});
-		}
-		//@ts-ignore
-		const end = performance.now();
-		lastQueryDuration.value = ((end - start) / 1000).toFixed(5);
-		if (records.length) {
+		if (activeProject.sql.backend === "duckdb_server") {
+			const reader = await backend.value.query(query.value, true);
 			hasResults.value = true;
-			await nextTick();
+			let table = null;
+
+			const chunks = [];
+			while (true) {
+				const { value, done } = await reader.read();
+				// console.log(value, done);
+
+				if (done) break; // Exit loop if the stream ends
+				if (value) {
+					chunks.push(new Uint8Array(value));
+				}
+			}
+
+			const arrowChunk = new Uint8Array(
+				chunks.reduce((acc, chunk) => acc + chunk.length, 0),
+			);
+			let offset = 0;
+			for (const chunk of chunks) {
+				arrowChunk.set(chunk, offset);
+				offset += chunk.length;
+			}
+
+			const recordBatchReader = RecordBatchReader.from(arrowChunk);
+			const firstVal = recordBatchReader.next().value;
 			//@ts-ignore
-			const table = await pWorker.value.table(records);
-			// @ts-ignore
-			pView.value.load(table, { configure: true });
+			table = await pWorker.value.table(firstVal.toArray());
+
+			for (const batch of recordBatchReader) {
+				table.update(batch.toArray());
+			}
+			//@ts-ignore
+			pView.value.load(table);
+		} else {
+			let { records, schema } = await backend.value.query(query.value);
+			if (Object.values(schema).includes("json")) {
+				//@ts-ignore
+				records = records.map((row) => {
+					const _row = {};
+					for (const [k, v] of Object.entries(row)) {
+						//@ts-ignore
+						_row[k] = JSON.stringify(v);
+					}
+					return _row;
+				});
+				schema = Object.fromEntries(
+					Object.entries(schema).map(([k, v]) => [k, v === "json" ? "string" : v])
+				);
+			}
+			//@ts-ignore
+			const end = performance.now();
+			lastQueryDuration.value = ((end - start) / 1000).toFixed(5);
+			if (records.length) {
+				hasResults.value = true;
+				await nextTick();
+				//@ts-ignore
+				const table = await pWorker.value.table(records);
+				// @ts-ignore
+				pView.value.load(table, { configure: true });
+			}
 		}
 
 		if (/create|attach|copy/gi.test(query.value)) {
@@ -164,12 +185,11 @@ const onPlay = async () => {
 		}
 	} catch (e) {
 		if (e instanceof Error) {
-			console.log(e);
 			error.value = e.toString();
 		} else {
 			error.value = "An unknown error occured";
 		}
-		playQuack();
+		// playQuack();
 	} finally {
 		loading.value = false;
 	}
@@ -203,47 +223,39 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div :class="[
-    'transition-all duration-200 w-full flex h-auto flex-col p-3 rounded space-y-2',
-    props.mode == 'console' ? 'h-full' : 'border-[1px] border-solid border-slate-200 hover:shadow-md focus-within:border-slate-300 focus-within:shadow-lg',
-  ]"
-       @focusin="inputFocused = true" @focusout="inputFocused = false"
-  >
-    <EditorCellToolbar :delete="props.mode == 'notebook'"
-                       :trash="props.mode == 'notebook'"
-                       :duplicate="props.mode == 'notebook'"
-                       @play="onPlay" @clear="onClear"
-                       @movedown="$projects.moveDown(props.id)"
-                       @moveup="$projects.moveUp(props.id)"
-                       @trash="$projects.deleteCell(props.id)"
-                       @format="onFormat"
-                       :edit="false"
-                       :display_results="false"/>
-    <div class="flex items-start flex-col overflow-hidden">
-      <div ref="queryEditorRef" class=" p-2 overflow-y-scroll w-full nice-scrollbar max-h-[30vh]" style="field-sizing: content"></div>
-    </div>
+	<div :class="[
+		'transition-all duration-200 w-full flex h-auto flex-col p-3 rounded space-y-2',
+		props.mode == 'console' ? 'h-full' : 'border-[1px] border-solid border-slate-200 hover:shadow-md focus-within:border-slate-300 focus-within:shadow-lg',
+	]" @focusin="inputFocused = true" @focusout="inputFocused = false">
+		<EditorCellToolbar :delete="props.mode == 'notebook'" :trash="props.mode == 'notebook'"
+			:duplicate="props.mode == 'notebook'" @play="onPlay" @clear="onClear"
+			@movedown="$projects.moveDown(props.id)" @moveup="$projects.moveUp(props.id)"
+			@trash="$projects.deleteCell(props.id)" @format="onFormat" :edit="false" :display_results="false" />
+		<div class="flex items-start flex-col overflow-hidden">
+			<div ref="queryEditorRef" class=" p-2 overflow-y-scroll w-full nice-scrollbar max-h-[30vh]"
+				style="field-sizing: content"></div>
+		</div>
 
-    <div class="bg-blue-200 flex-shrink" style="field-sizing: content" v-if="hasResults">
-      <perspective-viewer style="--column-width: 200px;" ref="pView" :class="[
-        'overflow-hidden',
-        props.mode=='console' ? 'h-full' : 'h-[25vh] flex-shrink min-h-[150px] resize-y'
-      ]"
-                          :theme="tableTheme"></perspective-viewer>
-    </div>
-    <div class="info justify-end flex space-x-2">
-      <span class="text-xs" v-if="lastQueryDuration && !error">query took: {{ lastQueryDuration }} s</span>
-      <span class="text-xs text-red-500 text-wrap" v-if="error != ''">{{ error }}</span>
-      <div class="i-ep:success-filled text-green-600 h-5 w-5" v-if="lastQueryDuration != '' && error == ''"></div>
-      <div class="i-material-symbols:chat-error-outline text-red-600 h-5 w-5" v-if="error != ''"></div>
-      <div class="i-line-md:loading-twotone-loop h-5 w-5" v-if="loading"></div>
-    </div>
-  </div>
+		<div class="bg-blue-200 flex-shrink" style="field-sizing: content" v-if="hasResults">
+			<perspective-viewer style="--column-width: 200px;" ref="pView" :class="[
+				'overflow-hidden',
+				props.mode == 'console' ? 'h-full' : 'h-[25vh] flex-shrink min-h-[150px] resize-y'
+			]" :theme="tableTheme"></perspective-viewer>
+		</div>
+		<div class="info justify-end flex space-x-2">
+			<span class="text-xs" v-if="lastQueryDuration && !error">query took: {{ lastQueryDuration }} s</span>
+			<span class="text-xs text-red-500 text-wrap" v-if="error != ''">{{ error }}</span>
+			<div class="i-ep:success-filled text-green-600 h-5 w-5" v-if="lastQueryDuration != '' && error == ''"></div>
+			<div class="i-material-symbols:chat-error-outline text-red-600 h-5 w-5" v-if="error != ''"></div>
+			<div class="i-svg-spinners-gooey-balls-1" v-if="loading"></div>
+		</div>
+	</div>
 </template>
 
 <style lang="scss">
 perspective-viewer {
-  td {
-    max-width: 20vw;
-  }
+	td {
+		max-width: 20vw;
+	}
 }
 </style>
