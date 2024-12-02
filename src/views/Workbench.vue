@@ -103,7 +103,7 @@ watch(cmdShiftE, (v) => {
       </div>
     </div>
 
-    <div class="overflow-y-scroll nice-scrollbar flex flex-col h-0 flex-grow space-y-6 pb-[200px]">
+    <div class="overflow-y-scroll nice-scrollbar flex flex-col h-0 flex-grow space-y-6">
       <div v-for="cell in $projects.sortedCells" :key="`${cell.position}-${cell.id}`" v-if="$projects.activeProjectMeta.mode == 'notebook'" class="w-full">
         <EditorCell :mode="$projects.activeProjectMeta.mode" v-model:query="cell.query" :id="cell.id" :position="cell.position" v-if="cell.type == 'sql'"/>
         <MarkdownCell :mode="$projects.activeProjectMeta.mode" v-model:markdown="cell.markdown" :id="cell.id" :position="cell.position" v-if="cell.type == 'markdown'"/>

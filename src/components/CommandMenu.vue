@@ -1,6 +1,15 @@
 <script setup lang="ts">
 import { Command, CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator, } from "@/components/ui/command";
-
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Button } from "@/components/ui/button";
 import { useColorMode, useMagicKeys } from "@vueuse/core";
 import { watch } from "vue";
 import { useMetaStore } from "@/store/meta.ts";
@@ -19,6 +28,7 @@ defineEmits([
 ]);
 
 const $projects = useProjects();
+const { activeProject } = $projects;
 const $router = useRouter();
 const $route = useRoute();
 const onColorModeToggle = () => {
@@ -43,6 +53,68 @@ watch([Meta_K, Ctrl_K], (v) => {
 </script>
 
 <template>
+  <Button size="xs" class="text-xs cursor-pointer hidden md:block" @click="$meta.cmdMenu = true"
+    data-umami-event="command-menu">
+    <div class="i-pixelarticons:command h-4 w-4"></div>
+  </Button>
+  <DropdownMenu>
+    <DropdownMenuTrigger as-child>
+      <Button size="xs" class="text-xs cursor-pointer md:hidden" data-umami-event="command-menu">
+        <div class="i-lucide-square-menu"></div>
+      </Button>
+    </DropdownMenuTrigger>
+    <DropdownMenuContent class="max-h-[80dvh] overflow-y-scroll nice-scrollbar">
+      <DropdownMenuLabel>Actions</DropdownMenuLabel>
+      <DropdownMenuSeparator />
+      <DropdownMenuGroup>
+        <DropdownMenuItem @select="$projects.saveProject" data-umami-event="save-project">
+          <div class="i-lucide:save"></div>
+          <span>save project</span>
+        </DropdownMenuItem>
+        <DropdownMenuItem @select="$projects.shareProject" data-umami-event="share-project">
+          <div class="i-lucide:share"></div>
+          <span>share</span>
+        </DropdownMenuItem>
+        <DropdownMenuItem value="convert-to-notebook" data-umami-event="convert-to-notebook" class="items-center flex"
+          v-if="$projects.activeProjectMeta.mode == 'console'" @select="$projects.convertToNotebook">
+          <div class="i-mdi:notebook-edit-outline"></div>
+          <span>convert to notebook</span>
+        </DropdownMenuItem>
+        <DropdownMenuItem value="convert-to-console" data-umami-event="convert-to-console" class="items-center flex"
+          v-if="activeProject.mode == 'notebook'" @select="$projects.convertToConsole">
+          <div class="i-fluent:window-console-20-filled"></div>
+          <span>convert to console</span>
+        </DropdownMenuItem>
+        <DropdownMenuItem value="new-add-cell-sql" data-umami-event="add-sql-cell" class="items-center flex"
+          @select="$projects.addCell('sql', null)">
+          <div class="i-hugeicons:sql"></div>
+          <span>add sql cell</span>
+        </DropdownMenuItem>
+        <DropdownMenuItem value="new-add-cell-markdown" data-umami-event="add-markdown-cell" class="items-center flex"
+          @select="$projects.addCell('markdown', null)">
+          <div class="i-ion:logo-markdown"></div>
+          <span>add markdown cell</span>
+        </DropdownMenuItem>
+      </DropdownMenuGroup>
+      <DropdownMenuSeparator />
+      <DropdownMenuGroup>
+        <DropdownMenuItem @select="$router.push('/projects')">
+          <span>Projects</span>
+        </DropdownMenuItem>
+        <DropdownMenuItem value="new project" data-umami-event="new-project" class="items-center flex"
+          @select="$projects.createProject">
+          <div class="i-lucide:list-plus"></div>
+          <span>new project</span>
+        </DropdownMenuItem>
+        <DropdownMenuItem data-umami-event="open-project" v-for="project in $projects.projects.slice(0, 3)"
+          @select="$projects.setActiveProject(project)">
+          <div class="flex justify-between items-center w-full">
+            <span class="text-muted-foreground">{{ project.name }}</span>
+          </div>
+        </DropdownMenuItem>
+      </DropdownMenuGroup>
+    </DropdownMenuContent>
+  </DropdownMenu>
   <CommandDialog v-model:open="$meta.cmdMenu">
     <Command class="rounded-lg border shadow-md ">
       <CommandInput placeholder="Type a command or search..." />
@@ -51,43 +123,42 @@ watch([Meta_K, Ctrl_K], (v) => {
         <CommandGroup heading="Actions" v-if="$route.name === 'workbench'">
 
           <CommandItem value="save" @select="$projects.saveProject" data-umami-event="save-project">
-            <div class="i-lucide:save w-4 h-4 mr-2"></div>
+            <div class="i-lucide:save mr-2"></div>
             <span>save project</span>
           </CommandItem>
           <CommandItem value="share" @select="$projects.shareProject" data-umami-event="share-project">
-            <div class="i-lucide:share w-4 h-4 mr-2"></div>
+            <div class="i-lucide:share mr-2"></div>
             <span>share</span>
           </CommandItem>
           <CommandItem value="convert-to-notebook" data-umami-event="convert-to-notebook" class="items-center flex"
             v-if="$projects.activeProjectMeta.mode == 'console'" @select="$projects.convertToNotebook">
-            <div class="i-mdi:notebook-edit-outline w-4 h-4 mr-2"></div>
+            <div class="i-mdi:notebook-edit-outline mr-2"></div>
             <span>convert to notebook</span>
           </CommandItem>
-          <!--          <CommandItem value="convert-to-console" data-umami-event="convert-to-console" class="items-center flex"-->
-          <!--                       v-if="$projects.activeProject.value.mode == 'notebook'"-->
-          <!--                       @select="$projects.convertToConsole">-->
-          <!--            <div class="i-fluent:window-console-20-filled w-4 h-4 mr-2"></div>-->
-          <!--            <span>convert to console</span>-->
-          <!--          </CommandItem>-->
+          <CommandItem value="convert-to-console" data-umami-event="convert-to-console" class="items-center flex"
+            v-if="activeProject.mode == 'notebook'" @select="$projects.convertToConsole">
+            <div class="i-fluent:window-console-20-filled mr-2"></div>
+            <span>convert to console</span>
+          </CommandItem>
           <CommandItem value="new-add-cell-sql" data-umami-event="add-sql-cell" class="items-center flex"
             @select="$projects.addCell('sql', null)">
-            <div class="i-hugeicons:sql w-4 h-4 mr-2"></div>
+            <div class="i-hugeicons:sql mr-2"></div>
             <span>add sql cell</span>
           </CommandItem>
           <CommandItem value="new-add-cell-markdown" data-umami-event="add-markdown-cell" class="items-center flex"
             @select="$projects.addCell('markdown', null)">
-            <div class="i-ion:logo-markdown w-4 h-4 mr-2"></div>
+            <div class="i-ion:logo-markdown mr-2"></div>
             <span>add markdown cell</span>
           </CommandItem>
         </CommandGroup>
         <CommandGroup heading="Files import" v-if="$route.name === 'workbench'">
           <CommandItem value="upload file" data-umami-event="start-upload-files" @select="$meta.startFilesImport">
-            <div class="i-lucide:import w-4 h-4 mr-2"></div>
+            <div class="i-lucide:import mr-2"></div>
             <span>upload file (csv, arrow, parquet)</span>
           </CommandItem>
           <CommandItem value="mount local filesystem" data-umami-event="mount-file-system"
             @select="$meta.startMountFileSystem">
-            <div class="i-lucide:file-stack w-4 h-4 mr-2"></div>
+            <div class="i-lucide:file-stack mr-2"></div>
             <span>mount file system</span>
           </CommandItem>
         </CommandGroup>
@@ -102,12 +173,12 @@ watch([Meta_K, Ctrl_K], (v) => {
           <CommandSeparator />
           <CommandItem value="list all projects" data-umami-event="list-projects" class="items-center flex"
             @select="$router.push('/projects')">
-            <div class="i-lucide:layout-list w-4 h-4 mr-2"></div>
+            <div class="i-lucide:layout-list mr-2"></div>
             <span>all projects</span>
           </CommandItem>
           <CommandItem value="new project" data-umami-event="new-project" class="items-center flex"
             @select="$emit('new-project')">
-            <div class="i-lucide:list-plus w-4 h-4 mr-2"></div>
+            <div class="i-lucide:list-plus mr-2"></div>
             <span>new project</span>
           </CommandItem>
         </CommandGroup>
