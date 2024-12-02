@@ -6,15 +6,15 @@ import MarkdownCell from "@/components/MarkdownCell.vue";
 import MountFileSystem from "@/components/MountFileSystem.vue";
 
 import NotificationsCard from "@/components/NotificationsCard.vue";
-import SQLBackendSelector from "@/components/SQLBackendSelector.vue";
+// import SQLBackendSelector from "@/components/SQLBackendSelector.vue";
 import ShareProjectModal from "@/components/ShareProjectModal.vue";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-	Popover,
-	PopoverContent,
-	PopoverTrigger,
-} from "@/components/ui/popover";
+// import {
+// 	Popover,
+// 	PopoverContent,
+// 	PopoverTrigger,
+// } from "@/components/ui/popover";
 import { useDuckDb } from "@/hooks/useDuckDb.ts";
 import { useMetaStore } from "@/store/meta.ts";
 import { useProjects } from "@/store/project.ts";
