@@ -26,8 +26,8 @@ const $projects = useProjects();
 
 const { loading: db_loading } = useDuckDb();
 const show = reactive({
-	toolBar: true,
-	utilsBar: false,
+  toolBar: true,
+  utilsBar: false,
 });
 
 const keys = useMagicKeys();
@@ -35,8 +35,8 @@ const keys = useMagicKeys();
 const cmdShiftE = keys["Option+Shift+E"];
 
 watch(cmdShiftE, (v) => {
-	if (!v) return;
-	show.toolBar = !show.toolBar;
+  if (!v) return;
+  show.toolBar = !show.toolBar;
 });
 
 // const doMount = async () => {
@@ -62,10 +62,9 @@ watch(cmdShiftE, (v) => {
       </div>
       <div v-else class="flex gap-2 items-center w-full flex-col md:flex-row">
         <div class="flex  flex-shrink space-x-2 w-full md:w-auto items-center ">
-          <Input v-model:model-value="$projects.activeProjectMeta.name"
-                 v-if="$route.name === 'workbench'"
-                 class="md:min-w-[300px] flex-grow md:flex-grow-0 border-slate-200  bg-slate-200 dark:bg-slate-500 text-center focus:bg-slate-100 dark:focus:bg-slate-900"/>
-          <NotificationsCard v-if="$route.name === 'workbench'"/>
+          <Input v-model:model-value="$projects.activeProjectMeta.name" v-if="$route.name === 'workbench'"
+            class="md:min-w-[300px] flex-grow md:flex-grow-0 border-slate-200  bg-slate-200 dark:bg-slate-500 text-center focus:bg-slate-100 dark:focus:bg-slate-900" />
+          <NotificationsCard v-if="$route.name === 'workbench'" />
           <!-- <Button variant="outline" @click="doMount">mount</Button>
           <Popover>
             <PopoverTrigger as-child>
@@ -81,12 +80,14 @@ watch(cmdShiftE, (v) => {
         <div class="flex flex-grow"></div>
         <div class="flex md:min-w-0 max-w-[100vw] flex-grow  px-2 md:px-0 w-full">
           <div class="overflow-x-scroll min-w-full nice-scrollbar flex space-x-2 items-center md:justify-end">
-            <Button class="flex-grow md:flex-grow-0" variant="outline" size="sm" @click="$projects.addCell('markdown', null)">
+            <Button class="flex-grow md:flex-grow-0" variant="outline" size="sm"
+              @click="$projects.addCell('markdown', null)">
               <div class="i-ion:logo-markdown"></div>
               <span class="ml-1 hidden md:block">add md</span>
             </Button>
 
-            <Button class="flex-grow md:flex-grow-0" variant="outline" size="sm" @click="$projects.addCell('sql', null)">
+            <Button class="flex-grow md:flex-grow-0" variant="outline" size="sm"
+              @click="$projects.addCell('sql', null)">
               <div class="i-hugeicons:sql"></div>
               <span class="ml-1 hidden md:block">add sql</span>
             </Button>
@@ -103,30 +104,31 @@ watch(cmdShiftE, (v) => {
       </div>
     </div>
 
-    <div class="overflow-y-scroll nice-scrollbar flex flex-col h-0 flex-grow space-y-6">
-      <div v-for="cell in $projects.sortedCells" :key="`${cell.position}-${cell.id}`" v-if="$projects.activeProjectMeta.mode == 'notebook'" class="w-full">
-        <EditorCell :mode="$projects.activeProjectMeta.mode" v-model:query="cell.query" :id="cell.id" :position="cell.position" v-if="cell.type == 'sql'"/>
-        <MarkdownCell :mode="$projects.activeProjectMeta.mode" v-model:markdown="cell.markdown" :id="cell.id" :position="cell.position" v-if="cell.type == 'markdown'"/>
+    <div class="overflow-y-scroll nice-scrollbar flex flex-col h-0 flex-grow space-y-6"
+      style="scroll-snap-type: y mandatory;">
+      <div v-for="cell in $projects.sortedCells" :key="`${cell.position}-${cell.id}`"
+        v-if="$projects.activeProjectMeta.mode == 'notebook'" class="w-full" style="scroll-snap-align: start;">
+        <EditorCell :mode="$projects.activeProjectMeta.mode" v-model:query="cell.query" :id="cell.id"
+          :position="cell.position" v-if="cell.type == 'sql'" />
+        <MarkdownCell :mode="$projects.activeProjectMeta.mode" v-model:markdown="cell.markdown" :id="cell.id"
+          :position="cell.position" v-if="cell.type == 'markdown'" />
       </div>
       <EditorCell v-if="$projects.activeProjectMeta.mode == 'console'" :mode="$projects.activeProjectMeta.mode"
-                  :id="$projects.activeProjectCells[0].id"
-                  :position="$projects.activeProjectCells[0].position"
-                  v-model:query="$projects.activeProjectCells[0].query"/>
+        :id="$projects.activeProjectCells[0].id" :position="$projects.activeProjectCells[0].position"
+        v-model:query="$projects.activeProjectCells[0].query" />
     </div>
   </div>
   <div :class="[
-            'tool-bar items-center flex flex-col space-y-3 overflow-y-scroll nice-scrollbar h-full',
-            $meta.showToolbar ? 'flex-grow w-[max(20vw,350px)] max-w-[max(20vw,350px)]' : 'w-0 opacity-0'
-        ]">
+    'tool-bar items-center flex flex-col space-y-3 overflow-y-scroll nice-scrollbar h-full',
+    $meta.showToolbar ? 'flex-grow w-[max(20vw,350px)] max-w-[max(20vw,350px)]' : 'w-0 opacity-0'
+  ]">
     <div class="overflow-y-scroll nice-scrollbar h-0 flex-grow w-full">
-      <DBSchemaDetails class="w-full"/>
+      <DBSchemaDetails class="w-full" />
     </div>
   </div>
-  <ShareProjectModal/>
-  <FileImport/>
-  <MountFileSystem/>
+  <ShareProjectModal />
+  <FileImport />
+  <MountFileSystem />
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>
