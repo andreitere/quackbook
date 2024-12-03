@@ -6,15 +6,15 @@ import MarkdownCell from "@/components/MarkdownCell.vue";
 import MountFileSystem from "@/components/MountFileSystem.vue";
 
 import NotificationsCard from "@/components/NotificationsCard.vue";
-// import SQLBackendSelector from "@/components/SQLBackendSelector.vue";
+import SQLBackendSelector from "@/components/SQLBackendSelector.vue";
 import ShareProjectModal from "@/components/ShareProjectModal.vue";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-// import {
-// 	Popover,
-// 	PopoverContent,
-// 	PopoverTrigger,
-// } from "@/components/ui/popover";
+import {
+	Popover,
+	PopoverContent,
+	PopoverTrigger,
+} from "@/components/ui/popover";
 import { useDuckDb } from "@/hooks/useDuckDb.ts";
 import { useMetaStore } from "@/store/meta.ts";
 import { useProjects } from "@/store/project.ts";
@@ -65,7 +65,7 @@ watch(cmdShiftE, (v) => {
           <Input v-model:model-value="$projects.activeProjectMeta.name" v-if="$route.name === 'workbench'"
             class="md:min-w-[300px] flex-grow md:flex-grow-0 border-slate-200  bg-slate-200 dark:bg-slate-500 text-center focus:bg-slate-100 dark:focus:bg-slate-900" />
           <NotificationsCard v-if="$route.name === 'workbench'" />
-          <!-- <Button variant="outline" @click="doMount">mount</Button>
+          <!-- <Button variant="outline" @click="doMount">mount</Button>-->
           <Popover>
             <PopoverTrigger as-child>
               <Button variant="outline" size="sm">
@@ -73,9 +73,9 @@ watch(cmdShiftE, (v) => {
               </Button>
             </PopoverTrigger>
             <PopoverContent class="w-80">
-              <SQLBackendSelector/>
+              <SQLBackendSelector />
             </PopoverContent>
-          </Popover> -->
+          </Popover>
         </div>
         <div class="flex flex-grow"></div>
         <div class="flex md:min-w-0 max-w-[100vw] flex-grow  px-2 md:px-0 w-full">

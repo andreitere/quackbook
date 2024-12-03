@@ -15,10 +15,10 @@ const backends = [
     value: "duckdb_server",
     link: "/help#sqlbackends"
   },
-  // {
-  //   label: "PGLite WASM",
-  //   value: "pglite_wasm",
-  // }
+  {
+    label: "PGLite WASM",
+    value: "pglite_wasm",
+  }
 ]
 </script>
 

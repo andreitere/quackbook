@@ -21,6 +21,7 @@
 		"@codemirror/state": "^6.4.1",
 		"@codemirror/view": "^6.34.2",
 		"@duckdb/duckdb-wasm": "^1.29.0",
+		"@electric-sql/pglite": "^0.2.14",
 		"@he-tree/vue": "^2.9.1",
 		"@radix-icons/vue": "^1.0.0",
 		"@shikijs/markdown-it": "^1.22.2",

@@ -153,6 +153,7 @@ const onPlay = async () => {
 			pView.value.load(table);
 		} else {
 			let { records, schema } = await backend.value.query(query.value);
+			console.log(records, schema)
 			if (Object.values(schema).includes("json")) {
 				//@ts-ignore
 				records = records.map((row) => {

@@ -177,7 +177,7 @@ watch([Meta_K, Ctrl_K], (v) => {
             <span>all projects</span>
           </CommandItem>
           <CommandItem value="new project" data-umami-event="new-project" class="items-center flex"
-            @select="$emit('new-project')">
+            @select="$projects.createProject">
             <div class="i-lucide:list-plus mr-2"></div>
             <span>new project</span>
           </CommandItem>
