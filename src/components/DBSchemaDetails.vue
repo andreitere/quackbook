@@ -16,7 +16,7 @@ const filteredSchema = computed(() => {
     return schema.value;
   }
   return schema.value.filter((entry) => {
-    return entry.table.toLowerCase().includes(filter.value.toLowerCase());
+    return entry.key.toLowerCase().includes(filter.value.toLowerCase());
   });
 });
 
@@ -47,7 +47,7 @@ onMounted(() => {
     <div>
       <div class="grid px-2 gap-2">
         <Input placeholder="search..." v-model:model-value="filter" />
-        <div v-for="entry in filteredSchema">
+        <div v-for="entry in filteredSchema" :key="entry.key">
           <div class="border border-gray-200 rounded-lg p-2 bg-white dark:bg-gray-800">
             <h2 class="text-md font-semibold tracking-wide text-gray-900 dark:text-gray-100">
               {{ entry.database }}.{{ entry.schema }}.{{ entry.table }}

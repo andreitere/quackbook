@@ -61,9 +61,9 @@ export const useDBSchema = createSharedComposable(() => {
 					//@ts-ignore
 					columns = columns.map((t) => t.toJSON());
 				}
-				console.log({ columns });
 				// Build the schema tree structure
 				return {
+					key: `${database}.${schema}.${table}`,
 					database,
 					schema,
 					table,
