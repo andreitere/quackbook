@@ -39,17 +39,21 @@ watch(cmdShiftE, (v) => {
   show.toolBar = !show.toolBar;
 });
 
+// onMounted(() => {
+//   // doMount();
+// })
+
 // const doMount = async () => {
-// 	const opfsRoot = await navigator.storage.getDirectory();
-// 	const fileHandle = await opfsRoot.getFileHandle("output.csv", {
-// 		create: true,
-// 	});
-// 	console.log(fileHandle);
-// 	console.log(opfsRoot);
-// 	const docsDir = await opfsRoot.getDirectoryHandle("docs", { create: true });
-// 	for await (const [name, handle] of docsDir) {
-// 		console.log(name, handle);
-// 	}
+//   const opfsRoot = await navigator.storage.getDirectory();
+//   const fileHandle = await opfsRoot.getFileHandle("output.csv", {
+//     create: true,
+//   });
+//   console.log(fileHandle);
+//   console.log(opfsRoot);
+//   const docsDir = await opfsRoot.getDirectoryHandle("docs", { create: true });
+//   for await (const [name, handle] of docsDir) {
+//     console.log(name, handle);
+//   }
 // };
 </script>
 
