@@ -1,4 +1,4 @@
-<script setup lang="ts">
+ark<script setup lang="ts">
 import { useDBSchema } from "@/store/dbSchema.ts";
 import { Button } from "@/components/ui/button";
 import { db_events } from "@/store/meta.ts";
@@ -35,18 +35,17 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="space-y-2 resizable relative">
-    <header class="p-3 flex items-center border-b-2">
-      <h3 class="">Schema</h3>
-      <div class="flex-grow"></div>
-      <Button @click="updateSchema" variant="ghost" size="xs">
-        <div class="i-lucide:refresh-ccw animated" :class="{ 'animate-spin': isLoading }"></div>
-      </Button>
-    </header>
-    <div v-if="schema == null" class="text-center p-2">no tables yet ✨</div>
-    <div>
-      <div class="grid px-2 gap-2">
-        <Input placeholder="search..." v-model:model-value="filter" />
+  <div class="space-y-2 resizable relative flex flex-col max-h-[100dvh] h-full">
+    <div class="space-y-2 flex flex-col flex-grow">
+      <header class="p-3 flex items-center border-b-2 bg-gray-300 text-foreground">
+        <h3 class="tracking-tighter">Schema</h3>
+        <div class="flex-grow"></div>
+        <Button @click="updateSchema" variant="ghost" size="xs">
+          <div class="i-lucide:refresh-ccw animated" :class="{ 'animate-spin': isLoading }"></div>
+        </Button>
+      </header>
+      <Input placeholder="search..." v-model:model-value="filter" />
+      <div class="flex flex-col overflow-y-scroll nice-scrollbar h-0 flex-grow space-y-2">
         <div v-for="entry in filteredSchema" :key="entry.key">
           <div class="border border-gray-200 rounded-lg p-2 bg-white dark:bg-gray-800">
             <h2 class="text-md font-semibold tracking-wide text-gray-900 dark:text-gray-100">
@@ -75,31 +74,17 @@ onMounted(() => {
           </div>
         </div>
       </div>
-
     </div>
+    <!-- <div class="space-y-2">
+      <header class="p-3 flex items-center border-b-2 bg-gray-300 text-foreground">
+        <h3 class="">Events</h3>
+        <div class="flex-grow"></div>
+        <Button @click="updateSchema" variant="ghost" size="xs">
+          <div class="i-lucide:refresh-ccw animated" :class="{ 'animate-spin': isLoading }"></div>
+        </Button>
+      </header>
+    </div> -->
 
-    <!-- <BaseTree v-model="_schemaTree" ref="tree" :default-open="true">
-      <template #default="{ node, stat }">
-        <div class="flex gap-1">
-          <button @click="stat.open = !stat.open">
-            <div v-if="node.type === 'database'" :class="[
-              'w-4 h-4 transition-all duration-200',
-              stat.open ? 'i-iconoir:database-search' : 'i-iconoir:database-solid'
-            ]"></div>
-            <div v-if="node.type === 'schema'" :class="[
-              'w-4 h-4',
-              stat.open ? 'i-lucide:folder-open' : 'i-lucide:folder'
-            ]"></div>
-            <div v-if="node.type === 'table'" :class="[
-              'w-4 h-4',
-              stat.open ? 'i-lucide:table-properties' : 'i-lucide:table-2'
-            ]"></div>
-            <div v-if="node.type === 'column'" :class="['w-3 h-3 i-lucide:columns-2']"></div>
-          </button>
-          <span>{{ node.label }}</span>
-        </div>
-      </template>
-</BaseTree> -->
   </div>
 </template>
 

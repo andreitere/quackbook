@@ -11,9 +11,9 @@ import ShareProjectModal from "@/components/ShareProjectModal.vue";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
-	Popover,
-	PopoverContent,
-	PopoverTrigger,
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
 } from "@/components/ui/popover";
 import { useDuckDb } from "@/hooks/useDuckDb.ts";
 import { useMetaStore } from "@/store/meta.ts";
@@ -119,12 +119,10 @@ watch(cmdShiftE, (v) => {
     </div>
   </div>
   <div :class="[
-    'tool-bar items-center flex flex-col space-y-3 overflow-y-scroll nice-scrollbar h-full',
+    'tool-bar items-center flex flex-col space-y-3 h-full',
     $meta.showToolbar ? 'flex-grow w-[max(450px)] max-w-[max(450px)]' : 'w-0 opacity-0'
   ]">
-    <div class="overflow-y-scroll nice-scrollbar h-0 flex-grow w-full">
-      <DBSchemaDetails class="w-full" />
-    </div>
+    <DBSchemaDetails class="w-full" />
   </div>
   <ShareProjectModal />
   <FileImport />
