@@ -120,7 +120,7 @@ watch(cmdShiftE, (v) => {
   </div>
   <div :class="[
     'tool-bar items-center flex flex-col space-y-3 overflow-y-scroll nice-scrollbar h-full',
-    $meta.showToolbar ? 'flex-grow w-[max(20vw,350px)] max-w-[max(20vw,350px)]' : 'w-0 opacity-0'
+    $meta.showToolbar ? 'flex-grow w-[max(450px)] max-w-[max(450px)]' : 'w-0 opacity-0'
   ]">
     <div class="overflow-y-scroll nice-scrollbar h-0 flex-grow w-full">
       <DBSchemaDetails class="w-full" />

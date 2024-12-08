@@ -13,7 +13,22 @@ const loading = ref(false);
 	return this.toString();
 };
 
-export function useDuckDb(config?: DuckDBConfig) {
+interface UseDuckDbReturn {
+	db: Ref<AsyncDuckDB | undefined>;
+	loading: Ref<boolean>;
+	error: Ref<unknown | null>;
+	ready: () => Promise<boolean>;
+	query: (queryStr: string, raw?: boolean) => Promise<QueryResult>;
+}
+
+interface QueryResult {
+	schema: Record<string, string>;
+	records: any[];
+	query: string;
+	duration: number;
+}
+
+export function useDuckDb(config?: DuckDBConfig): UseDuckDbReturn {
 	const error: Ref<unknown | null> = ref(null);
 	const _config = {
 		query: {
@@ -40,7 +55,7 @@ export function useDuckDb(config?: DuckDBConfig) {
 		}
 	};
 
-	const query = async (queryStr: string, raw = false) => {
+	const query = async (queryStr: string, raw = false): Promise<QueryResult> => {
 		const start = performance.now();
 		await ready();
 		if (!db.value) {
@@ -52,9 +67,6 @@ export function useDuckDb(config?: DuckDBConfig) {
 		const conn = await db.value.connect();
 		const results = await conn.query(queryStr);
 		const duration = performance.now() - start;
-		if (!results) {
-			return console.warn("no results");
-		}
 		//@ts-ignore
 		const schema = results.schema.fields.reduce((acc: Record<string, string>, next: Field) => {
 			acc[next?.name as string] = arrowTypeToJsType(next.type);

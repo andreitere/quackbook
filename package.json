@@ -59,6 +59,7 @@
 		"@types/markdown-it": "^14.1.2",
 		"@unocss/preset-icons": "^0.64.0",
 		"@vitejs/plugin-vue": "^5.1.4",
+		"animated-unocss": "^0.0.6",
 		"autoprefixer": "^10.4.20",
 		"husky": "^9.1.6",
 		"sass-embedded": "^1.80.6",

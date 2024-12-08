@@ -1,26 +1,28 @@
-import { useDuckDb } from "@/hooks/useDuckDb.ts";
-import { computed, ref } from "vue";
+import { useSQLBackend } from "@/hooks/useSQLBackend";
+import { ref } from "vue";
+import { useProjects } from "./project";
+import { createSharedComposable } from "@vueuse/core";
 
-type Column = {
-	name: string;
-	type: string;
-	notnull: boolean;
-	dflt_value: string | null;
-	pk: number;
-};
+// type Column = {
+// 	column_name: string;
+// 	data_type: string;
+// 	is_nullable: boolean;
+// 	column_default?: string;
+// 	is_identity: boolean;
+// };
 
-type DBTable = {
-	table: string;
-	columns: Column[];
-};
+// type DBTable = {
+// 	table: string;
+// 	columns: Column[];
+// };
 
-type SchemaTree = {
-	[database: string]: {
-		[schema: string]: {
-			[table: string]: DBTable;
-		};
-	};
-};
+// type SchemaTree = {
+// 	[database: string]: {
+// 		[schema: string]: {
+// 			[table: string]: DBTable;
+// 		};
+// 	};
+// };
 export type DataModelNode = {
 	id: string | number;
 	label: string;
@@ -28,88 +30,50 @@ export type DataModelNode = {
 	type: string;
 };
 
-export const useDBSchema = () => {
-	const { ready, db } = useDuckDb();
-	const schema = ref<SchemaTree>();
+export const useDBSchema = createSharedComposable(() => {
+	const { backend } = useSQLBackend();
+	const { activeProjectMeta } = useProjects();
+	const schema = ref<Record<string, any>[]>();
 
 	const updateSchemaDetails = async () => {
-		await ready();
-		if (!db.value) {
-			return;
-		}
-		const conn = await db.value?.connect();
 		// Step 1: Get all schemas
-		const schemasResult = await conn.query(`
+		let { records } = await backend.value.query(`
 			SELECT table_catalog as database, table_schema as schema, table_name as table
 			FROM information_schema.tables
 			WHERE table_catalog NOT IN ('system')
 			AND table_schema NOT IN ('information_schema', 'pg_catalog')
 		`);
-		const schemas = schemasResult.toArray().map((t) => t.toJSON());
+		console.log(records);
+		if (activeProjectMeta.sql.backend === "duckdb_wasm") {
+			//@ts-ignore
+			records = records.map((t) => t.toJSON());
+		}
+
 		// Step 2: For each schema, get all tables and build the tree
-		const schemaTree: SchemaTree = {};
 
-		await Promise.allSettled(
-			schemas.map(async ({ database, schema, table }) => {
-				const tableInfo = await conn.query(
-					`PRAGMA table_info('${database}.${schema}.${table}')`,
-				);
-				const columns = tableInfo.toArray().map((c) => c.toJSON()) as Column[];
-
+		const _schema = await Promise.all(
+			records.map(async ({ database, schema, table }: Record<string, any>) => {
+				console.log({ database, schema, table });
+				let { records: columns } = await backend.value.query(`
+					select * from information_schema.columns where table_catalog = '${database}' and table_schema = '${schema}' and table_name = '${table}';
+				`);
+				if (activeProjectMeta.sql.backend === "duckdb_wasm") {
+					//@ts-ignore
+					columns = columns.map((t) => t.toJSON());
+				}
+				console.log({ columns });
 				// Build the schema tree structure
-				if (!schemaTree[database]) {
-					schemaTree[database] = {};
-				}
-				if (!schemaTree[database][schema]) {
-					schemaTree[database][schema] = {};
-				}
-				schemaTree[database][schema][table] = { table, columns };
+				return {
+					database,
+					schema,
+					table,
+					columns,
+				};
 			}),
 		);
 
-		schema.value = schemaTree;
+		schema.value = _schema;
 	};
 
-	const schemaTree = computed(() => {
-		if (!schema.value) return [];
-		const dataModel: DataModelNode[] = [];
-		for (const [database, schemas] of Object.entries(schema.value)) {
-			const databaseNode: DataModelNode = {
-				id: database,
-				label: database,
-				type: "database",
-				children: [],
-			};
-
-			for (const [schema, tables] of Object.entries(schemas)) {
-				const schemaNode: DataModelNode = {
-					id: `${database}.${schema}`,
-					label: schema,
-					type: "schema",
-					children: [],
-				};
-				for (const [table, tableInfo] of Object.entries(tables)) {
-					const tableNode: DataModelNode = {
-						id: `${database}.${schema}.${table}`,
-						label: table,
-						type: "table",
-						children: tableInfo.columns.map((column: Column) => ({
-							id: `${database}.${schema}.${table}.${column.name}`,
-							label: column.name,
-							type: "column",
-							metadata: {
-								...column,
-							},
-						})),
-					};
-					schemaNode.children?.push(tableNode);
-				}
-				databaseNode.children?.push(schemaNode);
-			}
-			dataModel.push(databaseNode);
-		}
-		return dataModel;
-	});
-
-	return { schema, updateSchemaDetails, schemaTree };
-};
+	return { schema, updateSchemaDetails };
+});

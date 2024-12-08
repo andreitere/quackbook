@@ -91,7 +91,6 @@ export const arrowTypeToJsType = (arrowType: DataType) => {
 			console.log(arrowType);
 			_rType = "unknown";
 	}
-	console.log(arrowType, _rType);
 	return _rType;
 };
 

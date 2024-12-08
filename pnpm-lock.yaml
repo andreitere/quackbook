@@ -144,6 +144,9 @@ importers:
       '@vitejs/plugin-vue':
         specifier: ^5.1.4
         version: 5.2.0(vite@5.4.11(@types/node@20.17.6)(sass-embedded@1.80.7))(vue@3.5.12(typescript@5.6.3))
+      animated-unocss:
+        specifier: ^0.0.6
+        version: 0.0.6(animate.css@4.1.1)(unocss@0.64.0(postcss@8.4.49)(rollup@4.26.0)(vite@5.4.11(@types/node@20.17.6)(sass-embedded@1.80.7))(vue@3.5.12(typescript@5.6.3)))
       autoprefixer:
         specifier: ^10.4.20
         version: 10.4.20(postcss@8.4.49)
@@ -1123,6 +1126,9 @@ packages:
       vite:
         optional: true
 
+  '@unocss/autocomplete@0.51.13':
+    resolution: {integrity: sha512-SyI1SAFZ7Zaw4NqEdRUHPjCmTc/rSTRv1aasZlOC3x7mVG8j/R6+afyqFs4w3HUINJRc3d0tT/Uwfr7lD2GRSw==}
+
   '@unocss/cli@0.64.0':
     resolution: {integrity: sha512-xfY/qm7vr/4Qaf+CcQHuBJSg5ApZBvvGVD1zwyGFgfhfOFYR1hI3DS2zl75zav6btEwwXsjY7AUv6uYGF4M7dA==}
     engines: {node: '>=14'}
@@ -1132,8 +1138,14 @@ packages:
     resolution: {integrity: sha512-L97x4vEk7jNG5ptZY5Xp0xgEk//tbMpQVm2BzfyL7w+Hg8X3AV4YjFL6hysHvpYiTdUCVaZg+S0s3b7wuj8Mqw==}
     engines: {node: '>=14'}
 
+  '@unocss/core@0.51.8':
+    resolution: {integrity: sha512-myHRKBphEN3h0OnsUhg2JaFKjFGfqF/jmmzZCCMNU5UmxbheZomXANNLYXVgEP6LHvd4xAF0DEzrOBcDPLf0HQ==}
+
   '@unocss/core@0.64.0':
     resolution: {integrity: sha512-Qb8wWPYNlTagCdJGzULew+e3NMM8Bd7fr38lDLgrMj+njop+wzkSe1ZZOyMMH9yHSq/Rznn5eCjnyzyHwxGslQ==}
+
+  '@unocss/extractor-arbitrary-variants@0.51.8':
+    resolution: {integrity: sha512-cCsdRLqmt3adcaRtoIP2pC8mYgH3ed8DEES3E7VOWghqLjwLULUMyBS+vy7n9CvnV75kuTKb1bZ+k9eu/rfh2w==}
 
   '@unocss/extractor-arbitrary-variants@0.64.0':
     resolution: {integrity: sha512-oVB8l8zM+x0MQJTkraRcsrfJnWEwyPVgMgtzmNUm//HqV+xTrjZCNtOqHFNIZdj/+w0gkErGQLxzRwyPjlHq4g==}
@@ -1152,6 +1164,9 @@ packages:
 
   '@unocss/preset-icons@0.64.0':
     resolution: {integrity: sha512-jhozA4r583agZZpKttdootaWfvQ29lY/kHxNU1Ah2xeRQcVXXEh7M3cG0bo9HSIX9/BgXSk5rWQlqSPIqFl4Lw==}
+
+  '@unocss/preset-mini@0.51.8':
+    resolution: {integrity: sha512-eDm70Kuw3gscq2bjjmM7i11ox2siAbzsI9dIIpJtXntuWdzwlhqNk40YH/YnM02OfWVi8QLdWuye4wOA3//Fjw==}
 
   '@unocss/preset-mini@0.64.0':
     resolution: {integrity: sha512-bc7zanalVQUrETJ06eyS7y/lhceRlY8kBG/lRCV/dYmKl4Ho/s57LrpZH0G63OcO6IfWIjwoZHVC8/RHAqnYvQ==}
@@ -1463,6 +1478,15 @@ packages:
 
   alien-signals@0.2.2:
     resolution: {integrity: sha512-cZIRkbERILsBOXTQmMrxc9hgpxglstn69zm+F1ARf4aPAzdAFYd6sBq87ErO0Fj3DV94tglcyHG5kQz9nDC/8A==}
+
+  animate.css@4.1.1:
+    resolution: {integrity: sha512-+mRmCTv6SbCmtYJCN4faJMNFVNN5EuCTTprDTAo7YzIGji2KADmakjVA3+8mVDkZ2Bf09vayB35lSQIex2+QaQ==}
+
+  animated-unocss@0.0.6:
+    resolution: {integrity: sha512-JC7dCCulGZedisB1t/xB6pXuIWTr0Sci7UrLitelSy7dSU6z/S2UHOlThmb/bvGtNiARyGb0lidLB4xGZ9xMxg==}
+    peerDependencies:
+      animate.css: '>=4.1.1'
+      unocss: '>=0.50.4'
 
   ansi-regex@5.0.1:
     resolution: {integrity: sha512-quJQXlTSUGL2LH9SUXo8VwsY4soanhgo6LNSm84E1LBcE8s3O0wpdiRzyR9z/ZZJMlMWv37qOOb9pdJlMUEKFQ==}
@@ -2143,6 +2167,10 @@ packages:
 
   lru-cache@10.4.3:
     resolution: {integrity: sha512-JNAzZcXrCt42VGLuYz0zfAzDfAvJWW6AfYlDBQyDV5DClI2m5sAmK+OIO7s59XfsRsWHp02jAJrRadPRGTt6SQ==}
+
+  lru-cache@9.1.2:
+    resolution: {integrity: sha512-ERJq3FOzJTxBbFjZ7iDs+NiK4VI9Wz+RdrrAB8dio1oV+YvdPzUEE4QNiT2VD51DkIbCYRUUzCRkssXCHqSnKQ==}
+    engines: {node: 14 || >=16.14}
 
   lucide-vue-next@0.456.0:
     resolution: {integrity: sha512-KSBfTFpJV75GAUk5dfxWH4U4eJ0DpSeEZ7hMHkvLFF6ibMDZjXtxCxb/lm9AJ/T7auFwP82c/TLTJIiSNxvfkg==}
@@ -3922,6 +3950,10 @@ snapshots:
       - supports-color
       - vue
 
+  '@unocss/autocomplete@0.51.13':
+    dependencies:
+      lru-cache: 9.1.2
+
   '@unocss/cli@0.64.0(rollup@4.26.0)':
     dependencies:
       '@ampproject/remapping': 2.3.0
@@ -3948,7 +3980,13 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  '@unocss/core@0.51.8': {}
+
   '@unocss/core@0.64.0': {}
+
+  '@unocss/extractor-arbitrary-variants@0.51.8':
+    dependencies:
+      '@unocss/core': 0.51.8
 
   '@unocss/extractor-arbitrary-variants@0.64.0':
     dependencies:
@@ -3986,6 +4024,11 @@ snapshots:
       ofetch: 1.4.1
     transitivePeerDependencies:
       - supports-color
+
+  '@unocss/preset-mini@0.51.8':
+    dependencies:
+      '@unocss/core': 0.51.8
+      '@unocss/extractor-arbitrary-variants': 0.51.8
 
   '@unocss/preset-mini@0.64.0':
     dependencies:
@@ -4492,6 +4535,15 @@ snapshots:
       require-from-string: 2.0.2
 
   alien-signals@0.2.2: {}
+
+  animate.css@4.1.1: {}
+
+  animated-unocss@0.0.6(animate.css@4.1.1)(unocss@0.64.0(postcss@8.4.49)(rollup@4.26.0)(vite@5.4.11(@types/node@20.17.6)(sass-embedded@1.80.7))(vue@3.5.12(typescript@5.6.3))):
+    dependencies:
+      '@unocss/autocomplete': 0.51.13
+      '@unocss/preset-mini': 0.51.8
+      animate.css: 4.1.1
+      unocss: 0.64.0(postcss@8.4.49)(rollup@4.26.0)(vite@5.4.11(@types/node@20.17.6)(sass-embedded@1.80.7))(vue@3.5.12(typescript@5.6.3))
 
   ansi-regex@5.0.1: {}
 
@@ -5240,6 +5292,8 @@ snapshots:
       js-tokens: 4.0.0
 
   lru-cache@10.4.3: {}
+
+  lru-cache@9.1.2: {}
 
   lucide-vue-next@0.456.0(vue@3.5.12(typescript@5.6.3)):
     dependencies:
