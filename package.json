@@ -6,6 +6,7 @@
 	"scripts": {
 		"dev": "vite",
 		"build": "vue-tsc -b && vite build",
+		"build:dev": "vue-tsc -b && vite build --mode dev",
 		"preview": "vite preview",
 		"prepare": "husky",
 		"lint": "biome lint --write ./src",
