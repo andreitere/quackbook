@@ -58,7 +58,7 @@ watch(cmdShiftE, (v) => {
 </script>
 
 <template>
-  <div class="flex flex-grow w-1/3 flex-col h-full max-h-full px-2  py-0">
+  <div class="flex flex-grow w-1/3 flex-col h-full max-h-full px-2  py-0 ">
     <div class="flex justify-start items-center gap-2 text-gray-400 py-4">
       <div v-if="db_loading" class="flex items-center justify-center w-full">
         <div class="i-line-md:loading-twotone-loop w-5 h-5"></div>

@@ -7,7 +7,7 @@ import { computed, nextTick, onMounted, ref, useTemplateRef, watch } from "vue";
 
 import { format } from "sql-formatter";
 
-import { useSQLBackend } from "@/hooks/useSQLBackend.ts";
+import { useSQLBackend } from "@/hooks/useSQLBackend";
 import { useSQLExtensions } from "@/hooks/useSQLEditor.ts";
 import { db_events } from "@/store/meta.ts";
 import { useProjects } from "@/store/project.ts";
@@ -24,6 +24,7 @@ import { EditorState } from "@codemirror/state";
 import { EditorView, keymap } from "@codemirror/view";
 import { useColorMode, useVModels } from "@vueuse/core";
 import { ayuLight, cobalt } from "thememirror";
+import { QueryResult } from "@/types/database";
 
 const pView = ref(null);
 const color = useColorMode();
@@ -35,7 +36,7 @@ const props = defineProps({
 });
 const { query } = useVModels(props);
 
-const { backend } = useSQLBackend();
+const { backend, execute } = useSQLBackend();
 const $projects = useProjects();
 const { activeProject } = $projects;
 const queryEditor = useTemplateRef("queryEditorRef");
@@ -115,18 +116,17 @@ const onPlay = async () => {
 		await nextTick();
 		error.value = "";
 		loading.value = true;
-		const start = performance.now();
-		if (activeProject.sql.backend === "duckdb_server") {
-			const reader = await backend.value.query(query.value, true);
+		
+		const result = await execute(query.value, activeProject.sql.backend === "duckdb_server");
+		
+		if (result instanceof ReadableStreamDefaultReader) {
 			hasResults.value = true;
 			let table = null;
 
 			const chunks = [];
 			while (true) {
-				const { value, done } = await reader.read();
-				// console.log(value, done);
-
-				if (done) break; // Exit loop if the stream ends
+				const { value, done } = await result.read();
+				if (done) break;
 				if (value) {
 					chunks.push(new Uint8Array(value));
 				}
@@ -152,11 +152,12 @@ const onPlay = async () => {
 			//@ts-ignore
 			pView.value.load(table);
 		} else {
-			let { records, schema } = await backend.value.query(query.value);
-			console.log(records, schema)
+			const { records, schema, duration } = result;
+			let processedRecords = records;
+			let processedSchema = schema;
+			
 			if (Object.values(schema).includes("json")) {
-				//@ts-ignore
-				records = records.map((row) => {
+				processedRecords = records.map((row) => {
 					const _row = {};
 					for (const [k, v] of Object.entries(row)) {
 						//@ts-ignore
@@ -164,18 +165,20 @@ const onPlay = async () => {
 					}
 					return _row;
 				});
-				schema = Object.fromEntries(
+				processedSchema = Object.fromEntries(
 					Object.entries(schema).map(([k, v]) => [k, v === "json" ? "string" : v])
 				);
 			}
-			//@ts-ignore
-			const end = performance.now();
-			lastQueryDuration.value = ((end - start) / 1000).toFixed(5);
-			if (records.length) {
+			
+			if (duration) {
+				lastQueryDuration.value = (duration / 1000).toFixed(5);
+			}
+			
+			if (processedRecords.length) {
 				hasResults.value = true;
 				await nextTick();
 				//@ts-ignore
-				const table = await pWorker.value.table(records);
+				const table = await pWorker.value.table(processedRecords);
 				// @ts-ignore
 				pView.value.load(table, { configure: true });
 			}
@@ -190,7 +193,6 @@ const onPlay = async () => {
 		} else {
 			error.value = "An unknown error occured";
 		}
-		// playQuack();
 	} finally {
 		loading.value = false;
 	}
@@ -226,16 +228,15 @@ onMounted(async () => {
 <template>
 	<div :class="[
 		'transition-all duration-200 w-full flex h-auto flex-col p-3 rounded space-y-2 group',
-		props.mode == 'console' ? 'h-full' : 'border-[1px] border-solid border-slate-200 hover:shadow-md focus-within:border-slate-300 focus-within:shadow-lg',
+		props.mode == 'console' ? 'h-full' : 'border-[1px] border-solid border-slate-400 hover:shadow-md focus-within:border-slate-300 focus-within:shadow-lg',
 	]" @focusin="inputFocused = true" @focusout="inputFocused = false">
-		<EditorCellToolbar class=" duration-200" :class="[
-			props.mode == 'console' ? 'opacity-80' : 'opacity-0 group-hover:opacity-100',
-		]" :delete="props.mode == 'notebook'" :trash="props.mode == 'notebook'" :duplicate="props.mode == 'notebook'"
-			@play="onPlay" @clear="onClear" @movedown="$projects.moveDown(props.id)"
-			@moveup="$projects.moveUp(props.id)" @trash="$projects.deleteCell(props.id)" @format="onFormat"
-			:edit="false" :display_results="false" :format="true" />
+		<EditorCellToolbar :delete="props.mode == 'notebook'" :trash="props.mode == 'notebook'"
+			:duplicate="props.mode == 'notebook'" @play="onPlay" @clear="onClear"
+			@movedown="$projects.moveDown(props.id)" @moveup="$projects.moveUp(props.id)"
+			@trash="$projects.deleteCell(props.id)" @format="onFormat" :edit="false" :display_results="false"
+			:format="true" />
 		<div class="flex items-start flex-col overflow-hidden">
-			<div ref="queryEditorRef" class=" p-2 overflow-y-scroll w-full nice-scrollbar max-h-[30vh]"
+			<div ref="queryEditorRef" class="p-2 overflow-y-scroll w-full nice-scrollbar max-h-[30vh]"
 				style="field-sizing: content"></div>
 		</div>
 

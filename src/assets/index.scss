@@ -82,10 +82,11 @@
   }
 }
 
-
-html, body, #app {
+html,
+body,
+#app {
   @apply h-full w-full max-h-full max-w-full overflow-hidden;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
 }
 
 .delius-swash-caps-regular {
@@ -97,18 +98,19 @@ html, body, #app {
 * {
   user-select: none;
 }
-.prose, .prose * {
+.prose,
+.prose * {
   user-select: text;
 }
 
-
-.nice-scrollbar, .cm-editor,.cm-scroller {
+.nice-scrollbar,
+.cm-editor,
+.cm-scroller {
   &::-webkit-scrollbar-thumb {
     background-color: #bdc3c7;
     border-radius: 5px;
     width: 20px;
   }
-
 
   &::-webkit-scrollbar {
     background: white;
@@ -123,7 +125,6 @@ html, body, #app {
 }
 
 .page {
-
 }
 
 .cmd-btn {

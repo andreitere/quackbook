@@ -1,15 +1,16 @@
 <script setup lang="ts">
-import {Button} from "@/components/ui/button";
+import { Button, ButtonVariants } from "@/components/ui/button";
+import { ref } from "vue";
 
 defineProps({
-  play: {default: true},
-  save: {default: true},
-  clear: {default: true},
-  duplicate: {default: true},
-  trash: {default: true},
-  edit: {default: false},
-  update: {default: false},
-  format: {default: false}
+  play: { default: true },
+  save: { default: true },
+  clear: { default: true },
+  duplicate: { default: true },
+  trash: { default: true },
+  edit: { default: false },
+  update: { default: false },
+  format: { default: false }
 });
 
 const $emit = defineEmits([
@@ -25,36 +26,45 @@ const $emit = defineEmits([
   "movedown",
   "format"
 ]);
+const buttonVariant = ref<ButtonVariants["variant"]>("ghost");
+
 </script>
 
 <template>
   <div class="flex space-x-2">
-    <Button tabindex="-1" size="xs" data-umami-event="run-cell" class="cursor-pointer" variant="outline" v-if="play" @click="$emit('play')">
+    <Button tabindex="-1" size="xs" data-umami-event="run-cell" class="cursor-pointer" :variant="buttonVariant"
+      v-if="play" @click="$emit('play')">
       <div class="i-pixelarticons:play"></div>
     </Button>
-    <Button tabindex="-1" size="xs" data-umami-event="format-cell" class="cursor-pointer" variant="outline" v-if="format" @click="$emit('format')">
+    <Button tabindex="-1" size="xs" data-umami-event="format-cell" class="cursor-pointer" :variant="buttonVariant"
+      v-if="format" @click="$emit('format')">
       <div class="i-stash:wand-duotone"></div>
     </Button>
-    <Button tabindex="-1" size="xs" variant="outline" data-umami-event="clear-cell" v-if="clear" @click="$emit('clear')">
+    <Button tabindex="-1" size="xs" :variant="buttonVariant" data-umami-event="clear-cell" v-if="clear"
+      @click="$emit('clear')">
       <div class="i-mingcute:broom-line"></div>
     </Button>
     <div class="flex-grow"></div>
-    <Button tabindex="-1" size="xs" data-umami-event="edit-cell" variant="outline" @click="$emit('edit')" v-if="edit">
+    <Button tabindex="-1" size="xs" data-umami-event="edit-cell" :variant="buttonVariant" @click="$emit('edit')"
+      v-if="edit">
       <div class="i-pixelarticons:edit-box"></div>
     </Button>
-    <Button tabindex="-1" size="xs" data-umami-event="update-cell" variant="outline" @click="$emit('update')" v-if="update">
+    <Button tabindex="-1" size="xs" data-umami-event="update-cell" :variant="buttonVariant" @click="$emit('update')"
+      v-if="update">
       <div class="i-pixelarticons:close"></div>
     </Button>
-    <Button tabindex="-1" size="xs" data-umami-event="move-cell-up" variant="outline" @click="$emit('moveup')">
+    <Button tabindex="-1" size="xs" data-umami-event="move-cell-up" :variant="buttonVariant" @click="$emit('moveup')">
       <div class="i-material-symbols-light:arrow-upward-alt-rounded"></div>
     </Button>
-    <Button tabindex="-1" size="xs" data-umami-event="move-cell-down" variant="outline" @click="$emit('movedown')">
+    <Button tabindex="-1" size="xs" data-umami-event="move-cell-down" :variant="buttonVariant"
+      @click="$emit('movedown')">
       <div class="i-material-symbols-light:arrow-downward-alt-rounded"></div>
     </Button>
     <!--    <Button tabindex="-1" size="xs" variant="outline" v-if="duplicate" @click="$emit('duplicate')">-->
     <!--      <div class="i-pixelarticons:duplicate"></div>-->
     <!--    </Button>-->
-    <Button tabindex="-1" size="xs" data-umami-event="trash-cell" variant="outline" v-if="trash" @click="$emit('trash')">
+    <Button tabindex="-1" size="xs" data-umami-event="trash-cell" :variant="buttonVariant" v-if="trash"
+      @click="$emit('trash')">
       <div class="i-pixelarticons:trash"></div>
     </Button>
   </div>
