@@ -1,3 +1,37 @@
+<template>
+	<div :class="[
+		cn(
+			error ? 'border-red-500 focus-within:border-red-500' : ''
+		),
+		'transition-all duration-200 w-full flex h-auto flex-col p-3 rounded space-y-2 group bg-white',
+		'border-[1px] border-solid border-slate-200 focus-within:border-slate-300 focus-within:shadow-md',
+	]" @focusin="inputFocused = true" @focusout="inputFocused = false">
+		<EditorCellToolbar :delete="props.mode == 'notebook'" :trash="props.mode == 'notebook'"
+			:duplicate="props.mode == 'notebook'" :edit="false" :display_results="false" :format="true" @play="onPlay"
+			@clear="onClear" @movedown="$projects.moveDown(props.id)" @moveup="$projects.moveUp(props.id)"
+			@trash="$projects.deleteCell(props.id)" @format="onFormat" />
+		<div class="flex items-start flex-col overflow-hidden">
+			<div ref="queryEditorRef" class="p-2 overflow-y-scroll w-full nice-scrollbar max-h-[30vh]"
+				style="field-sizing: content" />
+		</div>
+
+		<div v-if="hasResults" class="bg-blue-200 flex-grow" style="field-sizing: content">
+			<perspective-viewer ref="pView" :class="[
+				'overflow-hidden',
+				props.mode == 'console' ? 'h-full' : 'h-[20vh] flex-shrink min-h-[100px] resize-y'
+			]" :theme="tableTheme" />
+		</div>
+		<div class="info justify-end flex space-x-2">
+			<span v-if="lastQueryDuration && !error" class="text-xs">query took: {{ lastQueryDuration }} s</span>
+			<pre v-if="error != ''" class="text-xs text-red-500 text-wrap"
+				v-html="error.replaceAll(/(\t)/gm, '&nbsp;&nbsp;&nbsp;&nbsp;').replaceAll(/(\r\n|\n|\r)/gm, '<br />')" />
+			<div v-if="lastQueryDuration != '' && error == ''" class="i-ep:success-filled text-green-600 h-5 w-5" />
+			<div v-if="error != ''" class="i-material-symbols:chat-error-outline text-red-600 h-5 w-5" />
+			<div v-if="loading" class="i-svg-spinners-gooey-balls-1" />
+		</div>
+	</div>
+</template>
+
 <script setup lang="ts">
 //@ts-ignore
 import perspective from "https://cdn.jsdelivr.net/npm/@finos/perspective/dist/cdn/perspective.js";
@@ -22,6 +56,7 @@ import { EditorState } from "@codemirror/state";
 import { EditorView, keymap } from "@codemirror/view";
 import { useColorMode, useVModels } from "@vueuse/core";
 import { ayuLight, cobalt } from "thememirror";
+import { cn } from "@/lib/utils";
 
 const pView = ref(null);
 const color = useColorMode();
@@ -222,76 +257,6 @@ onMounted(async () => {
 });
 </script>
 
-<template>
-  <div
-    :class="[
-      'transition-all duration-200 w-full flex h-auto flex-col p-3 rounded space-y-2 group bg-white',
-      'border-[1px] border-solid border-slate-200 focus-within:border-slate-300 focus-within:shadow-md',
-    ]"
-    @focusin="inputFocused = true"
-    @focusout="inputFocused = false"
-  >
-    <EditorCellToolbar
-      :delete="props.mode == 'notebook'"
-      :trash="props.mode == 'notebook'"
-      :duplicate="props.mode == 'notebook'"
-      :edit="false"
-      :display_results="false"
-      :format="true"
-      @play="onPlay"
-      @clear="onClear"
-      @movedown="$projects.moveDown(props.id)"
-      @moveup="$projects.moveUp(props.id)"
-      @trash="$projects.deleteCell(props.id)"
-      @format="onFormat"
-    />
-    <div class="flex items-start flex-col overflow-hidden">
-      <div
-        ref="queryEditorRef"
-        class="p-2 overflow-y-scroll w-full nice-scrollbar max-h-[30vh]"
-        style="field-sizing: content"
-      />
-    </div>
-
-    <div
-      v-if="hasResults"
-      class="bg-blue-200 flex-grow"
-      style="field-sizing: content"
-    >
-      <perspective-viewer
-        ref="pView"
-        :class="[
-          'overflow-hidden',
-          props.mode == 'console' ? 'h-full' : 'h-[20vh] flex-shrink min-h-[100px] resize-y'
-        ]"
-        :theme="tableTheme"
-      />
-    </div>
-    <div class="info justify-end flex space-x-2">
-      <span
-        v-if="lastQueryDuration && !error"
-        class="text-xs"
-      >query took: {{ lastQueryDuration }} s</span>
-      <pre
-        v-if="error != ''"
-        class="text-xs text-red-500 text-wrap"
-        v-html="error.replaceAll(/(\t)/gm, '&nbsp;&nbsp;&nbsp;&nbsp;').replaceAll(/(\r\n|\n|\r)/gm, '<br />')"
-      />
-      <div
-        v-if="lastQueryDuration != '' && error == ''"
-        class="i-ep:success-filled text-green-600 h-5 w-5"
-      />
-      <div
-        v-if="error != ''"
-        class="i-material-symbols:chat-error-outline text-red-600 h-5 w-5"
-      />
-      <div
-        v-if="loading"
-        class="i-svg-spinners-gooey-balls-1"
-      />
-    </div>
-  </div>
-</template>
 
 <style lang="scss">
 perspective-viewer {

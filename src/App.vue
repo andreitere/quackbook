@@ -7,7 +7,7 @@ import { useMagicKeys } from "@vueuse/core";
 import { watch } from "vue";
 import { useRoute } from "vue-router";
 import Toaster from "@/components/ui/toast/Toaster.vue";
-
+import CommandMenu from "@/components/CommandMenu.vue";
 const { playQuack } = useQuackDuck();
 const $meta = useMetaStore();
 const $route = useRoute();
@@ -31,7 +31,7 @@ watch([meta, shift, e], (v) => {
   <div class="w-full h-full flex flex-col relative bg-slate-50">
     <header
       class="flex items-center p-2 md:p-4 space-x-3 md:space-x-6 border-b border-slate-200 bg-white shadow-sm sticky top-0 z-50">
-      <!-- <CommandMenu /> -->
+      <CommandMenu />
 
       <TooltipProvider>
         <Tooltip>

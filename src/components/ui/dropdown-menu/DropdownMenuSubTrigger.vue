@@ -3,8 +3,10 @@
 import {
 	type DropdownMenuSubTriggerProps,
 	useForwardProps,
+	DropdownMenuSubTrigger,
 } from "radix-vue";
 import { computed, type HTMLAttributes } from "vue";
+import { cn } from "@/lib/utils";
 
 const props = defineProps<
 	DropdownMenuSubTriggerProps & { class?: HTMLAttributes["class"] }
@@ -28,6 +30,6 @@ const forwardedProps = useForwardProps(delegatedProps);
     )"
   >
     <slot />
-    <ChevronRightIcon class="ml-auto h-4 w-4" />
+    <div class="i-lucide:chevron-right ml-auto h-4 w-4" />
   </DropdownMenuSubTrigger>
 </template>
