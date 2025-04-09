@@ -1,9 +1,6 @@
 <script setup lang="ts">
-import { cn } from '@/lib/utils'
-import { CheckIcon } from '@radix-icons/vue'
+
 import {
-  RadioGroupIndicator,
-  RadioGroupItem,
   type RadioGroupItemProps,
   useForwardProps,
 } from 'radix-vue'

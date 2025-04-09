@@ -4,7 +4,6 @@ import { computed, ref, watch } from "vue";
 import { decodeBase64UrlToJson, expandKeys } from "@/lib/utils.ts";
 import { useProjects } from "@/store/project.ts";
 import { projectKeyMap } from "@/lib/constants.ts";
-import { Textarea } from "@/components/ui/textarea";
 import Ajv from "ajv";
 import projectSchemaRaw from "@/lib/schemas/project.schema.json"
 import { useToast } from "@/components/ui/toast";
@@ -106,7 +105,6 @@ const tryImport = (v: unknown) => {
       })
     }
   } catch (e) {
-    console.log(e)
     toast({
       title: "Import error",
       description: "Failed to import project. Please check the format and try again.",

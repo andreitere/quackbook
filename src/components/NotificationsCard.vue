@@ -1,10 +1,5 @@
 <script setup lang="ts">
-import {
-	HoverCard,
-	HoverCardContent,
-	HoverCardTrigger,
-} from "@/components/ui/hover-card";
-import { Button } from "@/components/ui/button";
+
 import { useProjects } from "@/store/project.ts";
 import { computed } from "vue";
 

@@ -1,9 +1,6 @@
 <script setup lang="ts">
-import { cn } from '@/lib/utils'
-import { DotFilledIcon } from '@radix-icons/vue'
+
 import {
-  MenubarItemIndicator,
-  MenubarRadioItem,
   type MenubarRadioItemEmits,
   type MenubarRadioItemProps,
   useForwardPropsEmits,

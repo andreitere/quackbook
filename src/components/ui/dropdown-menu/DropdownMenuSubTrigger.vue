@@ -1,8 +1,6 @@
 <script setup lang="ts">
-import { cn } from "@/lib/utils";
-import { ChevronRightIcon } from "@radix-icons/vue";
+
 import {
-	DropdownMenuSubTrigger,
 	type DropdownMenuSubTriggerProps,
 	useForwardProps,
 } from "radix-vue";

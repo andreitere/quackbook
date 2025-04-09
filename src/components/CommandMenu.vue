@@ -1,15 +1,5 @@
 <script setup lang="ts">
-import { Command, CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator, } from "@/components/ui/command";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Button } from "@/components/ui/button";
+
 import { useColorMode, useMagicKeys } from "@vueuse/core";
 import { watch } from "vue";
 import { useMetaStore } from "@/store/meta.ts";

@@ -1,4 +1,4 @@
-import { QueryResult, SQLBackend } from "@/types/database";
+import type { QueryResult, SQLBackend } from "@/types/database";
 import { useDuckDb } from "@/hooks/useDuckDb";
 
 export class DuckDBAdapter implements SQLBackend {

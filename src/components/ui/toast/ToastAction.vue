@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { cn } from "@/lib/utils";
-import { ToastAction, type ToastActionProps } from "radix-vue";
+
+import type { ToastActionProps } from "radix-vue";
 import { computed, type HTMLAttributes } from "vue";
 
 const props = defineProps<

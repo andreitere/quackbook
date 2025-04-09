@@ -1,12 +1,5 @@
 <script setup lang="ts">
-import CommandMenu from "@/components/CommandMenu.vue";
-import Toaster from "@/components/ui/toast/Toaster.vue";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+
 
 
 import { useQuackDuck } from "@/hooks/useQuackDuck.ts";
@@ -14,7 +7,6 @@ import { useMetaStore } from "@/store/meta.ts";
 import { useMagicKeys } from "@vueuse/core";
 import { watch } from "vue";
 import { useRoute } from "vue-router";
-import { Button } from "./components/ui/button";
 
 const { playQuack } = useQuackDuck();
 const $meta = useMetaStore();
@@ -36,55 +28,51 @@ watch([meta, shift, e], (v) => {
 </script>
 
 <template>
-  <div class="w-full h-full flex flex-col relative">
-    <header class="flex items-center p-1 md:p-3 space-x-2 md:space-x-4 border-b-[1px] border-solid border-slate-200">
+  <div class="w-full h-full flex flex-col relative bg-slate-50">
+    <header
+      class="flex items-center p-2 md:p-4 space-x-3 md:space-x-6 border-b border-slate-200 bg-white shadow-sm sticky top-0 z-50">
       <CommandMenu />
 
       <TooltipProvider>
         <Tooltip>
           <TooltipTrigger>
-            <router-link as-child to="/">
-              <h1 class="text-xl">QuackBook</h1>
-              <!-- <h1 class="text-xl md:hidden">QB</h1> -->
+            <router-link as-child to="/" class="group">
+              <h1 class="font-bold text-slate-800 transition-colors group-hover:text-slate-900">QuackBook
+              </h1>
             </router-link>
           </TooltipTrigger>
           <TooltipContent align="center" hide-when-detached>
-            <div @click="playQuack">quack 🦆</div>
+            <div @click="playQuack" class="cursor-pointer hover:text-slate-600 transition-colors">quack 🦆</div>
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
 
-
-      <div class="h-[50%] w-[1px] mx-5 bg-gray-500 hidden md:block"></div>
-      <div class="hidden items-center space-x-1 md:flex">
-        <router-link to="/import">
-          <Button variant="ghost" size="xs" class="text-sm">
+      <div class="h-[50%] w-[1px] mx-5 bg-slate-200 hidden md:block"></div>
+      <div class="hidden items-center space-x-2 md:flex">
+        <router-link to="/import" class="group">
+          <Button variant="ghost" size="sm" class="text-xs transition-colors group-hover:bg-slate-100">
             import
           </Button>
         </router-link>
-        <router-link to="/about">
-          <Button variant="ghost" size="xs" class="text-sm">
+        <router-link to="/about" class="group">
+          <Button variant="ghost" size="sm" class="text-xs transition-colors group-hover:bg-slate-100">
             about
           </Button>
         </router-link>
       </div>
       <div class="flex flex-grow"></div>
-      <div class="flex items-center">
-        <router-link to="/help">
-          <Button variant="ghost">
-            <div class="i-lucide:circle-help"></div>
-          </Button>
-        </router-link>
-        <a href="https://github.com/andreitere/quackbook" data-umami-event="github" target="_blank">
-          <Button variant="ghost">
-            <div class="i-bi:github w-4 h-4"></div>
+      <div class="flex items-center space-x-1">
+        <a href="https://github.com/andreitere/quackbook" data-umami-event="github" target="_blank" class="group">
+          <Button variant="ghost" class="transition-colors group-hover:bg-slate-100">
+            <div class="i-bi:github w-5 h-5"></div>
           </Button>
         </a>
         <Button variant="ghost" data-umami-event="show-db-schema" @click="$meta.showToolbar = !$meta.showToolbar"
-          v-if="$route.name === 'workbench'">
+          v-if="$route.name === 'workbench'" class="transition-colors hover:bg-slate-100">
           <div :class="[
             $meta.showToolbar ? `i-octicon:sidebar-collapse-24` : `i-octicon:sidebar-expand-24`,
-            'cursor-pointer h-5 w-5'
+            'cursor-pointer h-5 w-5 transition-transform duration-200',
+            $meta.showToolbar ? 'rotate-180' : ''
           ]">
           </div>
         </Button>
@@ -94,8 +82,11 @@ watch([meta, shift, e], (v) => {
       <router-view></router-view>
     </div>
     <Toaster />
-
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+.router-link-active {
+  @apply text-slate-900 font-medium;
+}
+</style>

@@ -1,7 +1,7 @@
 import { useToast } from "@/components/ui/toast";
 import { encodeJsonToBase64Url, expandKeys, shortenKeys } from "@/lib/utils.ts";
 import { useMetaStore } from "@/store/meta.ts";
-import { useStorage } from "@vueuse/core";
+import { useStorage, } from "@vueuse/core";
 import { computed, ref, type Ref } from "vue";
 import { useRouter } from "vue-router";
 import { defaultProjectCells, projectKeyMap } from "@/lib/constants.ts";

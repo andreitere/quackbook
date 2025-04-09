@@ -1,17 +1,5 @@
 <script setup lang="ts">
 
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle
-} from "@/components/ui/alert-dialog";
-import {Alert, AlertDescription, AlertTitle} from "@/components/ui/alert";
-import {Button} from "@/components/ui/button";
 import {useProjects} from "@/store/project.ts";
 import {useMetaStore} from "@/store/meta.ts";
 import {useClipboard} from "@vueuse/core";

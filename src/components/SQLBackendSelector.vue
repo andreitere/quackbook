@@ -1,42 +1,67 @@
 <script setup lang="ts">
-import {RadioGroup, RadioGroupItem} from '@/components/ui/radio-group'
-import {Label} from "@/components/ui/label";
-import {Input} from "@/components/ui/input";
-import {useProjects} from "@/store/project.ts";
+
+import { useProjects } from "@/store/project.ts";
 
 const $project = useProjects()
 const backends = [
   {
     label: "DuckDB WASM",
     value: "duckdb_wasm",
-  },
-  {
-    label: "DuckDB Server",
-    value: "duckdb_server",
-    link: "/help#sqlbackends"
+    description: "Run queries directly in your browser"
   },
   {
     label: "PGLite WASM",
     value: "pglite_wasm",
-  }
+    description: "PostgreSQL-compatible in-browser database"
+  },
+  {
+    label: "DuckDB Server",
+    value: "duckdb_server",
+    description: "Connect to a remote DuckDB instance with QuackServer",
+    link: "/help#sqlbackends"
+  },
 ]
+
+const handleBackendChange = () => {
+  window.location.reload();
+}
 </script>
 
 <template>
-  <h2 class="mb-2">Choose the SQL Backend</h2>
-  <RadioGroup default-value="duckdb_wasm" class="text-sm" v-model:model-value="$project.activeProjectMeta.sql.backend">
-    <div class="flex items-center space-x-2 " v-for="backend in backends">
-      <RadioGroupItem :id="backend.value" :value="backend.value"/>
-      <Label class="cursor-pointer" :for="backend.value">{{ backend.label }}</Label>
-      <span v-if="backend.link">(<a :href="backend.link" class="underline">read more</a>)</span>
-    </div>
-    <div class="flex w-full max-w-sm items-center gap-1.5" v-if="$project.activeProjectMeta.sql.backend=='duckdb_server'">
-      <Label for="host">Host</Label>
-      <Input id="host" type="text" placeholder="eg: http://localhost:8000" v-model:model-value="$project.activeProjectMeta.sql.host"/>
-    </div>
-  </RadioGroup>
+  <div class="space-y-4">
+    <h2 class="text-base font-semibold text-gray-900 dark:text-gray-100">Choose the SQL Backend</h2>
+    <RadioGroup default-value="duckdb_wasm" class="space-y-3"
+      v-model:model-value="$project.activeProjectMeta.sql.backend" @update:model-value="handleBackendChange">
+      <div v-for="backend in backends" :key="backend.value"
+        class="flex items-start space-x-3 p-3 rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+        <RadioGroupItem :id="backend.value" :value="backend.value" />
+        <Label :for="backend.value" class="flex flex-col cursor-pointer">
+          <span class="text-sm font-medium">
+            {{ backend.label }}
+          </span>
+          <p class="text-xs text-gray-500 dark:text-gray-400">
+            {{ backend.description }}
+            <a v-if="backend.link" :href="backend.link" class="text-blue-600 dark:text-blue-400 hover:underline ml-1">
+              Learn more
+            </a>
+          </p>
+        </Label>
+      </div>
+
+      <div v-if="$project.activeProjectMeta.sql.backend == 'duckdb_server'"
+        class="mt-4 p-2 rounded-lg bg-gray-50 dark:bg-gray-800">
+        <div class="space-y-2">
+          <Label for="host" class="text-xs font-medium">Server Host</Label>
+          <Input id="host" type="text" placeholder="eg: http://localhost:8000"
+            v-model:model-value="$project.activeProjectMeta.sql.host" class="w-full" />
+        </div>
+      </div>
+    </RadioGroup>
+  </div>
 </template>
 
 <style scoped>
-
+.radio-group-item {
+  @apply focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-blue-500;
+}
 </style>

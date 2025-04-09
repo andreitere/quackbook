@@ -42,6 +42,8 @@
 		"pinia": "^2.2.6",
 		"radix-vue": "^1.9.9",
 		"shiki": "^1.22.2",
+		"slickgrid": "^5.15.2",
+		"sortablejs": "^1.15.6",
 		"sql-formatter": "^15.4.6",
 		"tailwind-merge": "^2.5.4",
 		"tailwindcss-animate": "^1.0.7",

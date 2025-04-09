@@ -1,4 +1,4 @@
-import { QueryResult, SQLBackend } from "@/types/database";
+import type { QueryResult, SQLBackend } from "@/types/database";
 import { usePGLite } from "@/hooks/usePGLite";
 
 export class PGLiteAdapter implements SQLBackend {

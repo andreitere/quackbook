@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import EditorCellToolbar from "@/components/EditorCellToolbar.vue";
+
 import {useMDRenderer} from "@/hooks/useMDShiki";
 import {useProjects} from "@/store/project.ts";
 import {defaultKeymap, history, historyKeymap, indentWithTab,} from "@codemirror/commands";

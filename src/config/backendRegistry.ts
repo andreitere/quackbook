@@ -1,4 +1,4 @@
-import { BackendConfig, SQLBackendType } from '@/types/database';
+import type { BackendConfig, SQLBackendType } from '@/types/database';
 import { DuckDBAdapter } from '@/adapters/duckDBAdapter';
 import { DuckDBServerAdapter } from '@/adapters/duckDBServerAdapter';
 import { PGLiteAdapter } from '@/adapters/pgliteAdapter';

@@ -3,75 +3,95 @@ import { ref } from "vue";
 import { useProjects } from "./project";
 import { createSharedComposable } from "@vueuse/core";
 
-// type Column = {
-// 	column_name: string;
-// 	data_type: string;
-// 	is_nullable: boolean;
-// 	column_default?: string;
-// 	is_identity: boolean;
-// };
-
-// type DBTable = {
-// 	table: string;
-// 	columns: Column[];
-// };
-
-// type SchemaTree = {
-// 	[database: string]: {
-// 		[schema: string]: {
-// 			[table: string]: DBTable;
-// 		};
-// 	};
-// };
-export type DataModelNode = {
-	id: string | number;
-	label: string;
-	children?: DataModelNode[];
-	type: string;
+export type Column = {
+	column_name: string;
+	data_type: string;
+	is_nullable: boolean;
+	column_default?: string;
+	is_identity: boolean;
 };
+
+export type Table = {
+	name: string;
+	columns: Column[];
+};
+
+export type Schema = {
+	name: string;
+	tables: Record<string, Table>;
+};
+
+export type Database = {
+	name: string;
+	schemas: Record<string, Schema>;
+};
+
+export type SchemaTree = Record<string, Database>;
 
 export const useDBSchema = createSharedComposable(() => {
 	const { execute } = useSQLBackend();
 	const { activeProjectMeta } = useProjects();
-	const schema = ref<Record<string, any>[]>();
+	const schema = ref<SchemaTree>({});
 
 	const updateSchemaDetails = async () => {
 		// Step 1: Get all schemas
-		let { records } = await execute(`
+		const result = await execute(`
 			SELECT table_catalog as database, table_schema as schema, table_name as table
 			FROM information_schema.tables
 			WHERE table_catalog NOT IN ('system')
 			AND table_schema NOT IN ('information_schema', 'pg_catalog')
-		`);
-		console.log(records);
+		`) as { records: Array<{ database: string; schema: string; table: string }> };
+		
+		let records = result.records;
 		if (activeProjectMeta.sql.backend === "duckdb_wasm") {
 			//@ts-ignore
 			records = records.map((t) => t.toJSON());
 		}
 
-		// Step 2: For each schema, get all tables and build the tree
-		const _schema = await Promise.all(
-			records.map(async ({ database, schema, table }: Record<string, any>) => {
-				console.log({ database, schema, table });
-				let { records: columns } = await execute(`
-					select * from information_schema.columns where table_catalog = '${database}' and table_schema = '${schema}' and table_name = '${table}';
-				`);
-				if (activeProjectMeta.sql.backend === "duckdb_wasm") {
-					//@ts-ignore
-					columns = columns.map((t) => t.toJSON());
-				}
-				// Build the schema tree structure
-				return {
-					key: `${database}.${schema}.${table}`,
-					database,
-					schema,
-					table,
-					columns,
-				};
-			}),
-		);
+		// Initialize the schema tree
+		const schemaTree: SchemaTree = {};
 
-		schema.value = _schema;
+		// Step 2: For each table, get its columns and build the hierarchical structure
+		for (const { database, schema: schemaName, table } of records) {
+			// Initialize database if it doesn't exist
+			if (!schemaTree[database]) {
+				schemaTree[database] = {
+					name: database,
+					schemas: {}
+				};
+			}
+
+			// Initialize schema if it doesn't exist
+			if (!schemaTree[database].schemas[schemaName]) {
+				schemaTree[database].schemas[schemaName] = {
+					name: schemaName,
+					tables: {}
+				};
+			}
+
+			// Get columns for the table
+			const columnsResult = await execute(`
+				SELECT column_name, data_type, is_nullable, column_default, is_identity
+				FROM information_schema.columns 
+				WHERE table_catalog = '${database}' 
+				AND table_schema = '${schemaName}' 
+				AND table_name = '${table}'
+			`) as { records: Column[] };
+
+			let columns = columnsResult.records;
+			if (activeProjectMeta.sql.backend === "duckdb_wasm") {
+				//@ts-ignore
+				columns = columns.map((t) => t.toJSON());
+			}
+
+			// Add table with its columns to the schema
+			schemaTree[database].schemas[schemaName].tables[table] = {
+				name: table,
+				columns
+			};
+		}
+
+		schema.value = schemaTree;
 	};
 
 	return { schema, updateSchemaDetails };

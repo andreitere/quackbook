@@ -1,9 +1,6 @@
 <script setup lang="ts">
-// import {ref} from "vue"
-import {Input} from "@/components/ui/input";
+
 import {useProjects} from "@/store/project.ts";
-import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card";
-import {Button} from "@/components/ui/button"
 
 // const tab = ref<string>("local")
 const $projects = useProjects()

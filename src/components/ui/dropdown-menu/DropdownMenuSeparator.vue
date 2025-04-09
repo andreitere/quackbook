@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import { cn } from "@/lib/utils";
-import {
-	DropdownMenuSeparator,
-	type DropdownMenuSeparatorProps,
+
+import type {
+	DropdownMenuSeparatorProps,
 } from "radix-vue";
 import { computed, type HTMLAttributes } from "vue";
 

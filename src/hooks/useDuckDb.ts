@@ -61,9 +61,6 @@ export function useDuckDb(config?: DuckDBConfig): UseDuckDbReturn {
 		if (!db.value) {
 			throw "un initialized db";
 		}
-		if (raw) {
-			console.log("wants raw");
-		}
 		const conn = await db.value.connect();
 		const results = await conn.query(queryStr);
 		const duration = performance.now() - start;

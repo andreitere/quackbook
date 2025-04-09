@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Button, ButtonVariants } from "@/components/ui/button";
+import type { ButtonVariants } from "@/components/ui/button";
 import { ref } from "vue";
 
 defineProps({
@@ -53,18 +53,17 @@ const buttonVariant = ref<ButtonVariants["variant"]>("ghost");
       v-if="update">
       <div class="i-pixelarticons:close"></div>
     </Button>
-    <Button tabindex="-1" size="xs" data-umami-event="move-cell-up" :variant="buttonVariant" @click="$emit('moveup')">
-      <div class="i-material-symbols-light:arrow-upward-alt-rounded"></div>
-    </Button>
     <Button tabindex="-1" size="xs" data-umami-event="move-cell-down" :variant="buttonVariant"
       @click="$emit('movedown')">
       <div class="i-material-symbols-light:arrow-downward-alt-rounded"></div>
     </Button>
+    <Button tabindex="-1" size="xs" data-umami-event="move-cell-up" :variant="buttonVariant" @click="$emit('moveup')">
+      <div class="i-material-symbols-light:arrow-upward-alt-rounded"></div>
+    </Button>
     <!--    <Button tabindex="-1" size="xs" variant="outline" v-if="duplicate" @click="$emit('duplicate')">-->
     <!--      <div class="i-pixelarticons:duplicate"></div>-->
     <!--    </Button>-->
-    <Button tabindex="-1" size="xs" data-umami-event="trash-cell" :variant="buttonVariant" v-if="trash"
-      @click="$emit('trash')">
+    <Button tabindex="-1" size="xs" data-umami-event="trash-cell" :variant="buttonVariant" @click="$emit('trash')">
       <div class="i-pixelarticons:trash"></div>
     </Button>
   </div>

@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import {
-	DropdownMenuTrigger,
 	type DropdownMenuTriggerProps,
 	useForwardProps,
 } from "radix-vue";

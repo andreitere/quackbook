@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { cn } from '@/lib/utils'
+
 import {
-  MenubarRoot,
   type MenubarRootEmits,
   type MenubarRootProps,
   useForwardPropsEmits,

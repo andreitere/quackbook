@@ -2,7 +2,7 @@ import { useProjects } from "@/store/project";
 import { computed } from "vue";
 import { createGlobalState } from "@vueuse/core";
 import { backendRegistry } from "@/config/backendRegistry";
-import { SQLBackend, SQLBackendType, QueryResult } from "@/types/database";
+import type { SQLBackend, SQLBackendType, } from "@/types/database";
 
 export const useSQLBackend = createGlobalState(() => {
 	const $projects = useProjects();

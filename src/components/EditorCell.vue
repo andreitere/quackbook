@@ -1,7 +1,6 @@
 <script setup lang="ts">
 //@ts-ignore
 import perspective from "https://cdn.jsdelivr.net/npm/@finos/perspective/dist/cdn/perspective.js";
-import EditorCellToolbar from "@/components/EditorCellToolbar.vue";
 import { RecordBatchReader } from "apache-arrow";
 import { computed, nextTick, onMounted, ref, useTemplateRef, watch } from "vue";
 
@@ -24,12 +23,11 @@ import { EditorState } from "@codemirror/state";
 import { EditorView, keymap } from "@codemirror/view";
 import { useColorMode, useVModels } from "@vueuse/core";
 import { ayuLight, cobalt } from "thememirror";
-import { QueryResult } from "@/types/database";
 
 const pView = ref(null);
 const color = useColorMode();
 const props = defineProps({
-	mode: { default: "console", type: String },
+	mode: { default: "notebook", type: String },
 	query: { type: String, default: "select 1+1 as result;" },
 	id: { type: Number, required: true },
 	position: { type: Number, required: true },
@@ -116,9 +114,9 @@ const onPlay = async () => {
 		await nextTick();
 		error.value = "";
 		loading.value = true;
-		
+
 		const result = await execute(query.value, activeProject.sql.backend === "duckdb_server");
-		
+
 		if (result instanceof ReadableStreamDefaultReader) {
 			hasResults.value = true;
 			let table = null;
@@ -155,7 +153,7 @@ const onPlay = async () => {
 			const { records, schema, duration } = result;
 			let processedRecords = records;
 			let processedSchema = schema;
-			
+
 			if (Object.values(schema).includes("json")) {
 				processedRecords = records.map((row) => {
 					const _row = {};
@@ -169,11 +167,11 @@ const onPlay = async () => {
 					Object.entries(schema).map(([k, v]) => [k, v === "json" ? "string" : v])
 				);
 			}
-			
+
 			if (duration) {
 				lastQueryDuration.value = (duration / 1000).toFixed(5);
 			}
-			
+
 			if (processedRecords.length) {
 				hasResults.value = true;
 				await nextTick();
@@ -227,8 +225,8 @@ onMounted(async () => {
 
 <template>
 	<div :class="[
-		'transition-all duration-200 w-full flex h-auto flex-col p-3 rounded space-y-2 group',
-		props.mode == 'console' ? 'h-full' : 'border-[1px] border-solid border-slate-400 hover:shadow-md focus-within:border-slate-300 focus-within:shadow-lg',
+		'transition-all duration-200 w-full flex h-auto flex-col p-3 rounded space-y-2 group bg-white',
+		'border-[1px] border-solid border-slate-200 focus-within:border-slate-300 focus-within:shadow-md',
 	]" @focusin="inputFocused = true" @focusout="inputFocused = false">
 		<EditorCellToolbar :delete="props.mode == 'notebook'" :trash="props.mode == 'notebook'"
 			:duplicate="props.mode == 'notebook'" @play="onPlay" @clear="onClear"

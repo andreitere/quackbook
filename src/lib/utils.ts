@@ -88,7 +88,6 @@ export const arrowTypeToJsType = (arrowType: DataType) => {
 			_rType = "json";
 			break;
 		default:
-			console.log(arrowType);
 			_rType = "unknown";
 	}
 	return _rType;
@@ -122,7 +121,6 @@ export const expandKeys = (
 	keyMap: SomeObj,
 ): SomeObj | SomeObj[] => {
 	const reverseKeyMap = generateReverseKeyMap(keyMap);
-	console.log({ reverseKeyMap });
 	if (Array.isArray(obj)) {
 		//@ts-ignore
 		return obj.map((item) => expandKeys(item, keyMap));
