@@ -3,6 +3,7 @@ import {
 	type HoverCardRootEmits,
 	type HoverCardRootProps,
 	useForwardPropsEmits,
+	HoverCardRoot,
 } from "radix-vue";
 
 const props = defineProps<HoverCardRootProps>();

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { ButtonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { ref } from "vue";
 
 defineProps({

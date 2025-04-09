@@ -1,11 +1,13 @@
 <script setup lang="ts">
-
+import { Button } from "@/components/ui/button";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useColorMode, useMagicKeys } from "@vueuse/core";
 import { watch } from "vue";
 import { useMetaStore } from "@/store/meta.ts";
 import { useProjects } from "@/store/project.ts";
 import { useRoute, useRouter } from "vue-router";
-
+import { CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator } from "@/components/ui/command";
+import Toaster from "./ui/toast/Toaster.vue";
 const colorMode = useColorMode();
 const $meta = useMetaStore();
 

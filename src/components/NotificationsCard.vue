@@ -2,6 +2,8 @@
 
 import { useProjects } from "@/store/project.ts";
 import { computed } from "vue";
+import { Button } from "@/components/ui/button";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 
 const $projects = useProjects();
 

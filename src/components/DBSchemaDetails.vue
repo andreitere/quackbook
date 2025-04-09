@@ -5,7 +5,9 @@ import { db_events } from "@/store/meta.ts";
 import { useLoading } from "@/hooks/useAsyncFn";
 import "@he-tree/vue/style/default.css";
 import { computed, onMounted, ref } from "vue";
-
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import DBTable from "@/components/DBTable.vue";
 const { updateSchemaDetails, schema } = useDBSchema();
 const events = ref<string[]>([]);
 const filter = ref<string>("");
@@ -73,31 +75,57 @@ onMounted(() => {
     <div class="space-y-2 flex flex-col flex-grow">
       <header class="p-4 flex items-center border-b  text-gray-800">
         <div class="flex items-center space-x-3">
-          <div class="i-lucide:database text-xl text-blue-600"></div>
-          <h3 class="text-lg font-semibold">Schema</h3>
+          <div class="i-lucide:database text-xl text-blue-600" />
+          <h3 class="text-lg font-semibold">
+            Schema
+          </h3>
         </div>
-        <div class="flex-grow"></div>
-        <Button @click="updateSchema" variant="ghost" size="xs" class="hover:bg-gray-100">
-          <div class="i-lucide:refresh-ccw animated" :class="{ 'animate-spin': isLoading }"></div>
+        <div class="flex-grow" />
+        <Button
+          variant="ghost"
+          size="xs"
+          class="hover:bg-gray-100"
+          @click="updateSchema"
+        >
+          <div
+            class="i-lucide:refresh-ccw animated"
+            :class="{ 'animate-spin': isLoading }"
+          />
         </Button>
       </header>
-      <Input placeholder="search..." v-model:model-value="filter" />
+      <Input
+        v-model:model-value="filter"
+        placeholder="search..."
+      />
       <div class="flex flex-col overflow-y-scroll nice-scrollbar h-0 flex-grow space-y-2">
         <template v-if="filteredSchema">
-          <DBTable v-for="(db, dbName) in filteredSchema" :key="dbName" :database="db" :databaseName="dbName" />
+          <DBTable
+            v-for="(db, dbName) in filteredSchema"
+            :key="dbName"
+            :database="db"
+            :database-name="dbName"
+          />
         </template>
       </div>
     </div>
-    <!-- <div class="space-y-2">
+    <div class="space-y-2">
       <header class="p-3 flex items-center border-b-2 bg-gray-300 text-foreground">
-        <h3 class="">Events</h3>
-        <div class="flex-grow"></div>
-        <Button @click="updateSchema" variant="ghost" size="xs">
-          <div class="i-lucide:refresh-ccw animated" :class="{ 'animate-spin': isLoading }"></div>
+        <h3 class="">
+          Events
+        </h3>
+        <div class="flex-grow" />
+        <Button
+          variant="ghost"
+          size="xs"
+          @click="updateSchema"
+        >
+          <div
+            class="i-lucide:refresh-ccw animated"
+            :class="{ 'animate-spin': isLoading }"
+          />
         </Button>
       </header>
-    </div> -->
-
+    </div>
   </div>
 </template>
 

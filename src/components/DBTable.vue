@@ -1,5 +1,5 @@
 <script setup lang="ts">
-
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { ref, watch } from "vue";
 import type { Database, } from "@/store/dbSchema";
 
@@ -84,9 +84,9 @@ watch(() => props.database, initializeExpansionStates, { immediate: true });
 																	</div>
 																	<div class="tree-content">
 																		<span class="column-name">{{ column.column_name
-																			}}</span>
+																		}}</span>
 																		<span class="column-type">{{ column.data_type
-																			}}</span>
+																		}}</span>
 																		<span class="column-nullable"
 																			:class="column.is_nullable ? 'text-green-500' : 'text-red-500'">
 																			{{ column.is_nullable ? 'YES' : 'NO' }}
