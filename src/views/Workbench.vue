@@ -38,7 +38,7 @@ watch(cmdShiftE, (v) => {
 </script>
 
 <template>
-  <div class="flex flex-grow w-1/3 flex-col h-full max-h-full px-2 py-0 bg-slate-50 dark:bg-slate-800">
+  <div class="flex flex-grow w-1/3 flex-col h-full max-h-full px-2 py-0 bg-slate-100 dark:bg-slate-800">
     <div class="flex justify-start items-center gap-2 text-gray-600 dark:text-gray-300 py-4">
       <div
         v-if="db_loading"
@@ -144,7 +144,7 @@ watch(cmdShiftE, (v) => {
   >
     <DBSchemaDetails class="w-full" />
   </div>
-  <!-- <ShareProjectModal /> -->
+  <ShareProjectModal />
   <FileImport />
   <!-- <MountFileSystem /> -->
 </template>

@@ -36,7 +36,7 @@ export default defineConfig(({ mode }) => {
       Unfonts({
         google: {
           preconnect: true,
-          families: ["Roboto Mono", "Poppins"],
+          families: ["Roboto Mono", "Poppins", "Inter"],
         },
       }),
       Icons({

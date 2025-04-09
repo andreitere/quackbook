@@ -108,7 +108,7 @@ onMounted(() => {
         </template>
       </div>
     </div>
-    <div class="space-y-2">
+    <!-- <div class="space-y-2">
       <header class="p-3 flex items-center border-b-2 bg-gray-300 text-foreground">
         <h3 class="">
           Events
@@ -125,7 +125,7 @@ onMounted(() => {
           />
         </Button>
       </header>
-    </div>
+    </div> -->
   </div>
 </template>
 

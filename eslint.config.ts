@@ -27,6 +27,7 @@ export default defineConfigWithVueTs(
           ignorePatterns: [],
         },
       ],
+      "@typescript-eslint/no-unused-vars": "warn",
     },
   }
 )

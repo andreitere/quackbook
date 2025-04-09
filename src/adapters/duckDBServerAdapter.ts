@@ -1,40 +1,43 @@
-import type { QueryResult, SQLBackend } from "@/types/database";
-import { useDuckDBServer } from "@/hooks/useDuckDBServer";
-
+import type { QueryResult, SQLBackend } from "@/types/database"
+import { useDuckDBServer } from "@/hooks/useDuckDBServer"
+import { isDataRetrievalQuery, duckToJsType } from "@/lib/utils"
 export class DuckDBServerAdapter implements SQLBackend {
-  private duckdbServer = useDuckDBServer();
+  private duckdbServer = useDuckDBServer()
 
   async execute(query: string, stream = false): Promise<QueryResult | ReadableStreamDefaultReader<Uint8Array>> {
-    if (stream) {
-      const result = await this.duckdbServer.query(query, true);
-      if (!(result instanceof ReadableStreamDefaultReader)) {
-        throw new Error("Expected stream reader for streaming query");
-      }
-      return result;
+    let isRetrievalQuery = false
+    try {
+      isRetrievalQuery = isDataRetrievalQuery(query)
+    } catch (error) {
+      console.error(error)
     }
-    
-    const result = await this.duckdbServer.query(query, false);
-    if (result instanceof ReadableStreamDefaultReader) {
-      throw new Error("Unexpected stream reader for non-streaming query");
+    let cols = []
+    if (isRetrievalQuery) {
+      console.log("isRetrievalQuery", isRetrievalQuery)
+      const colsQuery = `DESCRIBE \n ${query}`
+      const colsResult = await this.duckdbServer.query(colsQuery, false)
+      cols = colsResult.result.reduce((acc: Record<string, string>, col) => {
+        acc[col.column_name] = duckToJsType(col.column_type)
+        return acc
+      }, {})
     }
 
+    const data = await this.duckdbServer.query(query, stream)
+
     return {
-      records: result.records.rows,
-      schema: result.records.schema.reduce((acc: Record<string, string>, field) => {
-        acc[field.name] = field.type;
-        return acc;
-      }, {}),
-      duration: 0
-    };
+      records: data,
+      schema: cols,
+      streamed: stream,
+    }
   }
 
   async connect(): Promise<void> {
     // Connection is handled per-query
-    return Promise.resolve();
+    return Promise.resolve()
   }
 
   async disconnect(): Promise<void> {
     // Disconnection is handled per-query
-    return Promise.resolve();
+    return Promise.resolve()
   }
-} 
+}

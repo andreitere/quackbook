@@ -4,8 +4,12 @@ import {
 	type AlertDialogContentEmits,
 	type AlertDialogContentProps,
 	useForwardPropsEmits,
+	AlertDialogPortal,
+	AlertDialogOverlay,
+	AlertDialogContent,
 } from "radix-vue";
 import { computed, type HTMLAttributes } from "vue";
+import { cn } from "@/lib/utils";
 
 const props = defineProps<
 	AlertDialogContentProps & { class?: HTMLAttributes["class"] }

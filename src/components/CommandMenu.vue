@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { Button } from "@/components/ui/button";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useColorMode, useMagicKeys } from "@vueuse/core";
 import { watch } from "vue";
 import { useMetaStore } from "@/store/meta.ts";
 import { useProjects } from "@/store/project.ts";
 import { useRoute, useRouter } from "vue-router";
 import { CommandDialog, Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator } from "@/components/ui/command";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 const colorMode = useColorMode();
 const $meta = useMetaStore();
 
@@ -52,8 +52,8 @@ watch([Meta_K, Ctrl_K], (v) => {
   >
     <div class="i-pixelarticons:command h-4 w-4" />
   </Button>
-  <DropdownMenu>
-    <DropdownMenuTrigger as-child>
+  <Popover>
+    <PopoverTrigger as-child>
       <Button
         size="xs"
         class="text-xs cursor-pointer md:hidden"
@@ -61,91 +61,100 @@ watch([Meta_K, Ctrl_K], (v) => {
       >
         <div class="i-lucide-square-menu" />
       </Button>
-    </DropdownMenuTrigger>
-    <DropdownMenuContent class="max-h-[80dvh] overflow-y-scroll nice-scrollbar">
-      <DropdownMenuLabel>Actions</DropdownMenuLabel>
-      <DropdownMenuSeparator />
-      <DropdownMenuGroup>
-        <DropdownMenuItem
-          data-umami-event="save-project"
-          @select="$projects.saveProject"
-        >
-          <div class="i-lucide:save" />
-          <span>save project</span>
-        </DropdownMenuItem>
-        <DropdownMenuItem
-          data-umami-event="share-project"
-          @select="$projects.shareProject"
-        >
-          <div class="i-lucide:share" />
-          <span>share</span>
-        </DropdownMenuItem>
-        <DropdownMenuItem
-          v-if="$projects.activeProjectMeta.mode == 'console'"
-          value="convert-to-notebook"
-          data-umami-event="convert-to-notebook"
-          class="items-center flex"
-          @select="$projects.convertToNotebook"
-        >
-          <div class="i-mdi:notebook-edit-outline" />
-          <span>convert to notebook</span>
-        </DropdownMenuItem>
-        <DropdownMenuItem
-          v-if="activeProject.mode == 'notebook'"
-          value="convert-to-console"
-          data-umami-event="convert-to-console"
-          class="items-center flex"
-          @select="$projects.convertToConsole"
-        >
-          <div class="i-fluent:window-console-20-filled" />
-          <span>convert to console</span>
-        </DropdownMenuItem>
-        <DropdownMenuItem
-          value="new-add-cell-sql"
-          data-umami-event="add-sql-cell"
-          class="items-center flex"
-          @select="$projects.addCell('sql', null)"
-        >
-          <div class="i-hugeicons:sql" />
-          <span>add sql cell</span>
-        </DropdownMenuItem>
-        <DropdownMenuItem
-          value="new-add-cell-markdown"
-          data-umami-event="add-markdown-cell"
-          class="items-center flex"
-          @select="$projects.addCell('markdown', null)"
-        >
-          <div class="i-ion:logo-markdown" />
-          <span>add markdown cell</span>
-        </DropdownMenuItem>
-      </DropdownMenuGroup>
-      <DropdownMenuSeparator />
-      <DropdownMenuGroup>
-        <DropdownMenuItem @select="$router.push('/projects')">
-          <span>Projects</span>
-        </DropdownMenuItem>
-        <DropdownMenuItem
-          value="new project"
-          data-umami-event="new-project"
-          class="items-center flex"
-          @select="$projects.createProject"
-        >
-          <div class="i-lucide:list-plus" />
-          <span>new project</span>
-        </DropdownMenuItem>
-        <DropdownMenuItem
-          v-for="project in $projects.projects.slice(0, 3)"
-          :key="project.id"
-          data-umami-event="open-project"
-          @select="$projects.setActiveProject(project)"
-        >
-          <div class="flex justify-between items-center w-full">
-            <span class="text-muted-foreground">{{ project.name }}</span>
+    </PopoverTrigger>
+    <PopoverContent class="w-72 p-0">
+      <div class="flex flex-col">
+        <div class="p-2">
+          <div class="text-sm font-medium px-2 py-1.5">
+            Actions
           </div>
-        </DropdownMenuItem>
-      </DropdownMenuGroup>
-    </DropdownMenuContent>
-  </DropdownMenu>
+          <div class="space-y-1">
+            <div
+              class="flex items-center px-2 py-1.5 text-sm rounded-sm hover:bg-accent cursor-pointer"
+              data-umami-event="save-project"
+              @click="$projects.saveProject"
+            >
+              <div class="i-lucide:save mr-2" />
+              <span>save project</span>
+            </div>
+            <div
+              class="flex items-center px-2 py-1.5 text-sm rounded-sm hover:bg-accent cursor-pointer"
+              data-umami-event="share-project"
+              @click="$projects.shareProject"
+            >
+              <div class="i-lucide:share mr-2" />
+              <span>share</span>
+            </div>
+            <div
+              v-if="$projects.activeProjectMeta.mode == 'console'"
+              class="flex items-center px-2 py-1.5 text-sm rounded-sm hover:bg-accent cursor-pointer"
+              data-umami-event="convert-to-notebook"
+              @click="$projects.convertToNotebook"
+            >
+              <div class="i-mdi:notebook-edit-outline mr-2" />
+              <span>convert to notebook</span>
+            </div>
+            <div
+              v-if="activeProject.mode == 'notebook'"
+              class="flex items-center px-2 py-1.5 text-sm rounded-sm hover:bg-accent cursor-pointer"
+              data-umami-event="convert-to-console"
+              @click="$projects.convertToConsole"
+            >
+              <div class="i-fluent:window-console-20-filled mr-2" />
+              <span>convert to console</span>
+            </div>
+            <div
+              class="flex items-center px-2 py-1.5 text-sm rounded-sm hover:bg-accent cursor-pointer"
+              data-umami-event="add-sql-cell"
+              @click="$projects.addCell('sql', null)"
+            >
+              <div class="i-hugeicons:sql mr-2" />
+              <span>add sql cell</span>
+            </div>
+            <div
+              class="flex items-center px-2 py-1.5 text-sm rounded-sm hover:bg-accent cursor-pointer"
+              data-umami-event="add-markdown-cell"
+              @click="$projects.addCell('markdown', null)"
+            >
+              <div class="i-ion:logo-markdown mr-2" />
+              <span>add markdown cell</span>
+            </div>
+          </div>
+        </div>
+        <div class="h-px bg-border" />
+        <div class="p-2">
+          <div class="text-sm font-medium px-2 py-1.5">
+            Projects
+          </div>
+          <div class="space-y-1">
+            <div
+              class="flex items-center px-2 py-1.5 text-sm rounded-sm hover:bg-accent cursor-pointer"
+              @click="$router.push('/projects')"
+            >
+              <span>Projects</span>
+            </div>
+            <div
+              class="flex items-center px-2 py-1.5 text-sm rounded-sm hover:bg-accent cursor-pointer"
+              data-umami-event="new-project"
+              @click="$projects.createProject"
+            >
+              <div class="i-lucide:list-plus mr-2" />
+              <span>new project</span>
+            </div>
+            <div
+              v-for="project in $projects.projects.slice(0, 3)"
+              :key="project.id"
+              class="flex items-center px-2 py-1.5 text-sm rounded-sm hover:bg-accent cursor-pointer"
+              data-umami-event="open-project"
+              @click="$projects.setActiveProject(project)"
+            >
+              <span class="text-muted-foreground">{{ project.name }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </PopoverContent>
+  </Popover>
   <CommandDialog v-model:open="$meta.cmdMenu">
     <Command class="rounded-lg border shadow-md ">
       <CommandInput placeholder="Type a command or search..." />

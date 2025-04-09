@@ -1,29 +1,26 @@
-import { useProjects } from "@/store/project.ts";
-import ky from "ky";
+import { useProjects } from "@/store/project.ts"
+import ky from "ky"
 
 interface DuckDBQueryResult {
-  rows: any[];
-  schema: Array<{ name: string; type: string }>;
+  rows: unknown[]
+  schema: Array<{ name: string; type: string }>
 }
 
 interface DuckDBResponse {
-  records: DuckDBQueryResult;
-  query: string;
+  records: DuckDBQueryResult
+  query: string
 }
 
 export const useDuckDBServer = () => {
-  const { activeProject } = useProjects();
+  const { activeProject } = useProjects()
 
   const getServerHost = () => {
     // Default to localhost:8000 if no host is specified
-    return activeProject.sql.host || "http://localhost:9999";
-  };
+    return activeProject.sql.host || "http://localhost:9999"
+  }
 
-  const query = async (
-    queryStr: string,
-    stream = false
-  ): Promise<ReadableStreamDefaultReader<Uint8Array> | DuckDBResponse> => {
-    const host = getServerHost();
+  const query = async (queryStr: string, stream = false): Promise<ReadableStreamDefaultReader<Uint8Array> | DuckDBResponse> => {
+    const host = getServerHost()
 
     try {
       if (!stream) {
@@ -37,42 +34,41 @@ export const useDuckDBServer = () => {
             },
           })
           .post<DuckDBResponse>(`${host}/query`, {
-            json: { query: queryStr.trim() },
+            json: { query: queryStr.trim(), withColumns: true },
             headers: {
               "Content-Type": "application/json",
             },
           })
-          .json();
-        return json;
+          .json()
+        return json
       }
 
-      const response = await ky.post(`${host}/query`, {
+      const response = await ky.post(`${host}/stream`, {
         json: { query: queryStr.trim() },
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "application/jsonl",
         },
-      });
+      })
 
-      const reader = response.body?.getReader();
+      const reader = response.body?.getReader()
       if (!reader) {
-        throw new Error("Failed to get stream reader");
+        throw new Error("Failed to get stream reader")
       }
-
-      return reader;
-    } catch (error: any) {
-      if (error.name === "TimeoutError") {
-        throw new Error(
-          `Connection to DuckDB server at ${host} timed out. Please check if the server is running.`
-        );
+      return reader
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        if (error.name === "TimeoutError") {
+          throw new Error(`Connection to DuckDB server at ${host} timed out. Please check if the server is running.`)
+        }
+        const response = (error as { response?: { status?: number } }).response
+        if (response?.status === 404) {
+          throw new Error(`DuckDB server not found at ${host}. Please check if the server is running and the host is correct.`)
+        }
+        throw new Error(`Failed to connect to DuckDB server: ${error.message}`)
       }
-      if (error.response?.status === 404) {
-        throw new Error(
-          `DuckDB server not found at ${host}. Please check if the server is running and the host is correct.`
-        );
-      }
-      throw new Error(`Failed to connect to DuckDB server: ${error.message}`);
+      throw new Error('An unknown error occurred while connecting to DuckDB server')
     }
-  };
+  }
 
-  return { query };
-};
+  return { query }
+}

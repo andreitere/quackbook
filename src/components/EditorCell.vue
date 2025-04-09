@@ -1,41 +1,70 @@
 <template>
-	<div :class="[
-		cn(
-			error ? 'border-red-500 focus-within:border-red-500' : ''
-		),
-		'transition-all duration-200 w-full flex h-auto flex-col p-3 rounded space-y-2 group bg-white',
-		'border-[1px] border-solid border-slate-200 focus-within:border-slate-300 focus-within:shadow-md',
-	]" @focusin="inputFocused = true" @focusout="inputFocused = false">
-		<EditorCellToolbar :delete="props.mode == 'notebook'" :trash="props.mode == 'notebook'"
-			:duplicate="props.mode == 'notebook'" :edit="false" :display_results="false" :format="true" @play="onPlay"
-			@clear="onClear" @movedown="$projects.moveDown(props.id)" @moveup="$projects.moveUp(props.id)"
-			@trash="$projects.deleteCell(props.id)" @format="onFormat" />
-		<div class="flex items-start flex-col overflow-hidden">
-			<div ref="queryEditorRef" class="p-2 overflow-y-scroll w-full nice-scrollbar max-h-[30vh]"
-				style="field-sizing: content" />
-		</div>
+  <div
+    :class="[
+      cn(
+        'transition-all duration-200 w-full flex h-auto flex-col p-3 rounded space-y-2 group bg-white',
+        'ring-[2px]  ring-transparent focus-within:shadow-md',
+        error ? 'ring-red-100' : '',
+        hasResults && !error ? 'ring-green-100' : '',
+      ),
+    ]"
+    @focusin="inputFocused = true"
+    @focusout="inputFocused = false"
+  >
+    <EditorCellToolbar
+      :delete="props.mode == 'notebook'"
+      :trash="props.mode == 'notebook'"
+      :duplicate="props.mode == 'notebook'"
+      :edit="false"
+      :display_results="false"
+      :format="true"
+      @play="onPlay"
+      @clear="onClear"
+      @movedown="$projects.moveDown(props.id)"
+      @moveup="$projects.moveUp(props.id)"
+      @trash="$projects.deleteCell(props.id)"
+      @format="onFormat"
+    />
+    <div class="flex items-start flex-col overflow-hidden">
+      <div
+        ref="queryEditorRef"
+        class="p-2 overflow-y-scroll w-full nice-scrollbar max-h-[30vh]"
+        style="field-sizing: content"
+      />
+    </div>
 
-		<div v-if="hasResults" class="bg-blue-200 flex-grow" style="field-sizing: content">
-			<perspective-viewer ref="pView" :class="[
-				'overflow-hidden',
-				props.mode == 'console' ? 'h-full' : 'h-[20vh] flex-shrink min-h-[100px] resize-y'
-			]" :theme="tableTheme" />
-		</div>
-		<div class="info justify-end flex space-x-2">
-			<span v-if="lastQueryDuration && !error" class="text-xs">query took: {{ lastQueryDuration }} s</span>
-			<pre v-if="error != ''" class="text-xs text-red-500 text-wrap"
-				v-html="error.replaceAll(/(\t)/gm, '&nbsp;&nbsp;&nbsp;&nbsp;').replaceAll(/(\r\n|\n|\r)/gm, '<br />')" />
-			<div v-if="lastQueryDuration != '' && error == ''" class="i-ep:success-filled text-green-600 h-5 w-5" />
-			<div v-if="error != ''" class="i-material-symbols:chat-error-outline text-red-600 h-5 w-5" />
-			<div v-if="loading" class="i-svg-spinners-gooey-balls-1" />
-		</div>
-	</div>
+    <ResultsViewer
+      v-if="hasResults"
+      ref="resultsRef"
+      class="w-full min-h-[200px] text-sm p-2"
+    />
+    <div class="info justify-end flex space-x-2">
+      <span
+        v-if="lastQueryDuration && !error"
+        class="text-xs"
+      >query took: {{ lastQueryDuration }} s</span>
+      <pre
+        v-if="error != ''"
+        class="text-xs text-red-500 text-wrap"
+        v-html="error.replaceAll(/(\t)/gm, '&nbsp;&nbsp;&nbsp;&nbsp;').replaceAll(/(\r\n|\n|\r)/gm, '<br />')"
+      />
+      <div
+        v-if="lastQueryDuration != '' && error == ''"
+        class="i-ep:success-filled text-green-600 h-5 w-5"
+      />
+      <div
+        v-if="error != ''"
+        class="i-material-symbols:chat-error-outline text-red-600 h-5 w-5"
+      />
+      <div
+        v-if="loading"
+        class="i-svg-spinners-gooey-balls-1"
+      />
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
-//@ts-ignore
-import perspective from "https://cdn.jsdelivr.net/npm/@finos/perspective/dist/cdn/perspective.js";
-import { RecordBatchReader } from "apache-arrow";
 import { computed, nextTick, onMounted, ref, useTemplateRef, watch } from "vue";
 import EditorCellToolbar from "@/components/EditorCellToolbar.vue";
 import { format } from "sql-formatter";
@@ -56,9 +85,14 @@ import { EditorState } from "@codemirror/state";
 import { EditorView, keymap } from "@codemirror/view";
 import { useColorMode, useVModels } from "@vueuse/core";
 import { ayuLight, cobalt } from "thememirror";
-import { cn } from "@/lib/utils";
 
-const pView = ref(null);
+
+import { cn } from "@/lib/utils";
+import ResultsViewer from "./ResultsViewer.vue";
+
+
+
+const resultsRef = useTemplateRef("resultsRef");
 const color = useColorMode();
 const props = defineProps({
 	mode: { default: "notebook", type: String },
@@ -78,7 +112,7 @@ const pWorker = ref(null);
 const inputFocused = ref(false);
 const lastQueryDuration = ref("");
 const loading = ref(false);
-
+const hot = ref<unknown>(null);
 const editor = ref<EditorView>();
 
 // -- start computed --
@@ -149,40 +183,55 @@ const onPlay = async () => {
 		error.value = "";
 		loading.value = true;
 
+
 		const result = await execute(query.value, activeProject.sql.backend === "duckdb_server");
-
-		if (result instanceof ReadableStreamDefaultReader) {
+		if (result.records instanceof ReadableStreamDefaultReader) {
 			hasResults.value = true;
-			let table = null;
-
-			const chunks = [];
+			await nextTick();
+			console.log(result.schema)
+			const decoder = new TextDecoder("utf-8");
+			//@ts-ignore
+			// const table = await pWorker.value?.table(result.schema);
+			// console.log(`got here`)
+			// console.log("table", table)
+			// const chunks = [];
+			let buffer = "";
 			while (true) {
-				const { value, done } = await result.read();
+				const { value, done } = await result.records.read();
 				if (done) break;
-				if (value) {
-					chunks.push(new Uint8Array(value));
+
+				buffer += decoder.decode(value, { stream: true });
+
+				const lines = buffer.split('\n');
+				buffer = lines.pop(); // keep last incomplete line
+
+				for (const line of lines) {
+					if (line.trim()) {
+						const obj = JSON.parse(line);
+						console.log("obj", obj)
+						hot.value.updateData([obj]);
+					}
 				}
 			}
 
-			const arrowChunk = new Uint8Array(
-				chunks.reduce((acc, chunk) => acc + chunk.length, 0),
-			);
-			let offset = 0;
-			for (const chunk of chunks) {
-				arrowChunk.set(chunk, offset);
-				offset += chunk.length;
-			}
+			// const arrowChunk = new Uint8Array(
+			// 	chunks.reduce((acc, chunk) => acc + chunk.length, 0),
+			// );
+			// let offset = 0;
+			// for (const chunk of chunks) {
+			// 	arrowChunk.set(chunk, offset);
+			// 	offset += chunk.length;
+			// }
 
-			const recordBatchReader = RecordBatchReader.from(arrowChunk);
-			const firstVal = recordBatchReader.next().value;
-			//@ts-ignore
-			table = await pWorker.value.table(firstVal.toArray());
+			// const recordBatchReader = RecordBatchReader.from(arrowChunk);
+			// const firstVal = recordBatchReader.next().value;
 
-			for (const batch of recordBatchReader) {
-				table.update(batch.toArray());
-			}
-			//@ts-ignore
-			pView.value.load(table);
+
+			// for (const batch of recordBatchReader) {
+			// 	table.update(batch.toArray());
+			// }
+			// //@ts-ignore
+			// pView.value.load(table);
 		} else {
 			const { records, schema, duration } = result;
 			let processedRecords = records;
@@ -209,10 +258,17 @@ const onPlay = async () => {
 			if (processedRecords.length) {
 				hasResults.value = true;
 				await nextTick();
+				resultsRef.value!.setColumns(schema);
+				const x = JSON.parse(JSON.stringify(processedRecords))
+				// dataView.value.beginUpdate();
+				// dataView.value.endUpdate();
+				resultsRef.value!.setData(x);
+				// dataView.value.addItems(x);
+				// dataView.value.addItem({, ...x });
 				//@ts-ignore
-				const table = await pWorker.value.table(processedRecords);
-				// @ts-ignore
-				pView.value.load(table, { configure: true });
+				// const table = await pWorker.value.table(processedRecords);
+				// // @ts-ignore
+				// pView.value.load(table, { configure: true });
 			}
 		}
 
@@ -220,6 +276,7 @@ const onPlay = async () => {
 			db_events.emit("UPDATE_SCHEMA");
 		}
 	} catch (e) {
+		console.log("error", e)
 		if (e instanceof Error) {
 			error.value = e.toString();
 		} else {
@@ -253,15 +310,9 @@ watch(queryEditor, () => {
 watch(color, initEditor);
 
 onMounted(async () => {
-	pWorker.value = await perspective.worker();
+
 });
 </script>
 
 
-<style lang="scss">
-perspective-viewer {
-	td {
-		max-width: 20vw;
-	}
-}
-</style>
+<style lang="scss"></style>
