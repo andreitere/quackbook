@@ -6,7 +6,6 @@ import autoprefixer from "autoprefixer"
 import Unfonts from "unplugin-fonts/vite"
 import Icons from "unplugin-icons/vite"
 import UnoCSS from "unocss/vite"
-import Components from "unplugin-vue-components/vite"
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
   const isProd = mode === "production" // Adjust the condition as needed
@@ -28,11 +27,7 @@ export default defineConfig(({ mode }) => {
       vue({
         template: {
           compilerOptions: {
-            isCustomElement: (tag) => [
-              'perspective-viewer',
-              'perspective-viewer-datagrid',
-              'perspective-viewer-d3fc'
-            ].includes(tag)
+            isCustomElement: (tag) => ["perspective-viewer", "perspective-viewer-datagrid", "perspective-viewer-d3fc"].includes(tag),
           },
         },
       }),

@@ -3,6 +3,7 @@
 // import "https://cdn.jsdelivr.net/npm/@finos/perspective-viewer-d3fc@3.5.0/dist/cdn/perspective-viewer-d3fc.js";
 import "@finos/perspective-viewer/dist/css/pro.css";
 import "virtual:uno.css"
+// @ts-ignore
 import Sortable from "sortablejs"
 ;(window as unknown as any).Sortable = Sortable
 import "slickgrid/dist/styles/css/slick-alpine-theme.css"

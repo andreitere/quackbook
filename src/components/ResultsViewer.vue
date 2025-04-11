@@ -45,13 +45,65 @@ const showTable = async (schema: Record<string, unknown>, data: Record<string, u
     }
 
     if (!p.worker) throw new Error("Perspective worker not initialized");
-    p.table = await p.worker.table(_data);
+    p.table = await p.worker.table(schema);
+    // p.table!.update(_data);
     if (!pViewer.value) throw new Error("Perspective viewer not mounted");
+
+    // Configure viewer to show raw date values
+    
     await pViewer.value.load(p.table);
+    await pViewer.value.restore({
+        plugin: "Datagrid",
+        settings: true,
+        plugin_config: {
+            datetime_format: "raw"
+        }
+    });
 };
 
+/**
+ * Adds additional data to the existing table
+ * @param data Additional records to add to the table
+ */
+const addData = async (data: Record<string, unknown>[]) => {
+    if (!p.table) {
+        console.error("Table not initialized. Call showTable first.");
+        return;
+    }
+
+    // Get schema from existing table
+    const schema = await p.table.schema();
+    
+    // Get JSON columns for efficient processing
+    const jsonColumns = Object.entries(schema)
+        .filter(([_, type]) => type === 'json')
+        .map(([col]) => col);
+
+    const _data = [];
+
+    // Process data in a single pass
+    for (const row of data) {
+        // Only process JSON columns if they exist
+        if (jsonColumns.length > 0) {
+            for (const col of jsonColumns) {
+                if (col in row) {
+                    row[col] = JSON.stringify(row[col]);
+                }
+            }
+        }
+
+        _data.push(row);
+    }
+
+    // Add data to the existing table
+    await p.table.update(data);    
+
+};
+
+
 defineExpose({
-    showTable
+    showTable,
+    addData
 });
 
 const doSetup = ref<Promise<void>>();

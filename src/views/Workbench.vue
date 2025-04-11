@@ -117,7 +117,6 @@ watch(cmdShiftE, (v) => {
     <div class="overflow-y-scroll nice-scrollbar flex flex-col h-0 flex-grow space-y-6 pb-[200px] px-5">
       <div
         v-for="cell in $projects.sortedCells"
-        v-if="$projects.activeProjectMeta.mode == 'notebook'"
         :key="`${cell.position}-${cell.id}`"
         class="w-full"
       >
@@ -146,7 +145,7 @@ watch(cmdShiftE, (v) => {
   </div>
   <ShareProjectModal />
   <FileImport />
-  <!-- <MountFileSystem /> -->
+  <MountFileSystem />
 </template>
 
 <style scoped>

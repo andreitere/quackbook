@@ -46,7 +46,7 @@
       <pre
         v-if="error != ''"
         class="text-xs text-red-500 text-wrap"
-        v-html="error.replaceAll(/(\t)/gm, '&nbsp;&nbsp;&nbsp;&nbsp;').replaceAll(/(\r\n|\n|\r)/gm, '<br />')"
+        v-html="formattedError"
       />
       <div
         v-if="lastQueryDuration != '' && error == ''"
@@ -86,11 +86,8 @@ import { EditorView, keymap } from "@codemirror/view";
 import { useColorMode, useVModels } from "@vueuse/core";
 import { ayuLight, cobalt } from "thememirror";
 
-
 import { cn } from "@/lib/utils";
 import ResultsViewer from "./ResultsViewer.vue";
-
-
 
 const resultsRef = useTemplateRef("resultsRef");
 const color = useColorMode();
@@ -102,27 +99,25 @@ const props = defineProps({
 });
 const { query } = useVModels(props);
 
-const { backend, execute } = useSQLBackend();
+const { execute } = useSQLBackend();
 const $projects = useProjects();
 const { activeProject } = $projects;
 const queryEditor = useTemplateRef("queryEditorRef");
 const hasResults = ref<boolean>(false);
 const error = ref<string>("");
-const pWorker = ref(null);
 const inputFocused = ref(false);
 const lastQueryDuration = ref("");
 const loading = ref(false);
-const hot = ref<unknown>(null);
 const editor = ref<EditorView>();
 
 // -- start computed --
 
-const tableTheme = computed(() => {
-	if (color.value === "light") {
-		return "Pro Light";
-	}
-	return "Pro Dark";
+const formattedError = computed(() => {
+	return error.value
+		.replace(/\t/g, '&nbsp;&nbsp;&nbsp;&nbsp;')
+		.replace(/\r\n|\n|\r/g, '<br />');
 });
+
 
 const editorTheme = computed(() => {
 	if (color.value === "light") {
@@ -188,7 +183,6 @@ const onPlay = async () => {
 		if (result.records instanceof ReadableStreamDefaultReader) {
 			hasResults.value = true;
 			await nextTick();
-			console.log(result.schema)
 			const decoder = new TextDecoder("utf-8");
 			//@ts-ignore
 			// const table = await pWorker.value?.table(result.schema);
@@ -196,6 +190,8 @@ const onPlay = async () => {
 			// console.log("table", table)
 			// const chunks = [];
 			let buffer = "";
+			const data = []
+			let isInit = false;
 			while (true) {
 				const { value, done } = await result.records.read();
 				if (done) break;
@@ -208,11 +204,20 @@ const onPlay = async () => {
 				for (const line of lines) {
 					if (line.trim()) {
 						const obj = JSON.parse(line);
-						console.log("obj", obj)
-						hot.value.updateData([obj]);
+						// console.log("obj", obj)
+						// data.push(...obj)
+						if (!isInit) {
+							isInit = true;
+							await resultsRef.value!.showTable(result.schema, obj)
+						}
+						console.log("new line", obj)
+						resultsRef.value!.addData(obj)
 					}
 				}
 			}
+			console.log(result.schema)
+
+			// resultsRef.value!.showTable(result.schema, data)
 
 			// const arrowChunk = new Uint8Array(
 			// 	chunks.reduce((acc, chunk) => acc + chunk.length, 0),
@@ -261,7 +266,8 @@ const onPlay = async () => {
 				// resultsRef.value!.setColumns(schema);
 				// const x = JSON.parse(JSON.stringify(processedRecords))
 				// resultsRef.value!.setData(x);
-				resultsRef.value!.showTable(processedSchema, processedRecords)
+				await resultsRef.value!.showTable(processedSchema, processedRecords)
+				resultsRef.value!.addData(processedRecords)
 
 			}
 		}
@@ -309,4 +315,4 @@ onMounted(async () => {
 </script>
 
 
-<style lang="scss"></style>       t
+<style lang="scss"></style>
