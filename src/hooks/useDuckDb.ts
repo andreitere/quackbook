@@ -90,7 +90,7 @@ export function useDuckDb(config?: DuckDBConfig): UseDuckDbReturn {
         },
       }
     }).filter((field) => field !== null)
-    const records = results.toArray()
+    const records = results.toArray();
     await conn.close()
 
     return { schema, records, query: queryStr, duration }

@@ -36,7 +36,7 @@
     <ResultsViewer
       v-if="hasResults"
       ref="resultsRef"
-      class="w-full min-h-[200px] text-sm p-2"
+      class="w-full min-h-[500px] text-sm p-2"
     />
     <div class="info justify-end flex space-x-2">
       <span
@@ -258,17 +258,11 @@ const onPlay = async () => {
 			if (processedRecords.length) {
 				hasResults.value = true;
 				await nextTick();
-				resultsRef.value!.setColumns(schema);
-				const x = JSON.parse(JSON.stringify(processedRecords))
-				// dataView.value.beginUpdate();
-				// dataView.value.endUpdate();
-				resultsRef.value!.setData(x);
-				// dataView.value.addItems(x);
-				// dataView.value.addItem({, ...x });
-				//@ts-ignore
-				// const table = await pWorker.value.table(processedRecords);
-				// // @ts-ignore
-				// pView.value.load(table, { configure: true });
+				// resultsRef.value!.setColumns(schema);
+				// const x = JSON.parse(JSON.stringify(processedRecords))
+				// resultsRef.value!.setData(x);
+				resultsRef.value!.showTable(processedSchema, processedRecords)
+
 			}
 		}
 
@@ -315,4 +309,4 @@ onMounted(async () => {
 </script>
 
 
-<style lang="scss"></style>
+<style lang="scss"></style>       t

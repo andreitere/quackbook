@@ -3,6 +3,9 @@
 @tailwind utilities;
 
 @layer base {
+  .font-inter {
+    font-family: "Inter", sans-serif;
+  }
   :root {
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
@@ -129,8 +132,4 @@ body,
 
 .cmd-btn {
   @apply bg-slate-800 text-white py-1 px-2 text-sm leading-tight rounded whitespace-nowrap;
-}
-
-.font-inter {
-  font-family: "Inter", sans-serif;
 }

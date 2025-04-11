@@ -1,57 +1,59 @@
 <template>
-  <div
-    ref="gridRef"
-    class="max-h-[300px]"
-  />
+  <perspective-viewer ref="pViewer" />
 </template>
 
 <script setup lang="ts">
-import { Column, GridAutosizeColsMode, SlickDataView, SlickGrid } from 'slickgrid';
-import { ref, useTemplateRef, onMounted } from 'vue';
+import perspective from "@finos/perspective";
+import type { PerspectiveElement } from "@finos/perspective-viewer";
+import "@finos/perspective-viewer";
+import "@finos/perspective-viewer-datagrid";
+import "@finos/perspective-viewer-d3fc";
+import { getPerspectiveWorker } from "@/lib/perspective";
+import { ref, onMounted, reactive } from 'vue';
 
-const gridRef = useTemplateRef("gridRef");
-const grid = ref<SlickGrid>();
-const dataView = ref<SlickDataView>();
+const pViewer = ref<PerspectiveElement>();
+const p = reactive({
+    worker: null as Awaited<ReturnType<typeof perspective.worker>> | null,
+    table: null as unknown | null,
+});
 
-const setData = (data: unknown[]) => {
-    dataView.value!.beginUpdate();
-    dataView.value!.setItems(data, "_oid");
-    dataView.value!.endUpdate();
-    grid.value!.render();
+interface DataRow {
+    toJSON(): Record<string, unknown>;
 }
-const setColumns = (columns: { id: string, field: string, label: string }[]) => {
-    grid.value!.setColumns(columns as Column[]);
-}
 
+const showTable = async (schema: Record<string, unknown>, data: DataRow[]) => {
+    console.log(schema);
+    await doSetup.value;
+    const _data = [];
+    for (const row of data) {
+        _data.push(row.toJSON());
+    }
+    if (!p.worker) throw new Error("Perspective worker not initialized");
+    p.table = await p.worker.table(_data);
+    if (!pViewer.value) throw new Error("Perspective viewer not mounted");
+    await pViewer.value.load(p.table);
+};
 
 defineExpose({
-    setData,
-    setColumns
-})
-onMounted(() => {
-    dataView.value = new SlickDataView({ inlineFilters: true });
-    grid.value = new SlickGrid(gridRef.value!, dataView.value, [], {
-        enableCellNavigation: true,
-        autosizeColsMode: GridAutosizeColsMode.FitColsToViewport,
-        fullWidthRows: true,
-        enableAutoSizeColumns: true,
-        // forceSyncScrolling: true,
-        enableMouseWheelScrollHandler: true,
-        enableColumnReorder: false,
-    });
-    dataView.value.onRowCountChanged.subscribe(function (e, args) {
-        grid.value!.updateRowCount();
-        grid.value!.render();
+    showTable
+});
+
+const doSetup = ref<Promise<void>>();
+
+onMounted(async () => {
+    doSetup.value = new Promise(async (resolve) => {
+        p.worker = getPerspectiveWorker();
+        resolve();
     });
 });
 </script>
 <style lang="scss">
 .slick-cell {
-    @apply text-xs py-[5px] text-gray-500 font-inter;
+    @apply text-xs py-[5px] text-gray-500;
 }
 
 .slick-header-column {
-    @apply py-1 h-[25px] text-xs font-semibold font-inter bg-gradient-to-b from-gray-50 to-gray-100 text-gray-800 transition-all duration-200 shadow-sm border-r border-gray-200 tracking-wider hover:from-blue-50 hover:to-blue-100;
+    @apply py-1 h-[25px] text-xs font-semibold bg-gradient-to-b from-gray-50 to-gray-100 text-gray-800 transition-all duration-200 shadow-sm border-r border-gray-200 tracking-wider hover:from-blue-50 hover:to-blue-100;
 
     &:hover {
         @apply bg-gray-100 cursor-pointer;

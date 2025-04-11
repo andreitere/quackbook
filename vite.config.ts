@@ -16,6 +16,7 @@ export default defineConfig(({ mode }) => {
       exclude: ["@electric-sql/pglite"],
     },
     build: {
+      target: "esnext",
       sourcemap: true,
     },
     css: {
@@ -27,8 +28,11 @@ export default defineConfig(({ mode }) => {
       vue({
         template: {
           compilerOptions: {
-            // treat all tags with a dash as custom elements
-            isCustomElement: (tag) => tag.includes("perspective-viewer"),
+            isCustomElement: (tag) => [
+              'perspective-viewer',
+              'perspective-viewer-datagrid',
+              'perspective-viewer-d3fc'
+            ].includes(tag)
           },
         },
       }),
