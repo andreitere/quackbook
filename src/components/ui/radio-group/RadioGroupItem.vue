@@ -6,7 +6,6 @@ import {
   RadioGroupItem,
   RadioGroupIndicator,
 } from 'radix-vue'
-import { CheckIcon } from "lucide-vue-next";
 import { cn } from "@/lib/utils";
 
 import { computed, type HTMLAttributes } from 'vue'
