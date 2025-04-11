@@ -17,17 +17,33 @@ const p = reactive({
     table: null as unknown | null,
 });
 
-interface DataRow {
-    toJSON(): Record<string, unknown>;
-}
 
-const showTable = async (schema: Record<string, unknown>, data: DataRow[]) => {
-    console.log(schema);
+const showTable = async (schema: Record<string, unknown>, data: Record<string, unknown>[]) => {
+    // Remap schema to {colName: type}
+
+    // Get JSON columns for efficient processing
+    const jsonColumns = Object.entries(schema)
+        .filter(([_, type]) => type === 'json')
+        .map(([col]) => col);
+
     await doSetup.value;
     const _data = [];
+
+    // Process data in a single pass
     for (const row of data) {
-        _data.push(row.toJSON());
+
+        // Only process JSON columns if they exist
+        if (jsonColumns.length > 0) {
+            for (const col of jsonColumns) {
+                if (col in row) {
+                    row[col] = JSON.stringify(row[col]);
+                }
+            }
+        }
+
+        _data.push(row);
     }
+
     if (!p.worker) throw new Error("Perspective worker not initialized");
     p.table = await p.worker.table(_data);
     if (!pViewer.value) throw new Error("Perspective viewer not mounted");
