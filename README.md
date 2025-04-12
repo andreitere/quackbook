@@ -39,6 +39,7 @@ And if you import or create tables or attach other databases, you can even inspe
 - **Schema Inspection**: Easily view and explore your database structure
 
 > [!NOTE]
-> I started this project sometime last year. While, in the meantime, DuckDB also launched its own web-based SQL editor, this project remains a valuable learning experience and a testament to the power of DuckDB in the browser — and, to be fair, it includes some additional goodies.
+> 1. I started this project sometime last year. While, in the meantime, DuckDB also launched its own web-based SQL editor, this project remains a valuable learning experience and a testament to the power of DuckDB in the browser — and, to be fair, it includes some additional goodies.
+> 2. this is a toy project built mostly to keep my passion for frontend development alive and keep up with latest technologies available. expect bugs 🤓
 
 ![QuackBook Screenshot](/demos/app-1.jpeg)
