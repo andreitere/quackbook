@@ -4,7 +4,7 @@ import HelpView from '@/views/HelpView.vue';
 import ImportView from '@/views/ImportView.vue';
 import ProjectsView from '@/views/ProjectsView.vue';
 import Workbench from '@/views/Workbench.vue';
-import { createRouter, createWebHistory } from 'vue-router';
+import { createRouter, createWebHashHistory } from 'vue-router';
 
 const routes = [
     {
@@ -14,10 +14,15 @@ const routes = [
     {
         path: '/',
         name: 'workbench',
+        query: {
+            quackMode: false,
+            serverPort: 3000,
+        },
         component: Workbench,
     },
     {
         path: '/about',
+
         name: 'about',
         component: About,
     },
@@ -34,7 +39,7 @@ const routes = [
 ];
 
 export const router = createRouter({
-    history: createWebHistory(),
+    history: createWebHashHistory(),
     routes,
 });
 
