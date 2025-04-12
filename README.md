@@ -41,4 +41,4 @@ And if you import or create tables or attach other databases, you can even inspe
 > [!NOTE]
 > I started this project sometime last year. While, in the meantime, DuckDB also launched its own web-based SQL editor, this project remains a valuable learning experience and a testament to the power of DuckDB in the browser — and, to be fair, it includes some additional goodies.
 
-![QuackBook Screenshot](/demos/app-1.png)
+![QuackBook Screenshot](/demos/app-1.jpeg)
