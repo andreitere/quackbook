@@ -1,14 +1,22 @@
-import "virtual:uno.css";
+import { router } from '@/router.ts';
+import { createPinia } from 'pinia';
+// @ts-ignore
+import Sortable from 'sortablejs';
+import { createApp } from 'vue';
+import App from './App.vue';
+import { initPerspective } from './lib/perspective';
+import '@finos/perspective-viewer/dist/css/pro.css';
+import 'virtual:uno.css';
+import './assets/index.scss';
 
-import "./assets/index.scss";
-import { createApp } from "vue";
-import App from "./App.vue";
-import { createPinia } from "pinia";
-import { router } from "@/router.ts";
+(window as unknown as any).Sortable = Sortable;
+
+// Initialize perspective before creating the app
+initPerspective();
 
 const app = createApp(App);
 const pinia = createPinia();
 
 app.use(pinia);
 app.use(router);
-app.mount("#app");
+app.mount('#app');

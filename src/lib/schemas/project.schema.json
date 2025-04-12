@@ -1,0 +1,120 @@
+{
+  "$id": "https://example.com/project.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "definitions": {
+    "SQLConfig": {
+      "type": "object",
+      "properties": {
+        "backend": {
+          "type": "string"
+        },
+        "host": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "backend",
+        "host"
+      ]
+    },
+    "ProjectMeta": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": [
+            "number",
+            "string",
+            "null"
+          ]
+        },
+        "name": {
+          "type": "string"
+        },
+        "mode": {
+          "type": "string"
+        },
+        "dirty": {
+          "type": "boolean"
+        },
+        "sql": {
+          "$ref": "#/definitions/SQLConfig"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "mode",
+        "dirty",
+        "sql"
+      ]
+    },
+    "CellType": {
+      "type": "string",
+      "enum": [
+        "markdown",
+        "sql"
+      ]
+    },
+    "Cell": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "number"
+        },
+        "query": {
+          "type": "string"
+        },
+        "markdown": {
+          "type": "string"
+        },
+        "position": {
+          "type": "number"
+        },
+        "type": {
+          "$ref": "#/definitions/CellType"
+        }
+      },
+      "required": [
+        "id",
+        "position",
+        "type"
+      ]
+    }
+  },
+  "properties": {
+    "id": {
+      "type": [
+        "number",
+        "string",
+        "null"
+      ]
+    },
+    "name": {
+      "type": "string"
+    },
+    "mode": {
+      "type": "string"
+    },
+    "dirty": {
+      "type": "boolean"
+    },
+    "sql": {
+      "$ref": "#/definitions/SQLConfig"
+    },
+    "cells": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/Cell"
+      }
+    }
+  },
+  "required": [
+    "id",
+    "name",
+    "mode",
+    "dirty",
+    "sql",
+    "cells"
+  ]
+}

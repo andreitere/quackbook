@@ -1,29 +1,33 @@
 <script setup lang="ts">
-import {
-	HoverCard,
-	HoverCardContent,
-	HoverCardTrigger,
-} from "@/components/ui/hover-card";
-import { Button } from "@/components/ui/button";
+
 import { useProjects } from "@/store/project.ts";
 import { computed } from "vue";
+import { Button } from "@/components/ui/button";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 
 const $projects = useProjects();
 
 const anyNotifications = computed(() => {
-	if ($projects.activeProject.value.dirty) return true;
+	if ($projects.activeProjectMeta.dirty) return true;
 });
 </script>
 
 <template>
   <HoverCard :open-delay="50">
     <HoverCardTrigger as-child>
-      <Button variant="outline" :class="[anyNotifications ? 'text-red-600': 'text-gray-200']">
-        <div class="i-material-symbols-light:notifications-active"></div>
+      <Button
+        variant="outline"
+        size="sm"
+        :class="[anyNotifications ? 'text-red-600': 'text-gray-200']"
+      >
+        <div class="i-material-symbols-light:notifications-active" />
       </Button>
     </HoverCardTrigger>
     <HoverCardContent class="w-80">
-      <div class="flex justify-between space-x-4" v-if="anyNotifications">
+      <div
+        v-if="anyNotifications"
+        class="flex justify-between space-x-4"
+      >
         <div class="space-y-1">
           <h4 class="text-sm font-bold">
             Project not saved
@@ -34,7 +38,9 @@ const anyNotifications = computed(() => {
         </div>
       </div>
       <div v-else>
-        <p class="text-center">no notifications 😋</p>
+        <p class="text-center">
+          no notifications 😋
+        </p>
       </div>
     </HoverCardContent>
   </HoverCard>

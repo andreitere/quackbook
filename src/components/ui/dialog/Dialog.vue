@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import {
-	DialogRoot,
 	type DialogRootEmits,
 	type DialogRootProps,
 	useForwardPropsEmits,
+	DialogRoot,
 } from "radix-vue";
 
 const props = defineProps<DialogRootProps>();

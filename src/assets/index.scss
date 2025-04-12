@@ -3,6 +3,9 @@
 @tailwind utilities;
 
 @layer base {
+  .font-inter {
+    font-family: "Inter", sans-serif;
+  }
   :root {
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
@@ -82,10 +85,11 @@
   }
 }
 
-
-html, body, #app {
+html,
+body,
+#app {
   @apply h-full w-full max-h-full max-w-full overflow-hidden;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
 }
 
 .delius-swash-caps-regular {
@@ -97,19 +101,24 @@ html, body, #app {
 * {
   user-select: none;
 }
+.prose,
+.prose * {
+  user-select: text;
+}
 
-.nice-scrollbar, .cm-editor,.cm-scroller {
+.nice-scrollbar,
+.cm-editor,
+.cm-scroller {
   &::-webkit-scrollbar-thumb {
     background-color: #bdc3c7;
-    border-radius: 5px;
+    border-radius: 3px;
     width: 20px;
   }
 
-
   &::-webkit-scrollbar {
-    background: white;
-    width: 4px;
-    height: 4px;
+    // background: white;
+    width: 2px;
+    height: 2px;
     border-radius: 2px;
   }
 }
@@ -119,5 +128,8 @@ html, body, #app {
 }
 
 .page {
+}
 
+.cmd-btn {
+  @apply bg-slate-800 text-white py-1 px-2 text-sm leading-tight rounded whitespace-nowrap;
 }

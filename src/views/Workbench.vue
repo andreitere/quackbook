@@ -1,109 +1,165 @@
 <script setup lang="ts">
-import DBSchemaDetails from "@/components/DBSchemaDetails.vue";
-import EditorCell from "@/components/EditorCell.vue";
-import FileImport from "@/components/FileImport.vue";
-import MarkdownCell from "@/components/MarkdownCell.vue";
-import MountFileSystem from "@/components/MountFileSystem.vue";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import {useMetaStore} from "@/store/meta.ts";
-import {useProjects} from "@/store/project.ts";
-import {useClipboard, useMagicKeys} from "@vueuse/core";
-import {reactive, ref, watch} from "vue";
-import {useDuckDb} from "@/hooks/useDuckDb.ts";
-import {Alert, AlertDescription, AlertTitle} from "@/components/ui/alert";
+import DBSchemaDetails from '@/components/DBSchemaDetails.vue';
+import EditableProjectName from '@/components/EditableProjectName.vue';
+import EditorCell from '@/components/EditorCell.vue';
+import FileImport from '@/components/FileImport.vue';
+import MarkdownCell from '@/components/MarkdownCell.vue';
+import MountFileSystem from '@/components/MountFileSystem.vue';
+import NotificationsCard from '@/components/NotificationsCard.vue';
+import QueryHistory from '@/components/QueryHistory.vue';
+import ShareProjectModal from '@/components/ShareProjectModal.vue';
+import SQLBackendSelector from '@/components/SQLBackendSelector.vue';
+import { Button } from '@/components/ui/button';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { useDuckDb } from '@/hooks/useDuckDb.ts';
+import { useMetaStore } from '@/store/meta.ts';
+import { useProjects } from '@/store/project.ts';
+import { onMounted } from 'vue';
+import { useRoute } from 'vue-router';
+import draggable from 'vuedraggable';
 
 const $meta = useMetaStore();
-const $projects = useProjects();
-const shareVal = ref();
+const $project = useProjects();
+const $route = useRoute();
+const { loading: db_loading } = useDuckDb();
 
-const {copy} = useClipboard({source: $meta.shareLink});
-const {loading: db_loading} = useDuckDb();
-const show = reactive({
-  toolBar: true,
-  utilsBar: false,
+onMounted(() => {
+    if ($route.query.quackMode) {
+        $project.activeProjectMeta.sql.backend = 'duckdb_server';
+        $project.activeProjectMeta.sql.host = `http://localhost:${$route.query.serverPort}`;
+        window.location.href = '/';
+    }
 });
-
-const keys = useMagicKeys();
-
-const cmdShiftE = keys["Option+Shift+E"];
-
-watch(cmdShiftE, (v) => {
-  if (!v) return;
-  show.toolBar = !show.toolBar;
-});
-
-const doCopy = async () => {
-  await copy($meta.shareLink);
-  $meta.shareLink = "";
-};
 </script>
 
 <template>
-  <div class="flex flex-grow w-1/3 flex-col h-full max-h-full px-2  py-4">
-    <div class="flex justify-center items-center gap-2 text-gray-400 py-4" v-if="db_loading">
-      <div class="i-line-md:loading-twotone-loop w-5 h-5"></div>
-      initializing duck db ❤️‍🔥
-    </div>
-    <div class="overflow-y-scroll nice-scrollbar flex flex-col h-0 flex-grow space-y-6 pb-[200px]">
-      <div v-for="cell in $projects.sortedCells.value" :key="`${cell.position}-${cell.id}`" v-if="$projects.activeProject.value.mode == 'notebook'" class="w-full">
-        <EditorCell :mode="$projects.activeProject.value.mode" v-model:query="cell.query" :id="cell.id" :position="cell.position" v-if="cell.type == 'sql'"/>
-        <MarkdownCell :mode="$projects.activeProject.value.mode" v-model:markdown="cell.markdown" :id="cell.id" :position="cell.position" v-if="cell.type == 'markdown'"/>
-      </div>
-      <EditorCell v-if="$projects.activeProject.value.mode == 'console'" :mode="$projects.activeProject.value.mode"
-                  :id="$projects.activeProject.value.cells[0].id"
-                  :position="$projects.activeProject.value.cells[0].position"
-                  v-model:query="$projects.activeProject.value.cells[0].query"/>
-    </div>
-  </div>
-  <div :class="[
-            'tool-bar items-center flex flex-col space-y-3 overflow-y-scroll nice-scrollbar h-full',
-            $meta.showToolbar ? 'flex-grow w-[max(20vw,350px)] max-w-[max(20vw,350px)]' : 'w-0 opacity-0'
-        ]">
-    <div class="overflow-y-scroll nice-scrollbar h-0 flex-grow w-full">
-      <DBSchemaDetails class="w-full"/>
-    </div>
-  </div>
-  <AlertDialog :open="$meta.shareLink != ''">
-    <AlertDialogContent>
-      <AlertDialogHeader>
-        <AlertDialogTitle>Share project</AlertDialogTitle>
-        <AlertDialogDescription>
-          {{ $projects.activeProject.value.name }}
-        </AlertDialogDescription>
-      </AlertDialogHeader>
-      <div class="flex flex-col items-stretch">
-        <input type="text" class="flex-grow border-2 rounded text-sm p-1" :value="$meta.shareLink" ref="shareVal"/>
-        <Alert variant="destructive" class="mt-5" v-if="$meta.shareLink.length > 2048">
+    <div class="flex flex-grow w-1/3 flex-col h-full max-h-full p-6 bg-gray-300 dark:bg-zinc-800">
+        <div class="flex justify-start items-center gap-2 text-gray-600 mb-6 dark:text-gray-300">
+            <div v-if="db_loading" class="flex items-center justify-center w-full">
+                <div class="i-line-md:loading-twotone-loop w-5 h-5" />
+                initializing duck db ❤
+            </div>
+            <div v-else class="flex gap-2 items-center w-full flex-col md:flex-row">
+                <div class="flex flex-grow space-x-2 w-full items-center">
+                    <EditableProjectName class="flex-grow" />
+                    <NotificationsCard />
+                    <Popover>
+                        <PopoverTrigger as-child>
+                            <Button variant="outline" size="sm" class="shadow-sm">
+                                <div class="i-material-symbols:settings-cinematic-blur-outline-rounded w-4-h-4" />
+                                <span class="text-sm text-gray-600 dark:text-gray-400 ml-2">
+                                    {{
+                                        $project.activeProjectMeta.sql.backend === 'duckdb_wasm'
+                                            ? 'DuckDB WASM'
+                                            : $project.activeProjectMeta.sql.backend === 'pglite_wasm'
+                                                ? 'PGLite WASM'
+                                                : 'DuckDB Server'
+                                    }}
+                                </span>
+                            </Button>
+                        </PopoverTrigger>
+                        <PopoverContent class="w-80">
+                            <SQLBackendSelector />
+                        </PopoverContent>
+                    </Popover>
+                </div>
+                <div class="flex flex-grow" />
+                <div class="flex md:min-w-0 max-w-[100vw] flex-grow px-2 md:px-0 w-full">
+                    <div class="overflow-x-scroll min-w-full nice-scrollbar flex space-x-2 items-center md:justify-end">
+                        <Button
+                            class="flex-grow md:flex-grow-0 shadow-sm" variant="outline" size="sm"
+                            @click="$project.addCell('markdown', null)"
+                        >
+                            <div class="i-ion:logo-markdown" />
+                            <span class="ml-1 hidden md:block">add md</span>
+                        </Button>
 
-          <AlertTitle class="flex">
-            <div class="i-mdi:exclamation-thick w-4 h-4"></div>
-            <span>Generated url looks a bit too long.</span>
-          </AlertTitle>
-          <AlertDescription>
-            This is fully based on the content of your cells. Check if you can reduce that a bit or try splitting it in different projects.
-            Limit: 2048. Current: {{ $meta.shareLink.length }}
-          </AlertDescription>
-        </Alert>
-      </div>
-      <AlertDialogFooter>
-        <AlertDialogCancel @click="$meta.shareLink = ''">Cancel</AlertDialogCancel>
-        <AlertDialogAction data-umami-event="copy-shared-link" @click="doCopy" v-if="$meta.shareLink.length <= 2048">Copy & Close</AlertDialogAction>
-      </AlertDialogFooter>
-    </AlertDialogContent>
-  </AlertDialog>
-  <FileImport/>
-  <MountFileSystem/>
+                        <Button
+                            class="flex-grow md:flex-grow-0 shadow-sm" variant="outline" size="sm"
+                            @click="$project.addCell('sql', null)"
+                        >
+                            <div class="i-hugeicons:sql" />
+                            <span class="ml-1 hidden md:block">add sql</span>
+                        </Button>
+                        <Button
+                            class="flex-grow md:flex-grow-0 shadow-sm" variant="outline" size="sm"
+                            @click="$project.saveProject"
+                        >
+                            <div class="i-lucide:save" />
+                            <span class="ml-1 hidden md:block">save</span>
+                        </Button>
+                        <Button
+                            class="flex-grow md:flex-grow-0 shadow-sm" variant="outline" size="sm"
+                            @click="$project.shareProject"
+                        >
+                            <div class="i-lucide:share" />
+                            <span class="ml-1 hidden md:block">share</span>
+                        </Button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="overflow-y-scroll nice-scrollbar flex flex-col h-0 flex-grow space-y-6 pb-[200px] py-2">
+            <draggable
+                v-model="$project.activeProjectCells"
+                item-key="id"
+                handle=".drag-handle"
+                class="space-y-6"
+                @end="$project.updatePositions()"
+            >
+                <template #item="{ element: cell }">
+                    <div class="w-full">
+                        <EditorCell
+                            v-if="cell.type == 'sql'"
+                            :id="cell.id"
+                            v-model:query="cell.query"
+                            :position="cell.position"
+                        />
+                        <MarkdownCell
+                            v-if="cell.type == 'markdown'"
+                            :id="cell.id"
+                            v-model:markdown="cell.markdown"
+                            :position="cell.position"
+                        />
+                    </div>
+                </template>
+            </draggable>
+        </div>
+    </div>
+    <div
+        class="tool-bar items-center flex flex-col space-y-3 h-full" :class="[
+            $meta.showToolbar ? 'flex-grow w-[max(450px)] max-w-[max(450px)]' : 'w-0 opacity-0',
+        ]"
+    >
+        <DBSchemaDetails class="w-full" />
+        <QueryHistory class="w-full" />
+    </div>
+    <ShareProjectModal />
+    <FileImport />
+    <MountFileSystem />
 </template>
 
 <style scoped>
+.nice-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
 
+.nice-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.nice-scrollbar::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+.dark .nice-scrollbar::-webkit-scrollbar-thumb {
+  background: #475569;
+}
+
+.drag-handle {
+  cursor: move;
+}
 </style>

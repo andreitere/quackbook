@@ -1,166 +1,267 @@
 <script setup lang="ts">
-import {
-	Command,
-	CommandDialog,
-	CommandEmpty,
-	CommandGroup,
-	CommandInput,
-	CommandItem,
-	CommandList,
-	CommandSeparator,
-} from "@/components/ui/command";
+import { Button } from '@/components/ui/button';
+import { Command, CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator } from '@/components/ui/command';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { useMetaStore } from '@/store/meta.ts';
+import { useProjects } from '@/store/project.ts';
+import { useColorMode, useMagicKeys } from '@vueuse/core';
+import { watch } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 
-import { useColorMode, useMagicKeys } from "@vueuse/core";
-import { watch } from "vue";
-import { useMetaStore } from "@/store/meta.ts";
-import { useProjects } from "@/store/project.ts";
-import { useRouter } from "vue-router";
-
+defineEmits([
+    'add-cell-sql',
+    'add-cell-markdown',
+    'new-project',
+    'convert-to-console',
+    'convert-to-notebook',
+]);
 const colorMode = useColorMode();
 const $meta = useMetaStore();
 
-defineEmits([
-	"add-cell-sql",
-	"add-cell-markdown",
-	"new-project",
-	"convert-to-console",
-	"convert-to-notebook",
-]);
-
 const $projects = useProjects();
 const $router = useRouter();
+const $route = useRoute();
 
-const onColorModeToggle = () => {
-	if (colorMode.value === "light") {
-		colorMode.value = "dark";
-	} else {
-		colorMode.value = "light";
-	}
-	$meta.cmdMenu = false;
-};
+function closeMenu() {
+    $meta.cmdMenu = false;
+}
+
+function onColorModeToggle() {
+    if (colorMode.value === 'light') {
+        colorMode.value = 'dark';
+    }
+    else {
+        colorMode.value = 'light';
+    }
+    $meta.cmdMenu = false;
+}
 
 const { Meta_K, Ctrl_K } = useMagicKeys({
-	passive: false,
-	onEventFired(e) {
-		if (e.key === "k" && (e.metaKey || e.ctrlKey)) e.preventDefault();
-	},
+    passive: false,
+    onEventFired(e) {
+        if (e.key === 'k' && (e.metaKey || e.ctrlKey))
+            e.preventDefault();
+    },
 });
 
 watch([Meta_K, Ctrl_K], (v) => {
-	if (v[0] || v[1]) $meta.cmdMenu = true;
+    if (v[0] || v[1])
+        $meta.cmdMenu = true;
 });
 </script>
 
 <template>
-  <CommandDialog v-model:open="$meta.cmdMenu">
-    <Command class="rounded-lg border shadow-md ">
-      <CommandInput placeholder="Type a command or search..."/>
-      <CommandList class="max-h-[60vh]">
-        <CommandEmpty>No results found.</CommandEmpty>
-
-        <CommandGroup heading="Actions">
-
-          <CommandItem value="save" @select="$projects.saveProject" data-umami-event="save-project">
-            <div class="i-pixelarticons:save w-4 h-4 mr-2"></div>
-            <span>save project</span>
-          </CommandItem>
-          <CommandItem value="share" @select="$projects.shareProject" data-umami-event="share-project">
-            <div class="i-pixelarticons:open w-4 h-4 mr-2"></div>
-            <span>share</span>
-          </CommandItem>
-          <CommandItem value="convert-to-notebook" data-umami-event="convert-to-notebook" class="items-center flex"
-                       v-if="$projects.activeProject.value.mode == 'console'"
-                       @select="$projects.convertToNotebook">
-            <div class="i-mdi:notebook-edit-outline w-4 h-4 mr-2"></div>
-            <span>convert to notebook</span>
-          </CommandItem>
-          <CommandItem value="convert-to-console" data-umami-event="convert-to-console" class="items-center flex"
-                       v-if="$projects.activeProject.value.mode == 'notebook'"
-                       @select="$projects.convertToConsole">
-            <div class="i-fluent:window-console-20-filled w-4 h-4 mr-2"></div>
-            <span>convert to console</span>
-          </CommandItem>
-          <CommandItem value="new-add-cell-sql" data-umami-event="add-sql-cell" class="items-center flex"
-                       @select="$projects.addCell('sql', null)">
-            <div class="i-material-symbols:sheets-add-on w-4 h-4 mr-2"></div>
-            <span>add sql cell</span>
-          </CommandItem>
-          <CommandItem value="new-add-cell-markdown" data-umami-event="add-markdown-cell" class="items-center flex"
-                       @select="$projects.addCell('markdown', null)">
-            <div class="i-ion:logo-markdown w-4 h-4 mr-2"></div>
-            <span>add markdown cell</span>
-          </CommandItem>
-        </CommandGroup>
-        <CommandGroup heading="Files import">
-          <CommandItem value="import file" data-umami-event="start-import-files" @select="$meta.startFilesImport">
-            <div class="i-pixelarticons:calendar-import w-4 h-4 mr-2"></div>
-            <span>import file (csv, arrow, parquet)</span>
-          </CommandItem>
-          <CommandItem value="mount local filesystem" data-umami-event="mount-file-system"
-                       @select="$meta.startMountFileSystem">
-            <div class="i-eos-icons:file-system-outlined w-4 h-4 mr-2"></div>
-            <span>mount file system</span>
-          </CommandItem>
-        </CommandGroup>
-        <CommandSeparator/>
-        <CommandGroup heading="Projects">
-<!--          <CommandItem :value="project.name" data-umami-event="open-project"-->
-<!--                       v-for="project in $projects.projects.value.slice(0,3)"-->
-<!--                       @select="$projects.setActiveProject(project)">-->
-<!--            <div class="flex justify-between items-center w-full">-->
-<!--              <span>{{ project.name }}</span>-->
-<!--            </div>-->
-<!--          </CommandItem>-->
-          <CommandSeparator/>
-          <CommandItem value="list all projects" data-umami-event="list-projects" class="items-center flex"
-                       @select="$router.push('/projects')">
-            <div class="i-ic:baseline-menu-book w-4 h-4 mr-2"></div>
-            <span>all projects</span>
-          </CommandItem>
-          <CommandItem value="new project" data-umami-event="new-project" class="items-center flex"
-                       @select="$emit('new-project')">
-            <div class="i-pixelarticons:briefcase-plus w-4 h-4 mr-2"></div>
-            <span>new project</span>
-          </CommandItem>
-        </CommandGroup>
-        <CommandSeparator/>
-        <CommandGroup heading="Navigation">
-          <CommandItem value="home" data-umami-event="home" @select="$router.push('/')">
-            <div class="flex justify-between items-center w-full">
-              <span>home</span>
+    <Button
+        size="xs" class="text-xs cursor-pointer hidden md:block transition-all duration-200 hover:scale-105"
+        data-umami-event="command-menu" @click="$meta.cmdMenu = true"
+    >
+        <div class="i-pixelarticons:command h-4 w-4" />
+    </Button>
+    <Popover>
+        <PopoverTrigger as-child>
+            <Button
+                size="xs" class="text-xs cursor-pointer md:hidden transition-all duration-200 hover:scale-105"
+                data-umami-event="command-menu"
+            >
+                <div class="i-lucide-square-menu" />
+            </Button>
+        </PopoverTrigger>
+        <PopoverContent class="w-72 p-0 shadow-lg border-0">
+            <div class="flex flex-col">
+                <div class="p-3">
+                    <div class="text-sm font-semibold px-2 py-1.5 text-muted-foreground">
+                        Actions
+                    </div>
+                    <div class="space-y-1">
+                        <div
+                            class="flex items-center px-3 py-2 text-sm rounded-md hover:bg-accent/50 cursor-pointer transition-colors duration-200"
+                            data-umami-event="save-project" @click="$projects.saveProject"
+                        >
+                            <div class="i-lucide:save mr-2 text-primary" />
+                            <span>Save Project</span>
+                        </div>
+                        <div
+                            class="flex items-center px-3 py-2 text-sm rounded-md hover:bg-accent/50 cursor-pointer transition-colors duration-200"
+                            data-umami-event="share-project" @click="$projects.shareProject"
+                        >
+                            <div class="i-lucide:share mr-2 text-primary" />
+                            <span>Share</span>
+                        </div>
+                        <div
+                            class="flex items-center px-3 py-2 text-sm rounded-md hover:bg-accent/50 cursor-pointer transition-colors duration-200"
+                            data-umami-event="add-sql-cell" @click="$projects.addCell('sql', null)"
+                        >
+                            <div class="i-hugeicons:sql mr-2 text-primary" />
+                            <span>Add SQL Cell</span>
+                        </div>
+                        <div
+                            class="flex items-center px-3 py-2 text-sm rounded-md hover:bg-accent/50 cursor-pointer transition-colors duration-200"
+                            data-umami-event="add-markdown-cell" @click="$projects.addCell('markdown', null)"
+                        >
+                            <div class="i-ion:logo-markdown mr-2 text-primary" />
+                            <span>Add Markdown Cell</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="h-px bg-border/50" />
+                <div class="p-3">
+                    <div class="text-sm font-semibold px-2 py-1.5 text-muted-foreground">
+                        Projects
+                    </div>
+                    <div class="space-y-1">
+                        <div
+                            class="flex items-center px-3 py-2 text-sm rounded-md hover:bg-accent/50 cursor-pointer transition-colors duration-200"
+                            @click="$router.push('/projects')"
+                        >
+                            <div class="i-lucide:layout-list mr-2 text-primary" />
+                            <span>All Projects</span>
+                        </div>
+                        <div
+                            class="flex items-center px-3 py-2 text-sm rounded-md hover:bg-accent/50 cursor-pointer transition-colors duration-200"
+                            data-umami-event="new-project" @click="$projects.createProject"
+                        >
+                            <div class="i-lucide:list-plus mr-2 text-primary" />
+                            <span>New Project</span>
+                        </div>
+                        <div
+                            v-for="project in $projects.projects.slice(0, 3)" :key="project.id"
+                            class="flex items-center px-3 py-2 text-sm rounded-md hover:bg-accent/50 cursor-pointer transition-colors duration-200"
+                            data-umami-event="open-project" @click="$projects.setActiveProject(project)"
+                        >
+                            <div class="i-lucide:file-text mr-2 text-primary" />
+                            <span class="text-muted-foreground">{{ project.name }}</span>
+                        </div>
+                    </div>
+                </div>
             </div>
-          </CommandItem>
-          <CommandItem value="about" data-umami-event="about" @select="$router.push('/about')">
-            <div class="flex justify-between items-center w-full">
-              <span>about</span>
-            </div>
-          </CommandItem>
-
-        </CommandGroup>
-        <CommandGroup heading="Meta">
-          <CommandItem value="switch to light mode"
-                       v-if="colorMode == 'dark'"
-                       data-umami-event="switch-to-light"
-                       @select="onColorModeToggle">
-            <div class="flex justify-between items-center w-full">
-              <span>switch to light mode</span>
-            </div>
-          </CommandItem>
-          <CommandItem value="switch to dark mode"
-                       v-if="colorMode == 'light'"
-                       data-umami-event="switch-to-dark"
-                       @select="onColorModeToggle">
-            <div class="flex justify-between items-center w-full">
-              <span>switch to dark mode</span>
-            </div>
-          </CommandItem>
-        </CommandGroup>
-      </CommandList>
-    </Command>
-
-  </CommandDialog>
+        </PopoverContent>
+    </Popover>
+    <CommandDialog v-model:open="$meta.cmdMenu">
+        <Command
+            class="rounded-lg border shadow-lg bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
+        >
+            <CommandInput placeholder="Type a command or search..." class="border-0 focus:ring-0" />
+            <CommandList class="nice-scrollbar max-h-[30vh]">
+                <CommandEmpty class="py-6 text-center text-sm text-muted-foreground">
+                    No results found.
+                </CommandEmpty>
+                <CommandGroup v-if="$route.name === 'workbench'" heading="Actions">
+                    <CommandItem
+                        value="save" data-umami-event="save-project"
+                        class="px-3 py-2 cursor-pointer transition-colors duration-200 hover:bg-accent/50 aria-selected:bg-accent aria-selected:text-accent-foreground"
+                        @select="() => { $projects.saveProject(); closeMenu(); }"
+                    >
+                        <div class="i-lucide:save mr-2 text-primary" />
+                        <span>Save Project</span>
+                    </CommandItem>
+                    <CommandItem
+                        value="share" data-umami-event="share-project"
+                        class="px-3 py-2 cursor-pointer transition-colors duration-200 hover:bg-accent/50 aria-selected:bg-accent aria-selected:text-accent-foreground"
+                        @select="() => { $projects.shareProject(); closeMenu(); }"
+                    >
+                        <div class="i-lucide:share mr-2 text-primary" />
+                        <span>Share</span>
+                    </CommandItem>
+                    <CommandItem
+                        value="new-add-cell-sql" data-umami-event="add-sql-cell"
+                        class="px-3 py-2 cursor-pointer transition-colors duration-200 hover:bg-accent/50 aria-selected:bg-accent aria-selected:text-accent-foreground"
+                        @select="() => { $projects.addCell('sql', null); closeMenu(); }"
+                    >
+                        <div class="i-hugeicons:sql mr-2 text-primary" />
+                        <span>Add SQL Cell</span>
+                    </CommandItem>
+                    <CommandItem
+                        value="new-add-cell-markdown" data-umami-event="add-markdown-cell"
+                        class="px-3 py-2 cursor-pointer transition-colors duration-200 hover:bg-accent/50 aria-selected:bg-accent aria-selected:text-accent-foreground"
+                        @select="() => { $projects.addCell('markdown', null); closeMenu(); }"
+                    >
+                        <div class="i-ion:logo-markdown mr-2 text-primary" />
+                        <span>Add Markdown Cell</span>
+                    </CommandItem>
+                </CommandGroup>
+                <CommandSeparator />
+                <CommandGroup heading="Projects">
+                    <CommandItem
+                        value="list all projects" data-umami-event="list-projects"
+                        class="px-3 py-2 cursor-pointer transition-colors duration-200 hover:bg-accent/50 aria-selected:bg-accent aria-selected:text-accent-foreground"
+                        @select="() => { $router.push('/projects'); closeMenu(); }"
+                    >
+                        <div class="i-lucide:layout-list mr-2 text-primary" />
+                        <span>All Projects</span>
+                    </CommandItem>
+                    <CommandItem
+                        value="new project" data-umami-event="new-project"
+                        class="px-3 py-2 cursor-pointer transition-colors duration-200 hover:bg-accent/50 aria-selected:bg-accent aria-selected:text-accent-foreground"
+                        @select="() => { $projects.createProject(); closeMenu(); }"
+                    >
+                        <div class="i-lucide:list-plus mr-2 text-primary" />
+                        <span>New Project</span>
+                    </CommandItem>
+                </CommandGroup>
+                <CommandSeparator />
+                <CommandGroup heading="Meta">
+                    <CommandItem
+                        v-if="colorMode === 'light'" value="switch to dark mode" data-umami-event="switch-to-dark"
+                        class="px-3 py-2 cursor-pointer transition-colors duration-200 hover:bg-accent/50 aria-selected:bg-accent aria-selected:text-accent-foreground"
+                        @select="() => { onColorModeToggle(); closeMenu(); }"
+                    >
+                        <div class="flex justify-between items-center w-full">
+                            <div class="flex items-center">
+                                <div class="i-lucide:moon mr-2 text-primary" />
+                                <span>Switch to Dark Mode</span>
+                            </div>
+                        </div>
+                    </CommandItem>
+                    <CommandItem
+                        v-if="colorMode === 'dark'" value="switch to light mode" data-umami-event="switch-to-light"
+                        class="px-3 py-2 cursor-pointer transition-colors duration-200 hover:bg-accent/50 aria-selected:bg-accent aria-selected:text-accent-foreground"
+                        @select="() => { onColorModeToggle(); closeMenu(); }"
+                    >
+                        <div class="flex justify-between items-center w-full">
+                            <div class="flex items-center">
+                                <div class="i-lucide:sun mr-2 text-primary" />
+                                <span>Switch to Light Mode</span>
+                            </div>
+                        </div>
+                    </CommandItem>
+                    <CommandItem
+                        value="system theme" data-umami-event="system-theme"
+                        class="px-3 py-2 cursor-pointer transition-colors duration-200 hover:bg-accent/50 aria-selected:bg-accent aria-selected:text-accent-foreground"
+                        @select="() => { colorMode = 'auto'; closeMenu(); }"
+                    >
+                        <div class="flex justify-between items-center w-full">
+                            <div class="flex items-center">
+                                <div class="i-lucide:monitor mr-2 text-primary" />
+                                <span>System Theme</span>
+                            </div>
+                        </div>
+                    </CommandItem>
+                </CommandGroup>
+            </CommandList>
+        </Command>
+    </CommandDialog>
 </template>
 
 <style scoped>
+.nice-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--border)) transparent;
+}
 
+.nice-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.nice-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.nice-scrollbar::-webkit-scrollbar-thumb {
+  background-color: hsl(var(--border));
+  border-radius: 3px;
+}
+
+.nice-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: hsl(var(--border) / 0.8);
+}
 </style>

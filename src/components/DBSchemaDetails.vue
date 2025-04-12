@@ -1,69 +1,131 @@
+ark
 <script setup lang="ts">
-import { type DataModelNode, useDBSchema } from "@/store/dbSchema.ts";
+import { useDBSchema } from "@/store/dbSchema.ts";
 import { db_events } from "@/store/meta.ts";
-import { BaseTree } from "@he-tree/vue";
+import { useLoading } from "@/hooks/useAsyncFn";
 import "@he-tree/vue/style/default.css";
-import { onMounted, ref, watch } from "vue";
-
-const { updateSchemaDetails, schemaTree } = useDBSchema();
+import { computed, onMounted, ref } from "vue";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import DBTable from "@/components/DBTable.vue";
+const { updateSchemaDetails, schema } = useDBSchema();
 const events = ref<string[]>([]);
-const _schemaTree = ref<DataModelNode[]>([]);
+const filter = ref<string>("");
 
-watch(schemaTree, () => {
-	_schemaTree.value = schemaTree.value;
+const filteredSchema = computed(() => {
+  if (!schema.value || filter.value === "") {
+    return schema.value;
+  }
+
+  const searchTerm = filter.value.toLowerCase();
+  const filtered: Record<string, any> = {};
+
+  Object.entries(schema.value).forEach(([dbName, db]) => {
+    const filteredSchemas: Record<string, any> = {};
+
+    Object.entries(db.schemas).forEach(([schemaName, schema]) => {
+      const filteredTables: Record<string, any> = {};
+
+      Object.entries(schema.tables).forEach(([tableName, table]) => {
+        if (
+          dbName.toLowerCase().includes(searchTerm) ||
+          schemaName.toLowerCase().includes(searchTerm) ||
+          tableName.toLowerCase().includes(searchTerm) ||
+          table.columns.some(col => col.column_name.toLowerCase().includes(searchTerm))
+        ) {
+          filteredTables[tableName] = table;
+        }
+      });
+
+      if (Object.keys(filteredTables).length > 0) {
+        filteredSchemas[schemaName] = {
+          ...schema,
+          tables: filteredTables
+        };
+      }
+    });
+
+    if (Object.keys(filteredSchemas).length > 0) {
+      filtered[dbName] = {
+        ...db,
+        schemas: filteredSchemas
+      };
+    }
+  });
+
+  return filtered;
 });
 
+const [updateSchema, { isLoading }] = useLoading(updateSchemaDetails);
+
 db_events.on(async (msg) => {
-	if (msg === "UPDATE_SCHEMA") {
-		await updateSchemaDetails();
-	}
-	events.value.push(msg as string);
+  if (msg === "UPDATE_SCHEMA") {
+    await updateSchemaDetails();
+  }
+  events.value.push(msg as string);
 });
 
 onMounted(() => {
-	updateSchemaDetails();
+  updateSchemaDetails();
 });
 </script>
 
 <template>
-  <div class="space-y-2 my-2">
-    <div v-if="schemaTree == null" class="text-center p-2">no tables yet ✨</div>
-<!--    <TreeView  id="my-tree" v-model="_schemaTree" v-else class="">-->
-<!--      <template #expander="{toggleNodeExpanded, metaModel: {data}}">-->
-<!--        <button @click="toggleNodeExpanded" :class="['i-solar:database-bold-duotone w-5 h-5', data.type]" v-if="data.type == 'database'"></button>-->
-<!--        <button @click="toggleNodeExpanded" :class="['i-material-symbols:schema-outline-rounded w-5 h-5', data.type]" v-if="data.type == 'schema'"></button>-->
-<!--        <button @click="toggleNodeExpanded" :class="['i-material-symbols:table-rows w-5 h-5', data.type]" v-if="data.type == 'table'"></button>-->
-<!--      </template>-->
-<!--    </TreeView>-->
-     <BaseTree v-model="_schemaTree" ref="tree" :default-open="true">
-      <template #default="{ node, stat }">
-        <div class="flex gap-1">
-          <button @click="stat.open = !stat.open">
-            <div
-                v-if="node.type === 'database'"
-                :class="[
-              'w-4 h-4',
-              stat.open ? 'i-ph:database-duotone': 'i-ph:database-fill'
-            ]"></div>
-            <div
-                v-if="node.type === 'schema'"
-                :class="[
-              'w-4 h-4',
-              stat.open ? 'i-material-symbols:schema-outline': 'i-material-symbols:schema'
-            ]"></div>
-            <div
-                v-if="node.type === 'table'"
-                :class="[
-              'w-4 h-4',
-              stat.open ? 'i-material-symbols:data-table-outline': 'i-material-symbols:data-table'
-            ]"></div>
-          </button>
-          <span :class="[
-              node.type === 'column' ? 'text-sm': ''
-          ]">{{ node.label }}</span>
+  <div class="space-y-2 resizable relative flex flex-col max-h-[100dvh] h-full">
+    <div class="space-y-2 flex flex-col flex-grow">
+      <header class="p-4 flex items-center border-b  text-gray-800">
+        <div class="flex items-center space-x-3">
+          <div class="i-lucide:database text-xl text-blue-600" />
+          <h3 class="text-lg font-semibold">
+            Schema
+          </h3>
         </div>
-      </template>
-    </BaseTree>
+        <div class="flex-grow" />
+        <Button
+          variant="ghost"
+          size="xs"
+          class="hover:bg-gray-100"
+          @click="updateSchema"
+        >
+          <div
+            class="i-lucide:refresh-ccw animated"
+            :class="{ 'animate-spin': isLoading }"
+          />
+        </Button>
+      </header>
+      <Input
+        v-model:model-value="filter"
+        placeholder="search..."
+      />
+      <div class="flex flex-col overflow-y-scroll nice-scrollbar h-0 flex-grow space-y-2">
+        <template v-if="filteredSchema">
+          <DBTable
+            v-for="(db, dbName) in filteredSchema"
+            :key="dbName"
+            :database="db"
+            :database-name="dbName"
+          />
+        </template>
+      </div>
+    </div>
+    <!-- <div class="space-y-2">
+      <header class="p-3 flex items-center border-b-2 bg-gray-300 text-foreground">
+        <h3 class="">
+          Events
+        </h3>
+        <div class="flex-grow" />
+        <Button
+          variant="ghost"
+          size="xs"
+          @click="updateSchema"
+        >
+          <div
+            class="i-lucide:refresh-ccw animated"
+            :class="{ 'animate-spin': isLoading }"
+          />
+        </Button>
+      </header>
+    </div> -->
   </div>
 </template>
 
@@ -71,6 +133,7 @@ onMounted(() => {
 .grtvn-self {
   @apply flex items-center space-x-2;
 }
+
 .grtvn-children-wrapper {
   @apply pl-4;
 
@@ -81,5 +144,4 @@ onMounted(() => {
     @apply py-0;
   }
 }
-
 </style>
