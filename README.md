@@ -16,7 +16,7 @@ desire to deepen my understanding. Sure, there are other similar tools out there
 QuackBook offers multiple execution environments for your SQL queries:
 - **DuckDB WASM**: Run queries directly in your browser
 - **PGLite (WASM)**: PostgreSQL compatibility in the browser
-- **Local DuckDB**: Connect to DuckDB on your system using (Quack server)[https://github.com/andreitere/quack]
+- **Local DuckDB**: Connect to DuckDB on your system using [quack server](https://github.com/andreitere/quack)
 
 Pretty much whatever you can imagine combining SQL and markdown!
 
