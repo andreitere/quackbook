@@ -19,7 +19,7 @@ declare module '@finos/perspective-viewer' {
 
 declare module '@finos/perspective' {
     interface PerspectiveWorker {
-        table(data: unknown[]): Promise<unknown>;
+        table(data: Record<string, unknown>[] | Record<string, unknown>): Promise<unknown>;
     }
     
     const perspective: {

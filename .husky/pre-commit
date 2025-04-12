@@ -1,2 +1,1 @@
-biome lint --error-on-warnings ./src
 vue-tsc -b

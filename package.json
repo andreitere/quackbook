@@ -9,8 +9,8 @@
 		"build:dev": "vue-tsc -b && vite build --mode development",
 		"preview": "vite preview",
 		"prepare": "husky",
-		"lint": "biome lint --write ./src",
-		"format": "biome format --write ./src"
+		"es:lint": "eslint ./src",
+		"es:fix": "eslint --fix ./src"
 	},
 	"dependencies": {
 		"@codemirror/autocomplete": "^6.18.3",
@@ -81,6 +81,7 @@
 		"unplugin-vue-components": "^28.4.1",
 		"unplugin-vue-macros": "^2.13.3",
 		"vite": "^5.4.10",
+		"vite-plugin-remove-console": "^2.2.0",
 		"vite-plugin-wasm": "^3.3.0",
 		"vue-tsc": "^2.1.6"
 	}

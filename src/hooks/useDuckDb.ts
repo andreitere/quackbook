@@ -55,7 +55,7 @@ export function useDuckDb(config?: DuckDBConfig): UseDuckDbReturn {
     }
   }
 
-  const query = async (queryStr: string, raw = false): Promise<QueryResult> => {
+  const query = async (queryStr: string): Promise<QueryResult> => {
     const start = performance.now()
     await ready()
     if (!db.value) {
@@ -64,33 +64,13 @@ export function useDuckDb(config?: DuckDBConfig): UseDuckDbReturn {
     const conn = await db.value.connect()
     const results = await conn.query(queryStr)
     const duration = performance.now() - start
-    // @ts-ignore
+
     const schema = results.schema.fields.reduce((acc: Record<string, string>, next: Field) => {
       acc[next?.name as string] = arrowTypeToJsType(next.type)
-      // acc["field"] = next?.name as string
       return acc
     }, {})
-    // const schema = results.schema.fields.map((field) => {
-    //   if(field.name === "_oid") {
-    //     return null;
-    //   }
-    //   const type = arrowTypeToJsType(field.type)
-    //   return {
-    //     id: field.name,
-    //     name: field.name,
-    //     type,
-    //     minWidth: 150,
-    //     width: 250,
-    //     field: field.name,
-    //     formatter: (_, __, value) => {
-    //       if (type === "json") {
-    //         return JSON.stringify(value)
-    //       }
-    //       return value
-    //     },
-    //   }
-    // }).filter((field) => field !== null)
-    const records = results.toArray();
+
+    const records = results.toArray()
     await conn.close()
 
     return { schema, records, query: queryStr, duration }

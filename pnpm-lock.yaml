@@ -205,6 +205,9 @@ devDependencies:
   vite:
     specifier: ^5.4.10
     version: 5.4.18(sass-embedded@1.86.3)
+  vite-plugin-remove-console:
+    specifier: ^2.2.0
+    version: 2.2.0
   vite-plugin-wasm:
     specifier: ^3.3.0
     version: 3.4.1(vite@5.4.18)
@@ -6386,6 +6389,10 @@ packages:
       '@types/unist': 3.0.3
       vfile-message: 4.0.2
     dev: false
+
+  /vite-plugin-remove-console@2.2.0:
+    resolution: {integrity: sha512-qgjh5pz75MdE9Kzs8J0kBwaCfifHV0ezRbB9rpGsIOxam+ilcGV7WOk91vFJXquzRmiKrFh3Hxlh0JJWAmXTbQ==}
+    dev: true
 
   /vite-plugin-wasm@3.4.1(vite@5.4.18):
     resolution: {integrity: sha512-ja3nSo2UCkVeitltJGkS3pfQHAanHv/DqGatdI39ja6McgABlpsZ5hVgl6wuR8Qx5etY3T5qgDQhOWzc5RReZA==}

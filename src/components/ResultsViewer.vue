@@ -4,14 +4,14 @@
 
 <script setup lang="ts">
 import perspective from "@finos/perspective";
-import type { PerspectiveElement } from "@finos/perspective-viewer";
+// import PerspectiveElement from "@finos/perspective-viewer";
 import "@finos/perspective-viewer";
 import "@finos/perspective-viewer-datagrid";
 import "@finos/perspective-viewer-d3fc";
 import { getPerspectiveWorker } from "@/lib/perspective";
 import { ref, onMounted, reactive } from 'vue';
 
-const pViewer = ref<PerspectiveElement>();
+const pViewer = ref();
 const p = reactive({
     worker: null as Awaited<ReturnType<typeof perspective.worker>> | null,
     table: null as unknown | null,
@@ -50,11 +50,11 @@ const showTable = async (schema: Record<string, unknown>, data: Record<string, u
     if (!pViewer.value) throw new Error("Perspective viewer not mounted");
 
     // Configure viewer to show raw date values
-    
+
     await pViewer.value.load(p.table);
     await pViewer.value.restore({
         plugin: "Datagrid",
-        settings: true,
+        settings: false,
         plugin_config: {
             datetime_format: "raw"
         }
@@ -71,9 +71,9 @@ const addData = async (data: Record<string, unknown>[]) => {
         return;
     }
 
-    // Get schema from existing table
+    // @ts-ignore
     const schema = await p.table.schema();
-    
+
     // Get JSON columns for efficient processing
     const jsonColumns = Object.entries(schema)
         .filter(([_, type]) => type === 'json')
@@ -95,8 +95,8 @@ const addData = async (data: Record<string, unknown>[]) => {
         _data.push(row);
     }
 
-    // Add data to the existing table
-    await p.table.update(data);    
+    // @ts-ignore
+    await p.table.update(data);
 
 };
 

@@ -1,33 +1,36 @@
 import type { QueryResult, SQLBackend } from "@/types/database"
-import { useDuckDBServer } from "@/hooks/useDuckDBServer"
+import { DuckDBServerResponse, useDuckDBServer } from "@/hooks/useDuckDBServer"
 import { isDataRetrievalQuery, duckToJsType } from "@/lib/utils"
 export class DuckDBServerAdapter implements SQLBackend {
   private duckdbServer = useDuckDBServer()
 
-  async execute(query: string, stream = false): Promise<QueryResult | ReadableStreamDefaultReader<Uint8Array>> {
+  async execute(...args: unknown[]): Promise<QueryResult> {
+    const [query] = args
     let isRetrievalQuery = false
     try {
-      isRetrievalQuery = isDataRetrievalQuery(query)
+      isRetrievalQuery = isDataRetrievalQuery(query as string)
     } catch (error) {
       console.error(error)
     }
-    let cols = []
+    let cols: Record<string, string> = {}
     if (isRetrievalQuery) {
       console.log("isRetrievalQuery", isRetrievalQuery)
       const colsQuery = `DESCRIBE \n ${query}`
-      const colsResult = await this.duckdbServer.query(colsQuery, false)
+      const colsResult = (await this.duckdbServer.query(colsQuery, false)) as DuckDBServerResponse
       cols = colsResult.result.reduce((acc: Record<string, string>, col) => {
+        //@ts-ignore
         acc[col.column_name] = duckToJsType(col.column_type)
         return acc
       }, {})
     }
 
-    const data = await this.duckdbServer.query(query, stream)
+    const data = (await this.duckdbServer.query(query as string, true)) as ReadableStreamDefaultReader<Uint8Array>
 
     return {
       records: data,
       schema: cols,
-      streamed: stream,
+      streamed: true,
+      shouldStringify: false,
     }
   }
 

@@ -4,8 +4,9 @@ import { usePGLite } from "@/hooks/usePGLite";
 export class PGLiteAdapter implements SQLBackend {
   private pglite = usePGLite();
 
-  async execute(query: string, stream = false): Promise<QueryResult> {
-    const result = await this.pglite.query(query);
+  async execute(...args: unknown[]): Promise<QueryResult> {
+    const [query] = args
+    const result = await this.pglite.query(query as string);
     return {
       records: result.records,
       schema: result.schema,

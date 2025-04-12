@@ -18,13 +18,17 @@
           <p>Run a HTTP server in any folder on your system, allowing DuckDB WASM to access files served by that server.</p>
           <div class="flex flex-col md:flex-row gap-4">
             <div class="flex-1">
-              <h4 class="font-bold">Using Node</h4>
+              <h4 class="font-bold">
+                Using Node
+              </h4>
               <pre class="select-all text-sm">npx serve --cors</pre>
               <span>or</span>
               <pre class="select-all text-sm">npx http-server --cors</pre>
             </div>
             <div class="flex-1">
-              <h4 class="font-bold">Using Python</h4>
+              <h4 class="font-bold">
+                Using Python
+              </h4>
               <pre class="select-all text-sm">python -m http.server --bind 127.0.0.1</pre>
             </div>
           </div>

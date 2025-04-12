@@ -88,6 +88,7 @@ import { ayuLight, cobalt } from "thememirror";
 
 import { cn } from "@/lib/utils";
 import ResultsViewer from "./ResultsViewer.vue";
+import { QueryResult } from "@/types/database";
 
 const resultsRef = useTemplateRef("resultsRef");
 const color = useColorMode();
@@ -170,6 +171,71 @@ const initEditor = () => {
 	});
 };
 
+
+const handleStream = async (result: QueryResult) => {
+	console.log(result);
+	hasResults.value = true;
+	await nextTick();
+	const decoder = new TextDecoder("utf-8");
+	let buffer = "";
+	let isInit = false;
+	const reader = result.records as ReadableStreamDefaultReader<Uint8Array>;
+	while (true) {
+		const { value, done } = await reader.read();
+		if (done) break;
+
+		buffer += decoder.decode(value, { stream: true });
+		const lines = buffer.split('\n');
+		buffer = lines.pop() || ""; // keep last incomplete line, ensure buffer is always a string
+
+		for (const line of lines) {
+			if (line.trim()) {
+				const obj = JSON.parse(line);
+				// console.log("obj", obj)
+				// data.push(...obj)
+				if (!isInit) {
+					isInit = true;
+					await resultsRef.value!.showTable(result.schema, obj)
+				}
+				resultsRef.value!.addData(obj)
+			}
+		}
+	}
+	console.log(result.schema)
+}
+
+const handleResult = async (result: QueryResult) => {
+	const { records, schema } = result as { records: Record<string, unknown>[], schema: Record<string, string> };
+	let processedRecords = records as Record<string, unknown>[];
+	let processedSchema = schema;
+
+
+	if (result.shouldStringify && Object.values(schema).includes("json")) {
+		processedRecords = records.map((row) => {
+			const _row = {};
+			for (const [k, v] of Object.entries(row)) {
+				//@ts-ignore
+				_row[k] = JSON.stringify(v);
+			}
+			return _row;
+		});
+		processedSchema = Object.fromEntries(
+			Object.entries(schema).map(([k, v]) => [k, v === "json" ? "string" : v])
+		);
+	}
+
+	if (!processedRecords.length) {
+		return
+	}
+	hasResults.value = true;
+	await nextTick();
+	await resultsRef.value!.showTable(processedSchema, processedRecords)
+	resultsRef.value!.addData(processedRecords)
+
+}
+
+
+
 const onPlay = async () => {
 	if (!inputFocused.value) return;
 	try {
@@ -181,95 +247,9 @@ const onPlay = async () => {
 
 		const result = await execute(query.value, activeProject.sql.backend === "duckdb_server");
 		if (result.records instanceof ReadableStreamDefaultReader) {
-			hasResults.value = true;
-			await nextTick();
-			const decoder = new TextDecoder("utf-8");
-			//@ts-ignore
-			// const table = await pWorker.value?.table(result.schema);
-			// console.log(`got here`)
-			// console.log("table", table)
-			// const chunks = [];
-			let buffer = "";
-			const data = []
-			let isInit = false;
-			while (true) {
-				const { value, done } = await result.records.read();
-				if (done) break;
-
-				buffer += decoder.decode(value, { stream: true });
-
-				const lines = buffer.split('\n');
-				buffer = lines.pop(); // keep last incomplete line
-
-				for (const line of lines) {
-					if (line.trim()) {
-						const obj = JSON.parse(line);
-						// console.log("obj", obj)
-						// data.push(...obj)
-						if (!isInit) {
-							isInit = true;
-							await resultsRef.value!.showTable(result.schema, obj)
-						}
-						console.log("new line", obj)
-						resultsRef.value!.addData(obj)
-					}
-				}
-			}
-			console.log(result.schema)
-
-			// resultsRef.value!.showTable(result.schema, data)
-
-			// const arrowChunk = new Uint8Array(
-			// 	chunks.reduce((acc, chunk) => acc + chunk.length, 0),
-			// );
-			// let offset = 0;
-			// for (const chunk of chunks) {
-			// 	arrowChunk.set(chunk, offset);
-			// 	offset += chunk.length;
-			// }
-
-			// const recordBatchReader = RecordBatchReader.from(arrowChunk);
-			// const firstVal = recordBatchReader.next().value;
-
-
-			// for (const batch of recordBatchReader) {
-			// 	table.update(batch.toArray());
-			// }
-			// //@ts-ignore
-			// pView.value.load(table);
+			handleStream(result)
 		} else {
-			const { records, schema, duration } = result;
-			let processedRecords = records;
-			let processedSchema = schema;
-
-			if (Object.values(schema).includes("json")) {
-				processedRecords = records.map((row) => {
-					const _row = {};
-					for (const [k, v] of Object.entries(row)) {
-						//@ts-ignore
-						_row[k] = JSON.stringify(v);
-					}
-					return _row;
-				});
-				processedSchema = Object.fromEntries(
-					Object.entries(schema).map(([k, v]) => [k, v === "json" ? "string" : v])
-				);
-			}
-
-			if (duration) {
-				lastQueryDuration.value = (duration / 1000).toFixed(5);
-			}
-
-			if (processedRecords.length) {
-				hasResults.value = true;
-				await nextTick();
-				// resultsRef.value!.setColumns(schema);
-				// const x = JSON.parse(JSON.stringify(processedRecords))
-				// resultsRef.value!.setData(x);
-				await resultsRef.value!.showTable(processedSchema, processedRecords)
-				resultsRef.value!.addData(processedRecords)
-
-			}
+			handleResult(result)
 		}
 
 		if (/create|attach|copy/gi.test(query.value)) {

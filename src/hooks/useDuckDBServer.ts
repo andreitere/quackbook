@@ -1,14 +1,9 @@
 import { useProjects } from "@/store/project.ts"
 import ky from "ky"
 
-interface DuckDBQueryResult {
-  rows: unknown[]
-  schema: Array<{ name: string; type: string }>
-}
-
-interface DuckDBResponse {
-  records: DuckDBQueryResult
-  query: string
+export interface DuckDBServerResponse {
+  result: Array<Record<string, unknown>>
+  columns: Array<{ name: string; type: string }>
 }
 
 export const useDuckDBServer = () => {
@@ -19,7 +14,7 @@ export const useDuckDBServer = () => {
     return activeProject.sql.host || "http://localhost:9999"
   }
 
-  const query = async (queryStr: string, stream = false): Promise<ReadableStreamDefaultReader<Uint8Array> | DuckDBResponse> => {
+  const query = async (queryStr: string, stream = false): Promise<ReadableStreamDefaultReader<Uint8Array> | DuckDBServerResponse> => {
     const host = getServerHost()
 
     try {
@@ -33,7 +28,7 @@ export const useDuckDBServer = () => {
               statusCodes: [408, 429, 500, 502, 503, 504],
             },
           })
-          .post<DuckDBResponse>(`${host}/query`, {
+          .post<DuckDBServerResponse>(`${host}/query`, {
             json: { query: queryStr.trim(), withColumns: true },
             headers: {
               "Content-Type": "application/json",
@@ -66,7 +61,7 @@ export const useDuckDBServer = () => {
         }
         throw new Error(`Failed to connect to DuckDB server: ${error.message}`)
       }
-      throw new Error('An unknown error occurred while connecting to DuckDB server')
+      throw new Error("An unknown error occurred while connecting to DuckDB server")
     }
   }
 

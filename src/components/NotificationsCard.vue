@@ -15,12 +15,19 @@ const anyNotifications = computed(() => {
 <template>
   <HoverCard :open-delay="50">
     <HoverCardTrigger as-child>
-      <Button variant="outline" size="sm"  :class="[anyNotifications ? 'text-red-600': 'text-gray-200']">
-        <div class="i-material-symbols-light:notifications-active"></div>
+      <Button
+        variant="outline"
+        size="sm"
+        :class="[anyNotifications ? 'text-red-600': 'text-gray-200']"
+      >
+        <div class="i-material-symbols-light:notifications-active" />
       </Button>
     </HoverCardTrigger>
     <HoverCardContent class="w-80">
-      <div class="flex justify-between space-x-4" v-if="anyNotifications">
+      <div
+        v-if="anyNotifications"
+        class="flex justify-between space-x-4"
+      >
         <div class="space-y-1">
           <h4 class="text-sm font-bold">
             Project not saved
@@ -31,7 +38,9 @@ const anyNotifications = computed(() => {
         </div>
       </div>
       <div v-else>
-        <p class="text-center">no notifications 😋</p>
+        <p class="text-center">
+          no notifications 😋
+        </p>
       </div>
     </HoverCardContent>
   </HoverCard>
