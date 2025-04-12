@@ -102,7 +102,6 @@ const { query } = useVModels(props);
 
 const { execute } = useSQLBackend();
 const $projects = useProjects();
-const { activeProject } = $projects;
 const queryEditor = useTemplateRef("queryEditorRef");
 const hasResults = ref<boolean>(false);
 const error = ref<string>("");
@@ -246,6 +245,7 @@ const onPlay = async () => {
 
 
 		const result = await execute({ query: query.value });
+		console.log(`onPlay result`, result)
 		if (result.records instanceof ReadableStreamDefaultReader) {
 			handleStream(result)
 		} else {

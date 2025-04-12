@@ -5,7 +5,7 @@ import { isDataRetrievalQuery, duckToJsType } from "@/lib/utils"
 export class DuckDBServerAdapter implements SQLBackend {
   private duckdbServer = useDuckDBServer()
 
-  async execute({ query, withColumns = true }: ExecuteArgs): Promise<QueryResult> {
+  async execute({ query, withColumns = true, stream = true }: ExecuteArgs): Promise<QueryResult> {
     console.log("execute", query, withColumns)
     let isRetrievalQuery = false
     try {
@@ -25,10 +25,18 @@ export class DuckDBServerAdapter implements SQLBackend {
       }, {})
     }
 
-    const data = (await this.duckdbServer.query(query as string, true)) as ReadableStreamDefaultReader<Uint8Array>
+    let records: ReadableStreamDefaultReader<Uint8Array> | unknown[]
+
+    if (stream) {
+      const result = (await this.duckdbServer.query(query as string, stream)) as ReadableStreamDefaultReader<Uint8Array>
+      records = result
+    } else {
+      const result = (await this.duckdbServer.query(query as string, false)) as DuckDBServerResponse
+      records = result.result
+    }
 
     return {
-      records: data,
+      records: records,
       schema: cols,
       streamed: true,
       shouldStringify: false,

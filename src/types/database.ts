@@ -3,6 +3,7 @@ export type SQLBackendType = "duckdb_server" | "duckdb_wasm" | "pglite_wasm"
 export type ExecuteArgs = {
   query: string
   withColumns?: boolean
+  stream?: boolean
 }
 
 export interface QueryResult {

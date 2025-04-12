@@ -42,8 +42,10 @@ export const useDBSchema = createSharedComposable(() => {
 			WHERE table_catalog NOT IN ('system')
 			AND table_schema NOT IN ('information_schema', 'pg_catalog')
 		`,
+      stream: false,
+      withColumns: false,
     })) as { records: Array<{ database: string; schema: string; table: string }> }
-    console.log({ result })
+    console.log("adapter response", { result })
     let records = result.records
     if (activeProjectMeta.sql.backend === "duckdb_wasm") {
       //@ts-ignore
@@ -80,7 +82,8 @@ export const useDBSchema = createSharedComposable(() => {
 				AND table_schema = '${schemaName}' 
 				AND table_name = '${table}'
 			`,
-        withColumns: true,
+        stream: false,
+        withColumns: false,
       })) as { records: Column[] }
 
       let columns = columnsResult.records

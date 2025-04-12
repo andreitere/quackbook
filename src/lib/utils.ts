@@ -210,3 +210,56 @@ export const duckToJsType = (type: string) => {
   ])
   return map.get(type) || "string"
 }
+
+export const pgToJsType = (typeId: number) => {
+  const map = new Map([
+    // Boolean
+    [16, "boolean"], // boolean
+
+    // Integers
+    [20, "integer"], // bigint
+    [21, "integer"], // smallint
+    [23, "integer"], // integer
+    [26, "integer"], // oid
+
+    // Floating point
+    [700, "integer"], // real/float4
+    [701, "integer"], // double precision/float8
+    [1700, "integer"], // numeric/decimal
+
+    // Date/Time
+    [1082, "date"], // date
+    [1083, "date"], // time
+    [1114, "date"], // timestamp without time zone
+    [1184, "date"], // timestamp with time zone
+    [1186, "date"], // interval
+
+    // Text/String types
+    [25, "string"], // text
+    [1043, "string"], // varchar
+    [2950, "string"], // uuid
+
+    // Binary data
+    [17, "string"], // bytea/blob
+
+    // Arrays
+    [1000, "string"], // boolean array
+    [1005, "string"], // smallint array
+    [1007, "string"], // integer array
+    [1016, "string"], // bigint array
+    [1021, "string"], // float array
+    [1022, "string"], // double array
+    [1231, "string"], // numeric array
+    [1015, "string"], // varchar array
+    [1009, "string"], // text array
+
+    // JSON
+    [114, "json"], // json
+    [3802, "json"], // jsonb
+
+    // Other
+    [0, null], // null
+  ])
+
+  return map.get(typeId) || "string"
+}
