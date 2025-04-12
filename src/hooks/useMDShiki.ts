@@ -1,6 +1,7 @@
+import { fromHighlighter } from "@shikijs/markdown-it";
+import { createSharedComposable } from "@vueuse/core";
 import MarkdownIt from "markdown-it";
-import Shiki from "@shikijs/markdown-it";
-import {createSharedComposable} from "@vueuse/core";
+import { createHighlighterCore, createOnigurumaEngine } from "shiki";
 
 const md = MarkdownIt({
   html: true,
@@ -8,18 +9,28 @@ const md = MarkdownIt({
   typographer: true,
 });
 
-const ready = async () => {
+async function ready() {
+  const highlighter = await createHighlighterCore({
+    themes: [
+      // @ts-ignore
+      import("shiki/themes/vitesse-light"),
+      // @ts-ignore
+      import("shiki/themes/vitesse-dark"),
+    ],
+    langs: [
+      // @ts-ignore
+      import("shiki/langs/sql"),
+    ],
+    engine: createOnigurumaEngine(() => import("shiki/wasm")),
+  });
   md.use(
-      await Shiki({
-        themes: {
-          light: "vitesse-light",
-          dark: "vitesse-dark",
-        },
-        langs: ["sql"],
-      }),
+    // @ts-ignore
+    fromHighlighter(highlighter, {
+      theme: "vitesse-light",
+    })
   );
-};
+}
 
 export const useMDRenderer = createSharedComposable(() => {
-  return {md, ready: ready()};
-})
+  return { md, ready: ready() };
+});
