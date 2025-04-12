@@ -1,19 +1,20 @@
-import type { QueryResult, SQLBackend } from "@/types/database"
+import type { ExecuteArgs, QueryResult, SQLBackend } from "@/types/database"
 import { DuckDBServerResponse, useDuckDBServer } from "@/hooks/useDuckDBServer"
 import { isDataRetrievalQuery, duckToJsType } from "@/lib/utils"
+
 export class DuckDBServerAdapter implements SQLBackend {
   private duckdbServer = useDuckDBServer()
 
-  async execute(...args: unknown[]): Promise<QueryResult> {
-    const [query] = args
+  async execute({ query, withColumns = true }: ExecuteArgs): Promise<QueryResult> {
+    console.log("execute", query, withColumns)
     let isRetrievalQuery = false
     try {
-      isRetrievalQuery = isDataRetrievalQuery(query as string)
+      isRetrievalQuery = isDataRetrievalQuery(query)
     } catch (error) {
       console.error(error)
     }
     let cols: Record<string, string> = {}
-    if (isRetrievalQuery) {
+    if (isRetrievalQuery && withColumns) {
       console.log("isRetrievalQuery", isRetrievalQuery)
       const colsQuery = `DESCRIBE \n ${query}`
       const colsResult = (await this.duckdbServer.query(colsQuery, false)) as DuckDBServerResponse

@@ -245,7 +245,7 @@ const onPlay = async () => {
 		loading.value = true;
 
 
-		const result = await execute(query.value, activeProject.sql.backend === "duckdb_server");
+		const result = await execute({ query: query.value });
 		if (result.records instanceof ReadableStreamDefaultReader) {
 			handleStream(result)
 		} else {
