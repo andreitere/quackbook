@@ -1,15 +1,11 @@
-<template>
-  <perspective-viewer ref="pViewer" />
-</template>
-
 <script setup lang="ts">
-import perspective from "@finos/perspective";
+import type perspective from '@finos/perspective';
+import { getPerspectiveWorker } from '@/lib/perspective';
+import { onMounted, reactive, ref } from 'vue';
 // import PerspectiveElement from "@finos/perspective-viewer";
-import "@finos/perspective-viewer";
-import "@finos/perspective-viewer-datagrid";
-import "@finos/perspective-viewer-d3fc";
-import { getPerspectiveWorker } from "@/lib/perspective";
-import { ref, onMounted, reactive } from 'vue';
+import '@finos/perspective-viewer';
+import '@finos/perspective-viewer-datagrid';
+import '@finos/perspective-viewer-d3fc';
 
 const pViewer = ref();
 const p = reactive({
@@ -17,8 +13,7 @@ const p = reactive({
     table: null as unknown | null,
 });
 
-
-const showTable = async (schema: Record<string, unknown>, data: Record<string, unknown>[]) => {
+async function showTable(schema: Record<string, unknown>, data: Record<string, unknown>[]) {
     // Remap schema to {colName: type}
 
     // Get JSON columns for efficient processing
@@ -31,7 +26,6 @@ const showTable = async (schema: Record<string, unknown>, data: Record<string, u
 
     // Process data in a single pass
     for (const row of data) {
-
         // Only process JSON columns if they exist
         if (jsonColumns.length > 0) {
             for (const col of jsonColumns) {
@@ -43,31 +37,34 @@ const showTable = async (schema: Record<string, unknown>, data: Record<string, u
 
         _data.push(row);
     }
+    console.log('show table', schema);
 
-    if (!p.worker) throw new Error("Perspective worker not initialized");
+    if (!p.worker)
+        throw new Error('Perspective worker not initialized');
     p.table = await p.worker.table(schema);
     // p.table!.update(_data);
-    if (!pViewer.value) throw new Error("Perspective viewer not mounted");
+    if (!pViewer.value)
+        throw new Error('Perspective viewer not mounted');
 
     // Configure viewer to show raw date values
 
     await pViewer.value.load(p.table);
     await pViewer.value.restore({
-        plugin: "Datagrid",
+        plugin: 'Datagrid',
         settings: false,
         plugin_config: {
-            datetime_format: "raw"
-        }
+            datetime_format: 'raw',
+        },
     });
-};
+}
 
 /**
  * Adds additional data to the existing table
  * @param data Additional records to add to the table
  */
-const addData = async (data: Record<string, unknown>[]) => {
+async function addData(data: Record<string, unknown>[]) {
     if (!p.table) {
-        console.error("Table not initialized. Call showTable first.");
+        console.error('Table not initialized. Call showTable first.');
         return;
     }
 
@@ -97,13 +94,11 @@ const addData = async (data: Record<string, unknown>[]) => {
 
     // @ts-ignore
     await p.table.update(data);
-
-};
-
+}
 
 defineExpose({
     showTable,
-    addData
+    addData,
 });
 
 const doSetup = ref<Promise<void>>();
@@ -115,6 +110,11 @@ onMounted(async () => {
     });
 });
 </script>
+
+<template>
+    <perspective-viewer ref="pViewer" />
+</template>
+
 <style lang="scss">
 .slick-cell {
     @apply text-xs py-[5px] text-gray-500;

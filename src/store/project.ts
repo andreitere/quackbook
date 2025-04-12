@@ -106,6 +106,33 @@ export const useProjects = defineStore('projects', () => {
         activeProjectMeta.value.dirty = true;
     };
 
+    const insertCell = (cell_type: CellType, position: number, query: string | null) => {
+        const obj = {
+            id: Date.now().valueOf(),
+            type: cell_type,
+            position,
+            query: '',
+            markdown: '',
+        };
+        if (cell_type === 'sql') {
+            obj.query = query ?? 'select 1 + 1 as result';
+        }
+        else {
+            obj.markdown = query ?? '#hello';
+        }
+
+        // Shift all cells after the insertion point
+        activeProjectCells.value = activeProjectCells.value.map((cell) => {
+            if (cell.position >= position) {
+                return { ...cell, position: cell.position + 1 };
+            }
+            return cell;
+        });
+
+        activeProjectCells.value.push(obj);
+        activeProjectMeta.value.dirty = true;
+    };
+
     const convertToConsole = () => {
         const singleCell = activeProjectCells.value
             .filter(c => c.type === 'sql')
@@ -177,7 +204,7 @@ export const useProjects = defineStore('projects', () => {
     };
 
     const sortedCells = computed(() => {
-    // @ts-ignore
+        // @ts-expect-error
         return activeProjectCells.value.toSorted(
             (a: Cell, b: Cell) => a.position - b.position,
         );
@@ -276,6 +303,7 @@ export const useProjects = defineStore('projects', () => {
         activeProject,
         createProject,
         addCell,
+        insertCell,
         convertToConsole,
         convertToNotebook,
         moveDown,
@@ -288,5 +316,6 @@ export const useProjects = defineStore('projects', () => {
         shareableProject,
         importSharedProject,
         convertProjectTo,
+        updatePositions,
     };
 });

@@ -16,16 +16,17 @@ import { useMetaStore } from '@/store/meta.ts';
 import { useProjects } from '@/store/project.ts';
 import { onMounted } from 'vue';
 import { useRoute } from 'vue-router';
+import draggable from 'vuedraggable';
 
 const $meta = useMetaStore();
-const $projects = useProjects();
+const $project = useProjects();
 const $route = useRoute();
 const { loading: db_loading } = useDuckDb();
 
 onMounted(() => {
     if ($route.query.quackMode) {
-        $projects.activeProjectMeta.sql.backend = 'duckdb_server';
-        $projects.activeProjectMeta.sql.host = `http://localhost:${$route.query.serverPort}`;
+        $project.activeProjectMeta.sql.backend = 'duckdb_server';
+        $project.activeProjectMeta.sql.host = `http://localhost:${$route.query.serverPort}`;
         window.location.href = '/';
     }
 });
@@ -46,6 +47,15 @@ onMounted(() => {
                         <PopoverTrigger as-child>
                             <Button variant="outline" size="sm" class="shadow-sm">
                                 <div class="i-material-symbols:settings-cinematic-blur-outline-rounded w-4-h-4" />
+                                <span class="text-sm text-gray-600 dark:text-gray-400 ml-2">
+                                    {{
+                                        $project.activeProjectMeta.sql.backend === 'duckdb_wasm'
+                                            ? 'DuckDB WASM'
+                                            : $project.activeProjectMeta.sql.backend === 'pglite_wasm'
+                                                ? 'PGLite WASM'
+                                                : 'DuckDB Server'
+                                    }}
+                                </span>
                             </Button>
                         </PopoverTrigger>
                         <PopoverContent class="w-80">
@@ -58,7 +68,7 @@ onMounted(() => {
                     <div class="overflow-x-scroll min-w-full nice-scrollbar flex space-x-2 items-center md:justify-end">
                         <Button
                             class="flex-grow md:flex-grow-0 shadow-sm" variant="outline" size="sm"
-                            @click="$projects.addCell('markdown', null)"
+                            @click="$project.addCell('markdown', null)"
                         >
                             <div class="i-ion:logo-markdown" />
                             <span class="ml-1 hidden md:block">add md</span>
@@ -66,21 +76,21 @@ onMounted(() => {
 
                         <Button
                             class="flex-grow md:flex-grow-0 shadow-sm" variant="outline" size="sm"
-                            @click="$projects.addCell('sql', null)"
+                            @click="$project.addCell('sql', null)"
                         >
                             <div class="i-hugeicons:sql" />
                             <span class="ml-1 hidden md:block">add sql</span>
                         </Button>
                         <Button
                             class="flex-grow md:flex-grow-0 shadow-sm" variant="outline" size="sm"
-                            @click="$projects.saveProject"
+                            @click="$project.saveProject"
                         >
                             <div class="i-lucide:save" />
                             <span class="ml-1 hidden md:block">save</span>
                         </Button>
                         <Button
                             class="flex-grow md:flex-grow-0 shadow-sm" variant="outline" size="sm"
-                            @click="$projects.shareProject"
+                            @click="$project.shareProject"
                         >
                             <div class="i-lucide:share" />
                             <span class="ml-1 hidden md:block">share</span>
@@ -91,13 +101,30 @@ onMounted(() => {
         </div>
 
         <div class="overflow-y-scroll nice-scrollbar flex flex-col h-0 flex-grow space-y-6 pb-[200px] py-2">
-            <div v-for="cell in $projects.sortedCells" :key="`${cell.position}-${cell.id}`" class="w-full">
-                <EditorCell v-if="cell.type == 'sql'" :id="cell.id" v-model:query="cell.query" :position="cell.position" />
-                <MarkdownCell
-                    v-if="cell.type == 'markdown'" :id="cell.id" v-model:markdown="cell.markdown"
-                    :position="cell.position"
-                />
-            </div>
+            <draggable
+                v-model="$project.activeProjectCells"
+                item-key="id"
+                handle=".drag-handle"
+                class="space-y-6"
+                @end="$project.updatePositions()"
+            >
+                <template #item="{ element: cell }">
+                    <div class="w-full">
+                        <EditorCell
+                            v-if="cell.type == 'sql'"
+                            :id="cell.id"
+                            v-model:query="cell.query"
+                            :position="cell.position"
+                        />
+                        <MarkdownCell
+                            v-if="cell.type == 'markdown'"
+                            :id="cell.id"
+                            v-model:markdown="cell.markdown"
+                            :position="cell.position"
+                        />
+                    </div>
+                </template>
+            </draggable>
         </div>
     </div>
     <div
@@ -130,5 +157,9 @@ onMounted(() => {
 
 .dark .nice-scrollbar::-webkit-scrollbar-thumb {
   background: #475569;
+}
+
+.drag-handle {
+  cursor: move;
 }
 </style>

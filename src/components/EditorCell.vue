@@ -113,7 +113,7 @@ function initEditor() {
 }
 
 async function handleStream(result: QueryResult) {
-    console.log(result);
+    console.error(result);
     hasResults.value = result.isRetrievalQuery ?? false;
     await nextTick();
     const decoder = new TextDecoder('utf-8');
@@ -132,8 +132,6 @@ async function handleStream(result: QueryResult) {
         for (const line of lines) {
             if (line.trim()) {
                 const obj = JSON.parse(line);
-                // console.log("obj", obj)
-                // data.push(...obj)
                 if (!isInit) {
                     isInit = true;
                     await resultsRef.value!.showTable(result.schema, obj);
@@ -154,7 +152,7 @@ async function handleResult(result: QueryResult) {
         processedRecords = records.map((row) => {
             const _row = {};
             for (const [k, v] of Object.entries(row)) {
-                // @ts-ignore
+                // @ts-expect-error - TypeScript doesn't recognize dynamic object property assignment
                 _row[k] = JSON.stringify(v);
             }
             return _row;
@@ -170,8 +168,11 @@ async function handleResult(result: QueryResult) {
     }
     hasResults.value = isRetrievalQuery;
     await nextTick();
+    console.log('show table');
     await resultsRef.value!.showTable(processedSchema, processedRecords);
+    console.log('setup table');
     resultsRef.value!.addData(processedRecords);
+    console.log('added data');
 }
 
 async function onPlay() {
@@ -256,20 +257,24 @@ onMounted(async () => {
         @focusin="inputFocused = true"
         @focusout="inputFocused = false"
     >
-        <EditorCellToolbar
-            :delete="props.mode == 'notebook'"
-            :trash="props.mode == 'notebook'"
-            :duplicate="props.mode == 'notebook'"
-            :edit="false"
-            :display_results="false"
-            :format="true"
-            @play="onPlay"
-            @clear="onClear"
-            @movedown="$projects.moveDown(props.id)"
-            @moveup="$projects.moveUp(props.id)"
-            @trash="$projects.deleteCell(props.id)"
-            @format="onFormat"
-        />
+        <div class="flex items-center gap-2">
+            <EditorCellToolbar
+                :delete="props.mode == 'notebook'"
+                :trash="props.mode == 'notebook'"
+                :duplicate="props.mode == 'notebook'"
+                :edit="false"
+                :display_results="false"
+                :format="true"
+                @play="onPlay"
+                @clear="onClear"
+                @movedown="$projects.moveDown(props.id)"
+                @moveup="$projects.moveUp(props.id)"
+                @trash="$projects.deleteCell(props.id)"
+                @format="onFormat"
+                @insert-above="$projects.insertCell('sql', props.position, null)"
+                @insert-below="$projects.insertCell('sql', props.position + 1, null)"
+            />
+        </div>
         <div class="flex items-start flex-col overflow-hidden">
             <div
                 ref="queryEditorRef"
@@ -277,12 +282,12 @@ onMounted(async () => {
                 style="field-sizing: content"
             />
         </div>
-
         <ResultsViewer
             v-if="hasResults"
             ref="resultsRef"
-            class="w-full min-h-[500px] text-sm p-2"
+            class="w-full min-h-[250px] text-sm p-2 fit-content"
         />
+
         <div class="info justify-end flex space-x-2">
             <pre
                 v-if="markers.error"

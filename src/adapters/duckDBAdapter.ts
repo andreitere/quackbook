@@ -20,15 +20,16 @@ export class DuckDBAdapter implements SQLBackend {
             console.error(error);
         }
 
-        const _query = isRetrievalQuery
-            ? `WITH data AS (${cleanedQuery}) SELECT * FROM data` // row_number() OVER () as _oid
-            : cleanedQuery;
+        // const _query = isRetrievalQuery
+        //     ? `WITH data AS (${cleanedQuery}) SELECT * FROM data` // row_number() OVER () as _oid
+        //     : cleanedQuery;
 
-        const result = await this.duckdb.query(_query);
+        const result = await this.duckdb.query(cleanedQuery);
         return {
             records: result.records,
             schema: result.schema,
             isRetrievalQuery,
+            shouldStringify: true,
         };
     }
 
