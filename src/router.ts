@@ -1,16 +1,11 @@
 import { useMetaStore } from '@/store/meta.ts';
 import About from '@/views/AboutView.vue';
 import HelpView from '@/views/HelpView.vue';
-import ImportView from '@/views/ImportView.vue';
 import ProjectsView from '@/views/ProjectsView.vue';
 import Workbench from '@/views/Workbench.vue';
 import { createRouter, createWebHashHistory } from 'vue-router';
 
 const routes = [
-    {
-        path: '/import/:project_json?',
-        component: ImportView,
-    },
     {
         path: '/',
         name: 'workbench',
@@ -22,7 +17,6 @@ const routes = [
     },
     {
         path: '/about',
-
         name: 'about',
         component: About,
     },
@@ -34,6 +28,11 @@ const routes = [
     {
         path: '/projects',
         name: 'projects',
+        component: ProjectsView,
+    },
+    {
+        path: '/projects/:projectData',
+        name: 'importProject',
         component: ProjectsView,
     },
 ];

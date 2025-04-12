@@ -21,6 +21,11 @@ const $meta = useMetaStore();
 const $projects = useProjects();
 const $router = useRouter();
 const $route = useRoute();
+
+function closeMenu() {
+    $meta.cmdMenu = false;
+}
+
 function onColorModeToggle() {
     if (colorMode.value === 'light') {
         colorMode.value = 'dark';
@@ -143,29 +148,32 @@ watch([Meta_K, Ctrl_K], (v) => {
                 <CommandGroup v-if="$route.name === 'workbench'" heading="Actions">
                     <CommandItem
                         value="save" data-umami-event="save-project"
-                        class="px-3 py-2 cursor-pointer transition-colors duration-200" @select="$projects.saveProject"
+                        class="px-3 py-2 cursor-pointer transition-colors duration-200 hover:bg-accent/50 aria-selected:bg-accent aria-selected:text-accent-foreground"
+                        @select="() => { $projects.saveProject(); closeMenu(); }"
                     >
                         <div class="i-lucide:save mr-2 text-primary" />
                         <span>Save Project</span>
                     </CommandItem>
                     <CommandItem
                         value="share" data-umami-event="share-project"
-                        class="px-3 py-2 cursor-pointer transition-colors duration-200" @select="$projects.shareProject"
+                        class="px-3 py-2 cursor-pointer transition-colors duration-200 hover:bg-accent/50 aria-selected:bg-accent aria-selected:text-accent-foreground"
+                        @select="() => { $projects.shareProject(); closeMenu(); }"
                     >
                         <div class="i-lucide:share mr-2 text-primary" />
                         <span>Share</span>
                     </CommandItem>
                     <CommandItem
                         value="new-add-cell-sql" data-umami-event="add-sql-cell"
-                        class="px-3 py-2 cursor-pointer transition-colors duration-200" @select="$projects.addCell('sql', null)"
+                        class="px-3 py-2 cursor-pointer transition-colors duration-200 hover:bg-accent/50 aria-selected:bg-accent aria-selected:text-accent-foreground"
+                        @select="() => { $projects.addCell('sql', null); closeMenu(); }"
                     >
                         <div class="i-hugeicons:sql mr-2 text-primary" />
                         <span>Add SQL Cell</span>
                     </CommandItem>
                     <CommandItem
                         value="new-add-cell-markdown" data-umami-event="add-markdown-cell"
-                        class="px-3 py-2 cursor-pointer transition-colors duration-200"
-                        @select="$projects.addCell('markdown', null)"
+                        class="px-3 py-2 cursor-pointer transition-colors duration-200 hover:bg-accent/50 aria-selected:bg-accent aria-selected:text-accent-foreground"
+                        @select="() => { $projects.addCell('markdown', null); closeMenu(); }"
                     >
                         <div class="i-ion:logo-markdown mr-2 text-primary" />
                         <span>Add Markdown Cell</span>
@@ -175,14 +183,16 @@ watch([Meta_K, Ctrl_K], (v) => {
                 <CommandGroup heading="Projects">
                     <CommandItem
                         value="list all projects" data-umami-event="list-projects"
-                        class="px-3 py-2 cursor-pointer transition-colors duration-200" @select="$router.push('/projects')"
+                        class="px-3 py-2 cursor-pointer transition-colors duration-200 hover:bg-accent/50 aria-selected:bg-accent aria-selected:text-accent-foreground"
+                        @select="() => { $router.push('/projects'); closeMenu(); }"
                     >
                         <div class="i-lucide:layout-list mr-2 text-primary" />
                         <span>All Projects</span>
                     </CommandItem>
                     <CommandItem
                         value="new project" data-umami-event="new-project"
-                        class="px-3 py-2 cursor-pointer transition-colors duration-200" @select="$projects.createProject"
+                        class="px-3 py-2 cursor-pointer transition-colors duration-200 hover:bg-accent/50 aria-selected:bg-accent aria-selected:text-accent-foreground"
+                        @select="() => { $projects.createProject(); closeMenu(); }"
                     >
                         <div class="i-lucide:list-plus mr-2 text-primary" />
                         <span>New Project</span>
@@ -192,7 +202,8 @@ watch([Meta_K, Ctrl_K], (v) => {
                 <CommandGroup heading="Meta">
                     <CommandItem
                         v-if="colorMode === 'light'" value="switch to dark mode" data-umami-event="switch-to-dark"
-                        class="px-3 py-2 cursor-pointer transition-colors duration-200" @select="onColorModeToggle"
+                        class="px-3 py-2 cursor-pointer transition-colors duration-200 hover:bg-accent/50 aria-selected:bg-accent aria-selected:text-accent-foreground"
+                        @select="() => { onColorModeToggle(); closeMenu(); }"
                     >
                         <div class="flex justify-between items-center w-full">
                             <div class="flex items-center">
@@ -203,7 +214,8 @@ watch([Meta_K, Ctrl_K], (v) => {
                     </CommandItem>
                     <CommandItem
                         v-if="colorMode === 'dark'" value="switch to light mode" data-umami-event="switch-to-light"
-                        class="px-3 py-2 cursor-pointer transition-colors duration-200" @select="onColorModeToggle"
+                        class="px-3 py-2 cursor-pointer transition-colors duration-200 hover:bg-accent/50 aria-selected:bg-accent aria-selected:text-accent-foreground"
+                        @select="() => { onColorModeToggle(); closeMenu(); }"
                     >
                         <div class="flex justify-between items-center w-full">
                             <div class="flex items-center">
@@ -214,7 +226,8 @@ watch([Meta_K, Ctrl_K], (v) => {
                     </CommandItem>
                     <CommandItem
                         value="system theme" data-umami-event="system-theme"
-                        class="px-3 py-2 cursor-pointer transition-colors duration-200" @select="colorMode = 'auto'"
+                        class="px-3 py-2 cursor-pointer transition-colors duration-200 hover:bg-accent/50 aria-selected:bg-accent aria-selected:text-accent-foreground"
+                        @select="() => { colorMode = 'auto'; closeMenu(); }"
                     >
                         <div class="flex justify-between items-center w-full">
                             <div class="flex items-center">

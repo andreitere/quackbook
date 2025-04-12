@@ -65,15 +65,16 @@ watch([meta, shift, e], (v) => {
             <div class="h-[50%] w-[1px] mx-5 bg-slate-200 hidden md:block" />
             <div class="hidden items-center space-x-2 md:flex">
                 <router-link
-                    to="/import"
+                    to="/projects"
                     class="group"
                 >
                     <Button
                         variant="ghost"
                         size="sm"
-                        class="text-xs transition-colors group-hover:bg-slate-100"
+                        class="text-xs transition-colors group-hover:bg-slate-100 flex items-center gap-1"
                     >
-                        import
+                        <div class="i-bi:folder w-4 h-4" />
+                        projects
                     </Button>
                 </router-link>
                 <router-link
@@ -83,8 +84,9 @@ watch([meta, shift, e], (v) => {
                     <Button
                         variant="ghost"
                         size="sm"
-                        class="text-xs transition-colors group-hover:bg-slate-100"
+                        class="text-xs transition-colors group-hover:bg-slate-100 flex items-center gap-1"
                     >
+                        <div class="i-bi:info-circle w-4 h-4" />
                         about
                     </Button>
                 </router-link>
