@@ -10,7 +10,7 @@
 		"preview": "vite preview",
 		"prepare": "husky",
 		"es:lint": "eslint ./src",
-		"es:fix": "eslint --fix ./src"
+		"es:fix": "npx eslint --fix ./src"
 	},
 	"dependencies": {
 		"@codemirror/autocomplete": "^6.18.3",
@@ -53,6 +53,7 @@
 		"vue-router": "4"
 	},
 	"devDependencies": {
+		"@antfu/eslint-config": "^4.12.0",
 		"@iconify/json": "^2.2.270",
 		"@tailwindcss/typography": "^0.5.15",
 		"@types/markdown-it": "^14.1.2",
