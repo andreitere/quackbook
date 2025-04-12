@@ -4,8 +4,8 @@
       cn(
         'transition-all duration-200 w-full flex h-auto flex-col p-3 rounded space-y-2 group bg-white',
         'ring-[2px]  ring-transparent focus-within:shadow-md',
-        error ? 'ring-red-100' : '',
-        hasResults && !error ? 'ring-green-100' : '',
+        markers.error ? 'ring-red-300' : '',
+        markers.done && !markers.error ? 'ring-lime-300' : '',
       ),
     ]"
     @focusin="inputFocused = true"
@@ -39,25 +39,21 @@
       class="w-full min-h-[500px] text-sm p-2"
     />
     <div class="info justify-end flex space-x-2">
-      <span
-        v-if="lastQueryDuration && !error"
-        class="text-xs"
-      >query took: {{ lastQueryDuration }} s</span>
       <pre
-        v-if="error != ''"
+        v-if="markers.error"
         class="text-xs text-red-500 text-wrap"
         v-html="formattedError"
       />
       <div
-        v-if="lastQueryDuration != '' && error == ''"
+        v-if="markers.done"
         class="i-ep:success-filled text-green-600 h-5 w-5"
       />
       <div
-        v-if="error != ''"
+        v-if="markers.error"
         class="i-material-symbols:chat-error-outline text-red-600 h-5 w-5"
       />
       <div
-        v-if="loading"
+        v-if="markers.loading"
         class="i-svg-spinners-gooey-balls-1"
       />
     </div>
@@ -65,13 +61,14 @@
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, onMounted, ref, useTemplateRef, watch } from "vue";
+import { computed, nextTick, onMounted, reactive, ref, useTemplateRef, watch } from "vue";
 import EditorCellToolbar from "@/components/EditorCellToolbar.vue";
 import { format } from "sql-formatter";
 import { useSQLBackend } from "@/hooks/useSQLBackend";
 import { useSQLExtensions } from "@/hooks/useSQLEditor.ts";
 import { db_events } from "@/store/meta.ts";
 import { useProjects } from "@/store/project.ts";
+import { useQueryHistory } from "@/store/queryHistory";
 import {
 	closeBracketsKeymap,
 	completionKeymap,
@@ -106,9 +103,14 @@ const queryEditor = useTemplateRef("queryEditorRef");
 const hasResults = ref<boolean>(false);
 const error = ref<string>("");
 const inputFocused = ref(false);
-const lastQueryDuration = ref("");
-const loading = ref(false);
+const markers = reactive({
+	loading: false,
+	done: false,
+	error: false
+});
 const editor = ref<EditorView>();
+
+const { addEntry } = useQueryHistory();
 
 // -- start computed --
 
@@ -130,8 +132,11 @@ const editorTheme = computed(() => {
 
 // -- start methods --
 const onClear = async () => {
-	hasResults.value = false;
+	hasResults.value = false
 	error.value = "";
+	markers.done = false;
+	markers.error = false;
+	markers.loading = false;
 };
 
 const initEditor = () => {
@@ -173,7 +178,7 @@ const initEditor = () => {
 
 const handleStream = async (result: QueryResult) => {
 	console.log(result);
-	hasResults.value = true;
+	hasResults.value = result.isRetrievalQuery ?? false;
 	await nextTick();
 	const decoder = new TextDecoder("utf-8");
 	let buffer = "";
@@ -200,11 +205,11 @@ const handleStream = async (result: QueryResult) => {
 			}
 		}
 	}
-	console.log(result.schema)
+	markers.done = true;
 }
 
 const handleResult = async (result: QueryResult) => {
-	const { records, schema } = result as { records: Record<string, unknown>[], schema: Record<string, string> };
+	const { records, schema, isRetrievalQuery } = result as { records: Record<string, unknown>[], schema: Record<string, string>, isRetrievalQuery: boolean };
 	let processedRecords = records as Record<string, unknown>[];
 	let processedSchema = schema;
 
@@ -223,10 +228,11 @@ const handleResult = async (result: QueryResult) => {
 		);
 	}
 
+	markers.done = true;
 	if (!processedRecords.length) {
 		return
 	}
-	hasResults.value = true;
+	hasResults.value = isRetrievalQuery;
 	await nextTick();
 	await resultsRef.value!.showTable(processedSchema, processedRecords)
 	resultsRef.value!.addData(processedRecords)
@@ -241,29 +247,37 @@ const onPlay = async () => {
 		hasResults.value = false;
 		await nextTick();
 		error.value = "";
-		loading.value = true;
+		markers.loading = true;
+		markers.done = false;
+		markers.error = false;
 
-
+		const startTime = performance.now();
 		const result = await execute({ query: query.value });
+		const duration = (performance.now() - startTime) / 1000; // Convert to seconds
+
+
+
 		console.log(`onPlay result`, result)
 		if (result.records instanceof ReadableStreamDefaultReader) {
 			handleStream(result)
 		} else {
 			handleResult(result)
 		}
+		addEntry({
+			query: query.value,
+			duration,
+		});
 
 		if (/create|attach|copy/gi.test(query.value)) {
 			db_events.emit("UPDATE_SCHEMA");
 		}
 	} catch (e) {
 		console.log("error", e)
-		if (e instanceof Error) {
-			error.value = e.toString();
-		} else {
-			error.value = "An unknown error occured";
-		}
+		const errorMessage = e instanceof Error ? e.toString() : "An unknown error occurred";
+		error.value = errorMessage;
+		markers.error = true;
 	} finally {
-		loading.value = false;
+		markers.loading = false;
 	}
 };
 

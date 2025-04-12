@@ -27,6 +27,7 @@ export class DuckDBAdapter implements SQLBackend {
     return {
       records: result.records,
       schema: result.schema,
+      isRetrievalQuery: isRetrievalQuery,
     }
   }
 

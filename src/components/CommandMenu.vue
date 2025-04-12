@@ -19,7 +19,6 @@ defineEmits([
 ]);
 
 const $projects = useProjects();
-const { activeProject } = $projects;
 const $router = useRouter();
 const $route = useRoute();
 const onColorModeToggle = () => {
@@ -46,7 +45,7 @@ watch([Meta_K, Ctrl_K], (v) => {
 <template>
   <Button
     size="xs"
-    class="text-xs cursor-pointer hidden md:block"
+    class="text-xs cursor-pointer hidden md:block transition-all duration-200 hover:scale-105"
     data-umami-event="command-menu"
     @click="$meta.cmdMenu = true"
   >
@@ -56,98 +55,82 @@ watch([Meta_K, Ctrl_K], (v) => {
     <PopoverTrigger as-child>
       <Button
         size="xs"
-        class="text-xs cursor-pointer md:hidden"
+        class="text-xs cursor-pointer md:hidden transition-all duration-200 hover:scale-105"
         data-umami-event="command-menu"
       >
         <div class="i-lucide-square-menu" />
       </Button>
     </PopoverTrigger>
-    <PopoverContent class="w-72 p-0">
+    <PopoverContent class="w-72 p-0 shadow-lg border-0">
       <div class="flex flex-col">
-        <div class="p-2">
-          <div class="text-sm font-medium px-2 py-1.5">
+        <div class="p-3">
+          <div class="text-sm font-semibold px-2 py-1.5 text-muted-foreground">
             Actions
           </div>
           <div class="space-y-1">
             <div
-              class="flex items-center px-2 py-1.5 text-sm rounded-sm hover:bg-accent cursor-pointer"
+              class="flex items-center px-3 py-2 text-sm rounded-md hover:bg-accent/50 cursor-pointer transition-colors duration-200"
               data-umami-event="save-project"
               @click="$projects.saveProject"
             >
-              <div class="i-lucide:save mr-2" />
-              <span>save project</span>
+              <div class="i-lucide:save mr-2 text-primary" />
+              <span>Save Project</span>
             </div>
             <div
-              class="flex items-center px-2 py-1.5 text-sm rounded-sm hover:bg-accent cursor-pointer"
+              class="flex items-center px-3 py-2 text-sm rounded-md hover:bg-accent/50 cursor-pointer transition-colors duration-200"
               data-umami-event="share-project"
               @click="$projects.shareProject"
             >
-              <div class="i-lucide:share mr-2" />
-              <span>share</span>
+              <div class="i-lucide:share mr-2 text-primary" />
+              <span>Share</span>
             </div>
             <div
-              v-if="$projects.activeProjectMeta.mode == 'console'"
-              class="flex items-center px-2 py-1.5 text-sm rounded-sm hover:bg-accent cursor-pointer"
-              data-umami-event="convert-to-notebook"
-              @click="$projects.convertToNotebook"
-            >
-              <div class="i-mdi:notebook-edit-outline mr-2" />
-              <span>convert to notebook</span>
-            </div>
-            <div
-              v-if="activeProject.mode == 'notebook'"
-              class="flex items-center px-2 py-1.5 text-sm rounded-sm hover:bg-accent cursor-pointer"
-              data-umami-event="convert-to-console"
-              @click="$projects.convertToConsole"
-            >
-              <div class="i-fluent:window-console-20-filled mr-2" />
-              <span>convert to console</span>
-            </div>
-            <div
-              class="flex items-center px-2 py-1.5 text-sm rounded-sm hover:bg-accent cursor-pointer"
+              class="flex items-center px-3 py-2 text-sm rounded-md hover:bg-accent/50 cursor-pointer transition-colors duration-200"
               data-umami-event="add-sql-cell"
               @click="$projects.addCell('sql', null)"
             >
-              <div class="i-hugeicons:sql mr-2" />
-              <span>add sql cell</span>
+              <div class="i-hugeicons:sql mr-2 text-primary" />
+              <span>Add SQL Cell</span>
             </div>
             <div
-              class="flex items-center px-2 py-1.5 text-sm rounded-sm hover:bg-accent cursor-pointer"
+              class="flex items-center px-3 py-2 text-sm rounded-md hover:bg-accent/50 cursor-pointer transition-colors duration-200"
               data-umami-event="add-markdown-cell"
               @click="$projects.addCell('markdown', null)"
             >
-              <div class="i-ion:logo-markdown mr-2" />
-              <span>add markdown cell</span>
+              <div class="i-ion:logo-markdown mr-2 text-primary" />
+              <span>Add Markdown Cell</span>
             </div>
           </div>
         </div>
-        <div class="h-px bg-border" />
-        <div class="p-2">
-          <div class="text-sm font-medium px-2 py-1.5">
+        <div class="h-px bg-border/50" />
+        <div class="p-3">
+          <div class="text-sm font-semibold px-2 py-1.5 text-muted-foreground">
             Projects
           </div>
           <div class="space-y-1">
             <div
-              class="flex items-center px-2 py-1.5 text-sm rounded-sm hover:bg-accent cursor-pointer"
+              class="flex items-center px-3 py-2 text-sm rounded-md hover:bg-accent/50 cursor-pointer transition-colors duration-200"
               @click="$router.push('/projects')"
             >
-              <span>Projects</span>
+              <div class="i-lucide:layout-list mr-2 text-primary" />
+              <span>All Projects</span>
             </div>
             <div
-              class="flex items-center px-2 py-1.5 text-sm rounded-sm hover:bg-accent cursor-pointer"
+              class="flex items-center px-3 py-2 text-sm rounded-md hover:bg-accent/50 cursor-pointer transition-colors duration-200"
               data-umami-event="new-project"
               @click="$projects.createProject"
             >
-              <div class="i-lucide:list-plus mr-2" />
-              <span>new project</span>
+              <div class="i-lucide:list-plus mr-2 text-primary" />
+              <span>New Project</span>
             </div>
             <div
               v-for="project in $projects.projects.slice(0, 3)"
               :key="project.id"
-              class="flex items-center px-2 py-1.5 text-sm rounded-sm hover:bg-accent cursor-pointer"
+              class="flex items-center px-3 py-2 text-sm rounded-md hover:bg-accent/50 cursor-pointer transition-colors duration-200"
               data-umami-event="open-project"
               @click="$projects.setActiveProject(project)"
             >
+              <div class="i-lucide:file-text mr-2 text-primary" />
               <span class="text-muted-foreground">{{ project.name }}</span>
             </div>
           </div>
@@ -156,10 +139,17 @@ watch([Meta_K, Ctrl_K], (v) => {
     </PopoverContent>
   </Popover>
   <CommandDialog v-model:open="$meta.cmdMenu">
-    <Command class="rounded-lg border shadow-md ">
-      <CommandInput placeholder="Type a command or search..." />
+    <Command
+      class="rounded-lg border shadow-lg bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
+    >
+      <CommandInput
+        placeholder="Type a command or search..."
+        class="border-0 focus:ring-0"
+      />
       <CommandList class="nice-scrollbar max-h-[30vh]">
-        <CommandEmpty>No results found.</CommandEmpty>
+        <CommandEmpty class="py-6 text-center text-sm text-muted-foreground">
+          No results found.
+        </CommandEmpty>
         <CommandGroup
           v-if="$route.name === 'workbench'"
           heading="Actions"
@@ -167,110 +157,59 @@ watch([Meta_K, Ctrl_K], (v) => {
           <CommandItem
             value="save"
             data-umami-event="save-project"
+            class="px-3 py-2 cursor-pointer transition-colors duration-200"
             @select="$projects.saveProject"
           >
-            <div class="i-lucide:save mr-2" />
-            <span>save project</span>
+            <div class="i-lucide:save mr-2 text-primary" />
+            <span>Save Project</span>
           </CommandItem>
           <CommandItem
             value="share"
             data-umami-event="share-project"
+            class="px-3 py-2 cursor-pointer transition-colors duration-200"
             @select="$projects.shareProject"
           >
-            <div class="i-lucide:share mr-2" />
-            <span>share</span>
-          </CommandItem>
-          <CommandItem
-            v-if="$projects.activeProjectMeta.mode == 'console'"
-            value="convert-to-notebook"
-            data-umami-event="convert-to-notebook"
-            class="items-center flex"
-            @select="$projects.convertToNotebook"
-          >
-            <div class="i-mdi:notebook-edit-outline mr-2" />
-            <span>convert to notebook</span>
-          </CommandItem>
-          <CommandItem
-            v-if="activeProject.mode == 'notebook'"
-            value="convert-to-console"
-            data-umami-event="convert-to-console"
-            class="items-center flex"
-            @select="$projects.convertToConsole"
-          >
-            <div class="i-fluent:window-console-20-filled mr-2" />
-            <span>convert to console</span>
+            <div class="i-lucide:share mr-2 text-primary" />
+            <span>Share</span>
           </CommandItem>
           <CommandItem
             value="new-add-cell-sql"
             data-umami-event="add-sql-cell"
-            class="items-center flex"
+            class="px-3 py-2 cursor-pointer transition-colors duration-200"
             @select="$projects.addCell('sql', null)"
           >
-            <div class="i-hugeicons:sql mr-2" />
-            <span>add sql cell</span>
+            <div class="i-hugeicons:sql mr-2 text-primary" />
+            <span>Add SQL Cell</span>
           </CommandItem>
           <CommandItem
             value="new-add-cell-markdown"
             data-umami-event="add-markdown-cell"
-            class="items-center flex"
+            class="px-3 py-2 cursor-pointer transition-colors duration-200"
             @select="$projects.addCell('markdown', null)"
           >
-            <div class="i-ion:logo-markdown mr-2" />
-            <span>add markdown cell</span>
-          </CommandItem>
-        </CommandGroup>
-        <CommandGroup
-          v-if="$route.name === 'workbench'"
-          heading="Files import"
-        >
-          <CommandItem
-            value="upload file"
-            data-umami-event="start-upload-files"
-            @select="$meta.startFilesImport"
-          >
-            <div class="i-lucide:import mr-2" />
-            <span>upload file (csv, arrow, parquet)</span>
-          </CommandItem>
-          <CommandItem
-            value="mount local filesystem"
-            data-umami-event="mount-file-system"
-            @select="$meta.startMountFileSystem"
-          >
-            <div class="i-lucide:file-stack mr-2" />
-            <span>mount file system</span>
+            <div class="i-ion:logo-markdown mr-2 text-primary" />
+            <span>Add Markdown Cell</span>
           </CommandItem>
         </CommandGroup>
         <CommandSeparator />
         <CommandGroup heading="Projects">
           <CommandItem
-            v-for="project in $projects.projects.slice(0, 3)"
-            :key="project.id"
-            :value="project.name"
-            data-umami-event="open-project"
-            @select="$projects.setActiveProject(project)"
-          >
-            <div class="flex justify-between items-center w-full">
-              <span>{{ project.name }}</span>
-            </div>
-          </CommandItem>
-          <CommandSeparator />
-          <CommandItem
             value="list all projects"
             data-umami-event="list-projects"
-            class="items-center flex"
+            class="px-3 py-2 cursor-pointer transition-colors duration-200"
             @select="$router.push('/projects')"
           >
-            <div class="i-lucide:layout-list mr-2" />
-            <span>all projects</span>
+            <div class="i-lucide:layout-list mr-2 text-primary" />
+            <span>All Projects</span>
           </CommandItem>
           <CommandItem
             value="new project"
             data-umami-event="new-project"
-            class="items-center flex"
+            class="px-3 py-2 cursor-pointer transition-colors duration-200"
             @select="$projects.createProject"
           >
-            <div class="i-lucide:list-plus mr-2" />
-            <span>new project</span>
+            <div class="i-lucide:list-plus mr-2 text-primary" />
+            <span>New Project</span>
           </CommandItem>
         </CommandGroup>
         <CommandSeparator />
@@ -279,20 +218,14 @@ watch([Meta_K, Ctrl_K], (v) => {
             v-if="colorMode == 'dark'"
             value="switch to light mode"
             data-umami-event="switch-to-light"
+            class="px-3 py-2 cursor-pointer transition-colors duration-200"
             @select="onColorModeToggle"
           >
             <div class="flex justify-between items-center w-full">
-              <span>switch to light mode</span>
-            </div>
-          </CommandItem>
-          <CommandItem
-            v-if="colorMode == 'light'"
-            value="switch to dark mode"
-            data-umami-event="switch-to-dark"
-            @select="onColorModeToggle"
-          >
-            <div class="flex justify-between items-center w-full">
-              <span>switch to dark mode</span>
+              <div class="flex items-center">
+                <div class="i-lucide:sun mr-2 text-primary" />
+                <span>Switch to Light Mode</span>
+              </div>
             </div>
           </CommandItem>
         </CommandGroup>
@@ -301,4 +234,26 @@ watch([Meta_K, Ctrl_K], (v) => {
   </CommandDialog>
 </template>
 
-<style scoped></style>
+<style scoped>
+.nice-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: hsl(var(--border)) transparent;
+}
+
+.nice-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.nice-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.nice-scrollbar::-webkit-scrollbar-thumb {
+  background-color: hsl(var(--border));
+  border-radius: 3px;
+}
+
+.nice-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: hsl(var(--border) / 0.8);
+}
+</style>

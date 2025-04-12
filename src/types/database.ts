@@ -12,6 +12,7 @@ export interface QueryResult {
   duration?: number
   streamed?: boolean
   shouldStringify?: boolean
+  isRetrievalQuery?: boolean
 }
 
 export interface SQLBackend {

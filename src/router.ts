@@ -2,7 +2,6 @@ import { useMetaStore } from "@/store/meta.ts";
 import About from "@/views/AboutView.vue";
 import HelpView from "@/views/HelpView.vue";
 import ImportView from "@/views/ImportView.vue";
-import MountFileSystem from "@/views/MountFileSystem.vue";
 import ProjectsView from "@/views/ProjectsView.vue";
 import Workbench from "@/views/Workbench.vue";
 import { createRouter, createWebHistory } from "vue-router";
@@ -26,11 +25,6 @@ const routes = [
         path: "/help",
         name: "help",
         component: HelpView,
-    },
-    {
-        path: "/mount-file-system",
-        name: "mount-file-system",
-        component: MountFileSystem,
     },
     {
         path: "/projects",

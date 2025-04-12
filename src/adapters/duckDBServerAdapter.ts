@@ -40,6 +40,7 @@ export class DuckDBServerAdapter implements SQLBackend {
       schema: cols,
       streamed: true,
       shouldStringify: false,
+      isRetrievalQuery: isRetrievalQuery,
     }
   }
 

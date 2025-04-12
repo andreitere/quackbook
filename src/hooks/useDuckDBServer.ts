@@ -59,7 +59,11 @@ export const useDuckDBServer = () => {
         if (response?.status === 404) {
           throw new Error(`DuckDB server not found at ${host}. Please check if the server is running and the host is correct.`)
         }
-        throw new Error(`Failed to connect to DuckDB server: ${error.message}`)
+        if (response?.status === 400) {
+          //@ts-ignore
+          const json = await response.json()
+          throw new Error(json.error)
+        }
       }
       throw new Error("An unknown error occurred while connecting to DuckDB server")
     }

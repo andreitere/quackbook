@@ -16,6 +16,7 @@ import SQLBackendSelector from "@/components/SQLBackendSelector.vue";
 import EditorCell from "@/components/EditorCell.vue";
 import DBSchemaDetails from "@/components/DBSchemaDetails.vue";
 import MountFileSystem from "@/components/MountFileSystem.vue";
+import QueryHistory from "@/components/QueryHistory.vue";
 
 const $meta = useMetaStore();
 const $projects = useProjects();
@@ -38,8 +39,8 @@ watch(cmdShiftE, (v) => {
 </script>
 
 <template>
-  <div class="flex flex-grow w-1/3 flex-col h-full max-h-full px-2 py-0 bg-slate-100 dark:bg-slate-800">
-    <div class="flex justify-start items-center gap-2 text-gray-600 dark:text-gray-300 py-4">
+  <div class="flex flex-grow w-1/3 flex-col h-full max-h-full p-6 bg-gray-300 dark:bg-zinc-800">
+    <div class="flex justify-start items-center gap-2 text-gray-600 mb-6 dark:text-gray-300">
       <div
         v-if="db_loading"
         class="flex items-center justify-center w-full"
@@ -114,7 +115,7 @@ watch(cmdShiftE, (v) => {
       </div>
     </div>
 
-    <div class="overflow-y-scroll nice-scrollbar flex flex-col h-0 flex-grow space-y-6 pb-[200px] px-5">
+    <div class="overflow-y-scroll nice-scrollbar flex flex-col h-0 flex-grow space-y-6 pb-[200px] py-2">
       <div
         v-for="cell in $projects.sortedCells"
         :key="`${cell.position}-${cell.id}`"
@@ -142,6 +143,7 @@ watch(cmdShiftE, (v) => {
     ]"
   >
     <DBSchemaDetails class="w-full" />
+    <QueryHistory class="w-full" />
   </div>
   <ShareProjectModal />
   <FileImport />

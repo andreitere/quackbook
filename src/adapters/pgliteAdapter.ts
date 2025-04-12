@@ -1,6 +1,6 @@
 import type { QueryResult, SQLBackend, ExecuteArgs } from "@/types/database"
 import { usePGLite } from "@/hooks/usePGLite"
-import { pgToJsType } from "@/lib/utils"
+import { pgToJsType, isDataRetrievalQuery } from "@/lib/utils"
 
 export class PGLiteAdapter implements SQLBackend {
   private pglite = usePGLite()
@@ -13,6 +13,7 @@ export class PGLiteAdapter implements SQLBackend {
       records: records,
       schema: cols,
       shouldStringify: true,
+      isRetrievalQuery: isDataRetrievalQuery(query),
     }
   }
 

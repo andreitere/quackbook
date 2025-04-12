@@ -1,18 +1,18 @@
 <script setup lang="ts">
 
 import { useProjects } from "@/store/project.ts";
-import { ref } from "vue";
+import { ref, useTemplateRef } from "vue";
 import { Input } from "@/components/ui/input";
 
 const $projects = useProjects();
 const isEditing = ref(false);
-const inputRef = ref<HTMLInputElement | null>(null);
+const inputRef = useTemplateRef("inputRef");
 
 const startEditing = () => {
   isEditing.value = true;
   // Focus the input after a small delay to ensure it's mounted
   setTimeout(() => {
-    inputRef.value?.focus();
+    inputRef.value!.$el.focus();
   }, 0);
 };
 
