@@ -39,9 +39,9 @@ onMounted(() => {
                 initializing duck db ❤
             </div>
             <div v-else class="flex gap-2 items-center w-full flex-col md:flex-row">
-                <div class="flex flex-shrink space-x-2 w-full md:w-auto items-center">
-                    <EditableProjectName v-if="$route.name === 'workbench'" />
-                    <NotificationsCard v-if="$route.name === 'workbench'" />
+                <div class="flex flex-grow space-x-2 w-full items-center">
+                    <EditableProjectName class="flex-grow" />
+                    <NotificationsCard />
                     <Popover>
                         <PopoverTrigger as-child>
                             <Button variant="outline" size="sm" class="shadow-sm">

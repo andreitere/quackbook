@@ -178,64 +178,37 @@ function tryImport(v: unknown) {
                 <div class="flex-grow" />
                 <div class="flex items-center gap-4">
                     <div class="relative w-64">
-                        <Input
-                            v-model="searchQuery"
-                            placeholder="Search projects..."
-                            class="pl-8"
-                        />
+                        <Input v-model="searchQuery" placeholder="Search projects..." class="pl-8" />
                         <div class="absolute left-2 top-1/2 -translate-y-1/2 text-muted-foreground">
                             <div class="i-ic:twotone-search" />
                         </div>
                     </div>
-                    <Button
-                        variant="outline"
-                        class="relative"
-                        @click="fileInput?.click()"
-                    >
+                    <Button variant="outline" class="relative" @click="fileInput?.click()">
                         <div class="i-lucide:upload-cloud mr-2" />
                         Import Project
-                        <input
-                            ref="fileInput"
-                            type="file"
-                            class="hidden"
-                            accept=".json"
-                            @change="onProjectUploaded"
-                        >
+                        <input ref="fileInput" type="file" class="hidden" accept=".json" @change="onProjectUploaded">
                     </Button>
                 </div>
             </div>
             <div
                 class="flex-grow flex flex-wrap items-start justify-start h-0 nice-scrollbar overflow-y-scroll gap-2"
-                :class="{ 'bg-blue-50 dark:bg-blue-900/20': isDragging }"
-                @dragover="onDragOver"
-                @dragleave="onDragLeave"
+                :class="{ 'bg-blue-50 dark:bg-blue-900/20': isDragging }" @dragover="onDragOver" @dragleave="onDragLeave"
                 @drop="onDrop"
             >
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
                     <Card
-                        v-for="project in filteredProjects"
-                        :key="`project-${project.id}`"
+                        v-for="project in filteredProjects" :key="`project-${project.id}`"
                         class="hover:shadow-lg transition-shadow duration-200"
                     >
                         <CardHeader class="pb-2">
                             <CardTitle class="flex justify-between items-center m-0">
-                                <span class="truncate max-w-[200px]">{{ project.name }}</span>
+                                <span class="">{{ project.name }}</span>
                                 <div class="flex items-center gap-1">
-                                    <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        class="h-8 w-8"
-                                        @click="deleteProject(project)"
-                                    >
-                                        <div class="i-lucide:trash-2 text-lg text-destructive" />
-                                    </Button>
-                                    <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        class="h-8 w-8"
-                                        @click="$projects.setActiveProject(project)"
-                                    >
+                                    <Button variant="ghost" size="icon" class="h-8 w-8" @click="$projects.setActiveProject(project)">
                                         <div class="i-ic:twotone-folder-open text-lg" />
+                                    </Button>
+                                    <Button variant="ghost" size="icon" class="h-8 w-8" @click="deleteProject(project)">
+                                        <div class="i-lucide:trash-2 text-lg text-destructive" />
                                     </Button>
                                 </div>
                             </CardTitle>
@@ -248,8 +221,7 @@ function tryImport(v: unknown) {
                             <div class="text-xs space-y-1 text-muted-foreground">
                                 <div
                                     v-for="(x, index) in project.cells.slice(0, 2).map(x => x.query || x.markdown)"
-                                    :key="`cell-${index}`"
-                                    class="truncate"
+                                    :key="`cell-${index}`" class="truncate"
                                 >
                                     {{ x }}
                                 </div>
@@ -263,10 +235,7 @@ function tryImport(v: unknown) {
             </div>
         </div>
         <!-- Loading Overlay -->
-        <div
-            v-if="isLoading"
-            class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-        >
+        <div v-if="isLoading" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div class="animate-spin i-lucide:loader-2 w-12 h-12 text-white" />
         </div>
 
@@ -283,7 +252,10 @@ function tryImport(v: unknown) {
                     <AlertDialogCancel @click="showDeleteDialog = false">
                         Cancel
                     </AlertDialogCancel>
-                    <AlertDialogAction class="bg-destructive text-destructive-foreground hover:bg-destructive/90" @click="confirmDelete">
+                    <AlertDialogAction
+                        class="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                        @click="confirmDelete"
+                    >
                         Delete
                     </AlertDialogAction>
                 </AlertDialogFooter>
@@ -294,33 +266,34 @@ function tryImport(v: unknown) {
 
 <style scoped>
 .nice-scrollbar {
-    scrollbar-width: thin;
-    scrollbar-color: var(--color-muted) transparent;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-muted) transparent;
 }
 
 .nice-scrollbar::-webkit-scrollbar {
-    width: 6px;
+  width: 6px;
 }
 
 .nice-scrollbar::-webkit-scrollbar-track {
-    background: transparent;
+  background: transparent;
 }
 
 .nice-scrollbar::-webkit-scrollbar-thumb {
-    background-color: var(--color-muted);
-    border-radius: 3px;
+  background-color: var(--color-muted);
+  border-radius: 3px;
 }
 
 .animate-spin {
-    animation: spin 1s linear infinite;
+  animation: spin 1s linear infinite;
 }
 
 @keyframes spin {
-    from {
-        transform: rotate(0deg);
-    }
-    to {
-        transform: rotate(360deg);
-    }
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
 }
 </style>
