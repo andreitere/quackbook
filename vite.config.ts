@@ -50,7 +50,7 @@ export default defineConfig(({ mode }) => {
                     if (isProd) {
                         return html.replace(
                             '</head>',
-                            `<script defer src="https://analytics.cloudcrafts.club/script.js" data-website-id="918cc775-65fc-418c-be8c-8597cdd1a450"></script>\n</body>`,
+                            `<script defer src="https://analytics.swninja.dev/script.js" data-website-id="918cc775-65fc-418c-be8c-8597cdd1a450"></script>\n</body>`,
                         );
                     }
                     return html;
